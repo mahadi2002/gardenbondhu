@@ -14,7 +14,9 @@ declare(strict_types=1);
  * not by generating all 60 unattended.
  */
 
+use App\Core\Crypto;
 use App\Core\Db;
+use App\Support\Operators;
 
 /** @var \PDO $pdo defined by migrate.php before this file is required */
 
@@ -521,4 +523,38 @@ if (!$exists) {
         [$adminEmail, password_hash('ChangeMe123!', PASSWORD_ARGON2ID), 'Admin']
     );
     fwrite(STDOUT, "  admin created: $adminEmail / ChangeMe123!  (CHANGE THIS before launch)\n");
+}
+
+// ── Demo subscriber ──────────────────────────────────────────────────
+//
+// Dev/demo convenience only — a subscriber account with an already-active
+// subscription, so /login can be tested immediately without stepping
+// through the OTP → first-charge flow every time. DELETE before production
+// (see the pre-launch checklist in README.md / spec §9.13).
+
+$demoMsisdn = '01812345678'; // Robi range, normal ending — no mock 00/99 quirks
+$demoHash   = Crypto::blindIndex($demoMsisdn);
+$demoUserId = Db::value('SELECT id FROM users WHERE msisdn_hash = ?', [$demoHash]);
+
+if (!$demoUserId) {
+    $demoUserId = Db::insert(
+        'INSERT INTO users (msisdn_hash, msisdn_enc, msisdn_last4, operator, status, display_name)
+         VALUES (?, ?, ?, ?, "active", "Demo User")',
+        [$demoHash, Crypto::encrypt($demoMsisdn), Operators::last4($demoMsisdn), (string) Operators::detect($demoMsisdn)]
+    );
+
+    $demoRef = 'mocksub_' . substr($demoHash, 0, 24);
+    $subId = Db::insert(
+        'INSERT INTO subscriptions (user_id, carrier_sub_ref, status, daily_amount, started_at, current_period_end)
+         VALUES (?, ?, "active", 2.78, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY))',
+        [$demoUserId, $demoRef]
+    );
+
+    Db::insert(
+        'INSERT INTO charge_transactions (subscription_id, idempotency_key, external_txn_id, amount, status, status_code, raw_response, attempted_at, settled_at)
+         VALUES (?, ?, ?, 2.78, "success", "OK", ?, NOW(), NOW())',
+        [$subId, 'demo-seed-' . $subId, 'mocktxn_demoseed' . $subId, json_encode(['mock' => true, 'seed' => true])]
+    );
+
+    fwrite(STDOUT, "  demo subscriber created: $demoMsisdn — login at /login with OTP code 123456\n");
 }
