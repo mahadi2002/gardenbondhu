@@ -43,10 +43,13 @@ final class SearchService
 
     private function searchPlants(string $q, int $limit): array
     {
+        // Columns must match what partials/plant-card.php renders (sunlight,
+        // water_need, difficulty chips) — search results use the same card
+        // partial as every other plant listing.
         if ($this->fulltext()) {
             try {
                 return Db::all(
-                    'SELECT id, slug, name_bn, name_en, summary_bn, hero_image, difficulty,
+                    'SELECT id, slug, name_bn, name_en, summary_bn, hero_image, difficulty, sunlight, water_need,
                             MATCH(name_bn, name_en, summary_bn) AGAINST (? IN NATURAL LANGUAGE MODE) AS relevance
                        FROM plants
                       WHERE is_published = 1
@@ -62,7 +65,7 @@ final class SearchService
 
         $like = '%' . $q . '%';
         return Db::all(
-            'SELECT id, slug, name_bn, name_en, summary_bn, hero_image, difficulty
+            'SELECT id, slug, name_bn, name_en, summary_bn, hero_image, difficulty, sunlight, water_need
                FROM plants
               WHERE is_published = 1
                 AND (name_bn LIKE ? OR name_en LIKE ? OR summary_bn LIKE ? OR scientific_name LIKE ?)

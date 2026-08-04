@@ -1,0 +1,219 @@
+{
+  "aam": {
+    "file": "aam.jpg",
+    "author": "Billjones94",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Mangoes_(Magnifera_indica)_from_India.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Mangifera_indica"
+  },
+  "kathal": {
+    "file": "kathal.jpg",
+    "author": "Tushar Hossain",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:The_jackfruit_is_holding_on_to_the_tree.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Jackfruit"
+  },
+  "peyara": {
+    "file": "peyara.jpg",
+    "author": "A-giấu",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Psidium_guajava_fruit.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Psidium_guajava"
+  },
+  "lichu": {
+    "file": "lichu.jpg",
+    "author": "B.navez",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Litchi_chinensis_fruits.JPG",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Lychee"
+  },
+  "dalim": {
+    "file": "dalim.jpg",
+    "author": "Jebulon",
+    "license": "CC0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Punica_granatum_fruit_Grenade.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Pomegranate"
+  },
+  "dragon-fruit": {
+    "file": "dragon-fruit.jpg",
+    "author": "Zenyrgarden",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Dragon_fruit_Hylocereus_Undatus_(Vietnam_White).jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Selenicereus_undatus"
+  },
+  "strawberry": {
+    "file": "strawberry.jpg",
+    "author": "Ivar Leidus",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Garden_strawberry_(Fragaria_×_ananassa)_single2.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Strawberry"
+  },
+  "kumra": {
+    "file": "kumra.jpg",
+    "author": "George Chernilevsky",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cucurbita_moschata_Butternut_2012_G2.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Cucurbita_moschata"
+  },
+  "mula": {
+    "file": "mula.jpg",
+    "author": "Self, en:User:Jengod",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Radish_3371103037_4ab07db0bf_o.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Radish"
+  },
+  "gajor": {
+    "file": "gajor.jpg",
+    "author": "Alvesgaspar",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Daucus_carota_May_2008-1_edit.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Daucus_carota"
+  },
+  "fulkopi": {
+    "file": "fulkopi.jpg",
+    "author": "Coyau",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Chou-fleur_02.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Cauliflower"
+  },
+  "korola": {
+    "file": "korola.jpg",
+    "author": "Francisco Manuel Blanco (O.S.A.)",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Momordica_charantia_Blanco2.357.png",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Momordica_charantia"
+  },
+  "lalshak": {
+    "file": "lalshak.jpg",
+    "author": "Tangopaso",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Amaranthus_tricolor_in_a_flower_bed_near_Notre-Dame_cathedral_in_Paris3.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Amaranthus_tricolor"
+  },
+  "rojonigondha": {
+    "file": "rojonigondha.jpg",
+    "author": "SKsiddhartthan",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Tuberose_flower.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Polianthes_tuberosa"
+  },
+  "beli": {
+    "file": "beli.jpg",
+    "author": "Habib M'henni",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Arabian_jasmin,_Tunisia_2010.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Jasminum_sambac"
+  },
+  "hasnahena": {
+    "file": "hasnahena.jpg",
+    "author": "Dinesh Valke from Thane, India",
+    "license": "CC BY-SA 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cestrum_nocturnum_(2464189820).jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Cestrum_nocturnum"
+  },
+  "baganbilash": {
+    "file": "baganbilash.jpg",
+    "author": "Forest & Kim Starr",
+    "license": "CC BY 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Starr_030418-0061_Bougainvillea_spectabilis.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Bougainvillea_spectabilis"
+  },
+  "rongon": {
+    "file": "rongon.jpg",
+    "author": "User:Kokkarani",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Ixora_coccinea.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Ixora_coccinea"
+  },
+  "surjomukhi": {
+    "file": "surjomukhi.jpg",
+    "author": "George Chernilevsky",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Sunflower_head_2015_G1.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Common_sunflower"
+  },
+  "oporajita": {
+    "file": "oporajita.jpg",
+    "author": "Suyash Dwivedi",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Asian_pigeonwings_in_Bhopal_04.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Clitoria_ternatea"
+  },
+  "korobi": {
+    "file": "korobi.jpg",
+    "author": "Alvesgaspar",
+    "license": "CC BY 2.5",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Nerium_oleander_flowers_leaves.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Nerium"
+  },
+  "ada": {
+    "file": "ada.jpg",
+    "author": "Franz Eugen Köhler, Köhler's Medizinal-Pflanzen",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Koeh-146-no_text.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Ginger"
+  },
+  "holud": {
+    "file": "holud.jpg",
+    "author": "SKsiddhartthan",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Turmeric_inflorescence.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Turmeric"
+  },
+  "neem": {
+    "file": "neem.jpg",
+    "author": "TheSlumPanda",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Neem_Tree_in_Rajasthan,_India.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Azadirachta_indica"
+  },
+  "spider-plant": {
+    "file": "spider-plant.jpg",
+    "author": "Dtarazona (derivative work: Peter coxhead)",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Hierbabuena_0611_Revised.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Chlorophytum_comosum"
+  },
+  "peace-lily": {
+    "file": "peace-lily.jpg",
+    "author": "JJ Harrison (https://www.jjharrison.com.au/)",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Spathiphyllum_cochlearispathum_RTBG.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Spathiphyllum"
+  },
+  "jade-plant": {
+    "file": "jade-plant.jpg",
+    "author": "author is sannse.",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Crassula_ovata_700.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Crassula_ovata"
+  },
+  "cactus": {
+    "file": "cactus.jpg",
+    "author": "Jan",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Echinopsis_oxygona_(3535885623).jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Echinopsis"
+  },
+  "anthurium": {
+    "file": "anthurium.jpg",
+    "author": "Taken by Fanghong",
+    "license": "CC BY 2.5",
+    "source_url": "https://commons.wikimedia.org/wiki/File:AnthuriumAndraenum.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Anthurium_andraeanum"
+  },
+  "money-tree": {
+    "file": "money-tree.jpg",
+    "author": "Dennis G. Jarvis",
+    "license": "CC BY-SA 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Flickr_-_archer10_(Dennis)_-_Guatemala-1376.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Pachira_aquatica"
+  },
+  "bonsai-ficus": {
+    "file": "bonsai-ficus.jpg",
+    "author": "H. Zell (note: regular Ficus microcarpa tree photo used as fallback; no freely-licensed bonsai-styled photo of this species found on Commons)",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Ficus_microcarpa_-_La_Gomera_01.jpg",
+    "wikipedia_url": "https://en.wikipedia.org/wiki/Ficus_microcarpa"
+  }
+}

@@ -21,7 +21,7 @@ relevant section into a new AI session before continuing work, per
 | P9 Q&A + uploads | ✅ Done | ImageService (finfo → GD re-encode → EXIF strip → random name) |
 | P10 Billing | ✅ Done | `charge_cycle.php`, `queue_worker.php`, `cleanup.php`, `care_tasks.php`, webhook idempotency |
 | P11 Admin | ✅ Done | Full CRUD for plants/problems/guides/qa/users, Argon2id auth, `msisdn_last4`-only display |
-| P12 Content | 🟡 Partial | 20 plants (full beginner list from brief) / 13 problems / 8 guides. Spec minimum is 60/40/20 — see "Next content batch" below |
+| P12 Content | 🟡 Partial | 51 plants / 13 problems / 8 guides. Spec minimum is 60/40/20 — see "Next content batch" below |
 | P13 Harden & ship | ⬜ Not started | Needs real the carrier billing provider developer-portal credentials (not available in this brief) |
 
 ## Verified end-to-end (live, against a running MariaDB 10.4 + PHP 8.2)
@@ -82,6 +82,83 @@ these work correctly with zero JavaScript, not just as a JS-only fallback.
 Verified with a full route sweep: every public, gated, and admin page now
 renders with `grep -c 'style="'` returning `0`.
 
+## Content expansion + real photos (this pass)
+
+Grew the catalog from 20 to 51 plants — the original 20-plant beginner list
+plus two expansion batches covering categories that were thin (fruits,
+vegetables, flowers, spices/medicinal, indoor/succulent, bonsai) and popular
+ornamentals of international origin now commonly sold in Bangladeshi
+nurseries (bougainvillea, dragon fruit, anthurium, etc.). Deliberately
+**not** attempting "every plant in the world" — the whole product (Bangla
+season calendar, BDT pricing, local availability) is calibrated for
+Bangladesh gardening specifically; a global catalog would dilute that.
+
+Every plant now has a real photo. A background research pass sourced one
+license-verified image per plant from Wikimedia Commons (Public Domain, CC0,
+CC-BY, or CC-BY-SA only — never scraped, per spec §14's explicit warning),
+downloaded into `public/assets/img/plants/<slug>.jpg`, with author/license/
+source recorded per image in `database/seeds/plant_photo_credits*.json` and
+`PHOTO_CREDITS.md`. `content.php`'s seed loop now wires `hero_image`
+automatically by checking what's on disk, rather than a hand-maintained
+mapping — re-seeding after a later photo batch backfills anything missing.
+
+A separate research pass fact-checked `toxic_to_pets` flags and basic care
+parameters against ASPCA's toxic-plant reference and horticultural sources
+(full findings in `database/seeds/fact_check_report.md`). Three confirmed/
+likely errors were fixed:
+
+- `patharkuchi` (Kalanchoe) — was `0`, should be `1`. ASPCA lists all
+  *Kalanchoe* species as toxic (cardiac glycosides). Added an in-body
+  safety warning to match.
+- `moric` (chili, *Capsicum annuum*) — was `1`, changed to `0`. The original
+  data conflated it with ASPCA's toxic "Ornamental Pepper," which is
+  actually a different genus (*Solanum pseudocapsicum*). Capsaicin causes
+  spicy-mouth irritation, not ASPCA-classified toxicity.
+- `baganbilash` (Bougainvillea) — was `1`, changed to `0`. No ASPCA entry
+  exists; the real hazard is mechanical (thorns), not systemic toxicity —
+  noted in the body text instead.
+
+**Four ambiguous cases were left as-is, flagged for a native-speaker/expert
+review pass rather than guessed at:** `gada` (Marigold — *Tagetes* vs. the
+ASPCA-confirmed-non-toxic *Calendula* "Garden Marigold" may not be the same
+plant), `rojonigondha` (Tuberose — no direct source, inferred only from a
+related *Agave* species), `neem` (evidence found is about concentrated neem
+*oil*, not the leaves as described in the body text), `begun` (Eggplant —
+likely correctly flagged toxic as a *Solanum* relative of tomato, but no
+direct ASPCA citation found). See the full report for sources on each.
+
+**A real bug surfaced during the post-expansion recheck:** `SearchService::searchPlants()`
+wasn't selecting `sunlight`/`water_need`, which `partials/plant-card.php`
+needs to render its chips — any search whose results included a plant threw
+an uncaught `ErrorException` (HTTP 500). Existed since the original build;
+never triggered before because earlier testing only exercised the empty-result
+state. Fixed in `app/Services/SearchService.php`.
+
+**Two more real gaps found and fixed via user testing:**
+- The gated app's topbar (Account/theme-toggle/Logout) reused the `.nav`
+  class purely for link styling, but the mobile nav-collapse CSS rule
+  targeted that same generic class — below 900px width the whole topbar
+  silently got `display:none` with no hamburger to reopen it, so the logout
+  button was unreachable on any narrow window or phone. Scoped the collapse
+  to `#primary-nav` specifically (`public/assets/css/app.css`).
+- `/account` and `/expired` use the public page layout, not the gated app
+  shell, and the public nav's logged-in state never had a logout option at
+  all — only links back into `/app`. A user stuck on `/expired` (e.g. after
+  a failed first charge) had no way to log out. Added the logout form to
+  `partials/nav.php`'s logged-in state, and fixed "আমার অ্যাকাউন্ট" to
+  actually link to `/account` instead of `/app`.
+
+**Pricing copy correction:** removed every monthly-equivalent framing
+("৮৩ টাকা/month") from the CTA block and paywall partial per user feedback —
+pricing is stated exclusively as the actual daily charge everywhere now,
+matching how billing actually works (charged per day, cancel any day).
+
+**Operator mapping correction:** per user feedback, `config/operators.php`
+now maps 018→robi and 016→airtel (Robi's own original range vs. Airtel's
+pre-merger range, shown separately in marketing copy even though 016 is
+Robi-operated today) — previously both were mapped to `robi`, meaning the
+`airtel` operator value could never actually be recorded.
+
 ## Known deviations from the spec bundle
 
 - **Operator prefix map** (`config/operators.php`): the brief says Robi =
@@ -99,17 +176,24 @@ renders with `grep -c 'style="'` returning `0`.
 
 ## Next content batch (the real remaining work)
 
-Per spec §12/§13, growing from the current 20/13/8 to the 60/40/20 minimum:
+Per spec §12/§13, growing from the current 51/13/8 to the 60/40/20 minimum:
 
-- **40 more plants** — the brief names the first 20 explicitly (done); the
-  remaining 40 need selecting and drafting. Budget ~15 min/plant of human
-  editing after an AI first draft, per `04-AI-BUILD-PLAYBOOK.md` — this is
-  the single largest remaining cost (~10-15 hours).
+- **~9 more plants** to hit the spec's 60 minimum — the catalog now covers
+  Bangladesh's common vegetables, fruits, flowers, spices, indoor/succulent
+  and bonsai categories reasonably well; remaining gaps are mostly deeper
+  cultivar variety (e.g. more rice/field-crop-adjacent kitchen-garden plants)
+  rather than whole missing categories.
 - **27 more problems** — common Bangladesh pests/diseases not yet covered:
   ফলের মাছি (fruit fly), কাটুই পোকা (cutworm), অ্যানথ্রাকনোজ, ব্যাকটেরিয়াল
   উইল্ট, শিকড়ে গিঁট রোগ (nematode), etc.
 - **12 more guides** — categories with zero guides so far: `tools`,
   `indoor` (beyond what's touched in plant pages).
+- **Native-speaker review pass** — every plant/problem/guide body was
+  AI-drafted (by me) in conversational Bangla following the spec's style
+  guidance, not machine-translated, but per spec §12's own caution this
+  should still get a native-speaker editing pass before public launch,
+  same as the original 20. The 4 ambiguous `toxic_to_pets` cases noted
+  above are the highest-priority items for that pass.
 
 Do this with `database/seeds/content.php` as the pattern: plain PHP arrays,
 `INSERT ... WHERE NOT EXISTS` idempotency already handled by the seed
