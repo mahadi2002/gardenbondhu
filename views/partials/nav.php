@@ -23,7 +23,11 @@ $isLoggedIn = \App\Core\Session::userId() !== null;
   <?php endforeach; ?>
 
   <?php if ($isLoggedIn): ?>
-    <a href="/app">আমার অ্যাকাউন্ট</a>
+    <a href="/account"<?= $currentPath === '/account' ? ' aria-current="page"' : '' ?>>আমার অ্যাকাউন্ট</a>
+    <form method="post" action="/logout" data-guard>
+      <?= csrf_field() ?>
+      <button class="btn btn--ghost btn--sm" type="submit">Logout</button>
+    </form>
     <a class="price-badge header-cta" href="/app">অ্যাপে যান</a>
   <?php else: ?>
     <a href="/login">লগইন করুন</a>
