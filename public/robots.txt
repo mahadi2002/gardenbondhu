@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /app/
+Disallow: /account
+Disallow: /admin
+Disallow: /subscribe/
+Disallow: /webhooks/
+Disallow: /media/
+
+Sitemap: /sitemap.xml
