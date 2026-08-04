@@ -10,10 +10,10 @@ $this->layout('layouts/public', ['title' => $query !== '' ? '"' . $query . '" �
 ?>
 <section class="section">
   <div class="wrap">
-    <form method="get" action="/search" class="cluster" style="margin-bottom:2rem">
+    <form method="get" action="/search" class="cluster mb-2">
       <label class="visually-hidden" for="search-q">খুঁজুন</label>
-      <input class="input" type="search" id="search-q" name="q" value="<?= e($query) ?>"
-             placeholder="যেমন: পাতা হলুদ, পুদিনা, মিলিবাগ" style="max-width:420px">
+      <input class="input max-w-sm" type="search" id="search-q" name="q" value="<?= e($query) ?>"
+             placeholder="যেমন: পাতা হলুদ, পুদিনা, মিলিবাগ">
       <button class="btn" type="submit">খুঁজুন</button>
     </form>
 

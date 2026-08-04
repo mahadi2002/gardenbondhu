@@ -7,7 +7,7 @@ $this->layout('layouts/app', ['title' => 'গাছ যোগ করুন']);
 ?>
 <div class="page-head"><h1>গাছ যোগ করুন</h1></div>
 
-<form class="card" method="post" action="/app/garden" data-guard style="max-width:640px">
+<form class="card max-w-620" method="post" action="/app/garden" data-guard>
   <?= csrf_field() ?>
 
   <div class="field">

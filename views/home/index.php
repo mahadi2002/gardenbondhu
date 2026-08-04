@@ -192,19 +192,19 @@ $steps = [
 <section class="section section--tight">
   <div class="wrap stats reveal">
     <div class="stat">
-      <p class="stat__n mb-0"><?= e(bn_num((int) $stats['plants'])) ?>+</p>
+      <p class="stat__n mb-0" data-count-to="<?= e((string) (int) $stats['plants']) ?>" data-suffix="+"><?= e(bn_num((int) $stats['plants'])) ?>+</p>
       <p class="stat__l mb-0">গাছ</p>
     </div>
     <div class="stat">
-      <p class="stat__n mb-0"><?= e(bn_num((int) $stats['problems'])) ?>+</p>
+      <p class="stat__n mb-0" data-count-to="<?= e((string) (int) $stats['problems']) ?>" data-suffix="+"><?= e(bn_num((int) $stats['problems'])) ?>+</p>
       <p class="stat__l mb-0">রোগ ও পোকা</p>
     </div>
     <div class="stat">
-      <p class="stat__n mb-0"><?= e(bn_num((int) $stats['guides'])) ?>+</p>
+      <p class="stat__n mb-0" data-count-to="<?= e((string) (int) $stats['guides']) ?>" data-suffix="+"><?= e(bn_num((int) $stats['guides'])) ?>+</p>
       <p class="stat__l mb-0">গাইড</p>
     </div>
     <div class="stat">
-      <p class="stat__n mb-0">১২</p>
+      <p class="stat__n mb-0" data-count-to="12">১২</p>
       <p class="stat__l mb-0">মাসের ক্যালেন্ডার</p>
     </div>
   </div>

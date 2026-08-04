@@ -107,6 +107,33 @@ $isCurrent = static function (string $href) use ($currentPath): bool {
       </a>
     <?php endforeach; ?>
   </nav>
+
+  <div class="fab-backdrop" data-fab-backdrop></div>
+  <div class="fab-group" data-fab-group data-open="false">
+    <ul class="fab-menu">
+      <li>
+        <a href="/app/garden/add">
+          <span class="fab-menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21V9m0 0c0-4 3-7 8-7 0 5-3 8-8 8m0 5c-4 0-7-2-7-6 4 0 7 2 7 6"/></svg></span>
+          <span>গাছ যোগ করুন</span>
+        </a>
+      </li>
+      <li>
+        <a href="/app/diagnose">
+          <span class="fab-menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4"/></svg></span>
+          <span>রোগ নির্ণয়</span>
+        </a>
+      </li>
+      <li>
+        <a href="/app/qa/ask">
+          <span class="fab-menu__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19h.01M9.5 9a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8v.5M4 5h16v13H8l-4 3z"/></svg></span>
+          <span>প্রশ্ন করুন</span>
+        </a>
+      </li>
+    </ul>
+    <button class="fab" type="button" data-fab-toggle aria-expanded="false" aria-haspopup="true" aria-label="দ্রুত কাজ">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
 </div>
 
 <script src="<?= e(asset('js/app.js')) ?>" defer></script>

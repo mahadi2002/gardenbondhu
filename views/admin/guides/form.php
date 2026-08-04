@@ -41,7 +41,7 @@ $action = $isNew ? '/admin/guides' : '/admin/guides/' . $guide['id'];
 
   <div class="field">
     <label for="g-body">পূর্ণ লেখা — Markdown</label>
-    <textarea class="input" id="g-body" name="body_bn" style="min-height:18rem"><?= e((string) ($guide['body_bn'] ?? '')) ?></textarea>
+    <textarea class="input min-h-lg" id="g-body" name="body_bn"><?= e((string) ($guide['body_bn'] ?? '')) ?></textarea>
   </div>
 
   <div class="grid grid--2">
@@ -55,12 +55,12 @@ $action = $isNew ? '/admin/guides' : '/admin/guides/' . $guide['id'];
     </label>
   </div>
 
-  <button class="btn btn--accent" type="submit" style="margin-top:1rem">সংরক্ষণ করুন</button>
+  <button class="btn btn--accent mt-1" type="submit">সংরক্ষণ করুন</button>
 </form>
 
 <?php if (!$isNew): ?>
-  <form method="post" action="/admin/guides/<?= e((string) $guide['id']) ?>/delete"
-        data-confirm="মুছে ফেলবেন?" style="margin-top:1rem">
+  <form class="mt-1" method="post" action="/admin/guides/<?= e((string) $guide['id']) ?>/delete"
+        data-confirm="মুছে ফেলবেন?">
     <?= csrf_field() ?>
     <button class="btn btn--danger" type="submit">মুছুন</button>
   </form>

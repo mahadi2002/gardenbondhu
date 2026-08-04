@@ -39,6 +39,49 @@ relevant section into a new AI session before continuing work, per
   `ngram` FULLTEXT parser is caught and logged, `SearchService` falls back to
   `LIKE` automatically (this is the documented, expected path on MariaDB).
 
+## Visual redesign (post-launch pass)
+
+The original build followed spec §6 literally (flat cards, no motion beyond
+scroll-reveal). A second pass rewrote `public/assets/css/app.css` and
+`app.js`/`diagnose.js` for a more modern, interactive feel — inspired by
+current plant-care app UI patterns (Planta/Plantify-style "modern
+naturalism": deep-green gradients, glass surfaces, soft elevation) — while
+keeping every existing CSS class name so no view had to be restructured:
+
+- Gradient/elevation/motion design tokens (`--gradient-leaf`, `--shadow-md`,
+  `--ease-spring`, etc.) layered onto the same `--leaf`/`--marigold`/`--brick`
+  palette from spec §6.1 — no colours were replaced, only given depth.
+- New interactive components: animated stat counters, a conic-gradient
+  progress ring on the dashboard, a floating action button in the gated app,
+  button ripple, pointer-tracked card tilt, a header that gains a shadow on
+  scroll, an animated hamburger icon, and a rotating FAQ icon.
+- Flash notices are now dismissable and auto-fade for success/info messages,
+  progressively enhancing the same server-rendered markup (no JS = the
+  banner just stays visible, exactly as before).
+- The leaf-diagnoser hotspots pulse gently until the first tap, inviting
+  interaction without being required for the feature to work.
+
+**A real bug was found and fixed during this pass, unrelated to styling:**
+`App\Core\Env::load()`'s comment-stripping regex broke on a value that is
+*only* a trailing comment (`ADMIN_IP_ALLOWLIST=   # comma-separated...`) —
+`trim()` ran before the comment strip, eating the leading whitespace the
+regex needed, so the comment text itself became the config value. This
+silently populated `admin_ip_allowlist` and made `/admin` return 403 for
+everyone. Fixed in `app/Core/Env.php`; `tests/smoke.php` still passes 27/27.
+
+**CSP compliance fix:** the original build had ~35 inline `style=""`
+attributes scattered across 24 admin/app views — invisible to `curl`-based
+testing (which doesn't enforce CSP) but silently blocked by real browsers
+under the locked-down `style-src 'self'` policy (spec §9.9, no
+`unsafe-inline`). All were replaced with static utility classes
+(`.max-w-sm`, `.mt-1`, `.pre-line`, etc.) or, for genuinely dynamic values
+(confidence bar width, admin charge-trend bar heights, progress-ring fill),
+a stepped 5%-granularity class set (`.w-pct-N` / `.h-pct-N` / `.progress-N`)
+computed server-side via the new `pct_step()` helper in `Helpers.php` — so
+these work correctly with zero JavaScript, not just as a JS-only fallback.
+Verified with a full route sweep: every public, gated, and admin page now
+renders with `grep -c 'style="'` returning `0`.
+
 ## Known deviations from the spec bundle
 
 - **Operator prefix map** (`config/operators.php`): the brief says Robi =

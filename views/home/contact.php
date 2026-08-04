@@ -6,7 +6,7 @@
       <p class="lede">প্রশ্ন, মতামত বা কোনো সমস্যা — নিচের ফর্মে লিখুন, আমরা দেখব।</p>
     </div>
 
-    <form class="card" method="post" action="/contact" data-guard style="max-width:560px">
+    <form class="card max-w-md" method="post" action="/contact" data-guard>
       <?= csrf_field() ?>
 
       <div class="honeypot" aria-hidden="true">

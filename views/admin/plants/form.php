@@ -117,7 +117,7 @@ $spaceSelected = $isNew ? [] : explode(',', (string) $plant['space_type']);
 
   <div class="field">
     <label for="p-body">পূর্ণ বিবরণ — Markdown (PAID)</label>
-    <textarea class="input" id="p-body" name="body_bn" style="min-height:16rem"><?= e((string) ($plant['body_bn'] ?? '')) ?></textarea>
+    <textarea class="input min-h-md" id="p-body" name="body_bn"><?= e((string) ($plant['body_bn'] ?? '')) ?></textarea>
   </div>
 
   <div class="grid grid--2">
@@ -153,12 +153,12 @@ $spaceSelected = $isNew ? [] : explode(',', (string) $plant['space_type']);
     </fieldset>
   <?php endif; ?>
 
-  <label class="check" style="margin-bottom:1.25rem">
+  <label class="check mb-1-25">
     <input type="checkbox" name="toxic_to_pets" value="1" <?= (int) ($plant['toxic_to_pets'] ?? 0) === 1 ? ' checked' : '' ?>>
     <span>পোষা প্রাণীর জন্য বিষাক্ত</span>
   </label>
 
-  <label class="check" style="margin-bottom:1.5rem">
+  <label class="check mb-1-5">
     <input type="checkbox" name="is_published" value="1" <?= (int) ($plant['is_published'] ?? 0) === 1 ? ' checked' : '' ?>>
     <span>Published (সাইটে দেখা যাবে)</span>
   </label>
@@ -167,8 +167,8 @@ $spaceSelected = $isNew ? [] : explode(',', (string) $plant['space_type']);
 </form>
 
 <?php if (!$isNew): ?>
-  <form method="post" action="/admin/plants/<?= e((string) $plant['id']) ?>/delete"
-        data-confirm="গাছটি মুছে ফেলবেন?" style="margin-top:1rem">
+  <form class="mt-1" method="post" action="/admin/plants/<?= e((string) $plant['id']) ?>/delete"
+        data-confirm="গাছটি মুছে ফেলবেন?">
     <?= csrf_field() ?>
     <button class="btn btn--danger" type="submit">মুছুন</button>
   </form>

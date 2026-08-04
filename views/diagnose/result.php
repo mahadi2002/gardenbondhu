@@ -49,7 +49,7 @@ $this->layout('layouts/app', ['title' => 'সম্ভাব্য কারণ'
         <div class="between">
           <h2 class="card__title mb-0"><?= e((string) $result['name_bn']) ?></h2>
           <span class="confidence confidence--<?= e($cls) ?>">
-            <span class="confidence__bar"><span class="confidence__fill" style="width:<?= e((string) round($result['confidence'] * 100)) ?>%"></span></span>
+            <span class="confidence__bar"><span class="confidence__fill w-pct-<?= e((string) pct_step((float) $result['confidence'] * 100)) ?>"></span></span>
             <?= e((string) $result['confidence_label']) ?>
           </span>
         </div>
@@ -65,7 +65,7 @@ $this->layout('layouts/app', ['title' => 'সম্ভাব্য কারণ'
   </div>
 <?php endif; ?>
 
-<p class="cluster" style="margin-top:1.5rem">
+<p class="cluster mt-1-5">
   <a class="btn btn--ghost" href="/app/diagnose">নতুন করে শুরু করুন</a>
   <a class="btn btn--ghost" href="/app/qa/ask">প্রশ্ন করুন</a>
 </p>

@@ -15,7 +15,7 @@ $guideBase = $inApp ? '/app/guides/' : '/guides/';
 ?>
 <?php if (!$inApp): ?><section class="section"><div class="wrap"><?php endif; ?>
 
-<article class="prose" style="max-width:var(--maxw)">
+<article class="prose max-w-page">
   <div class="page-head">
     <p class="eyebrow"><?= e((string) config('content.guide_category.' . $guide['category'])) ?></p>
     <h1><?= e((string) $guide['title_bn']) ?></h1>

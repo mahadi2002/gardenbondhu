@@ -1,7 +1,7 @@
 <?php
 /**
  * @var array $todayTasks, $weekTasks, $myPlants, $picks, $guides, $questions
- * @var int   $plantCount, $season
+ * @var int   $plantCount, $season, $doneTodayCount, $totalTodayCount
  * @var string $monthName
  */
 use App\Core\View;
@@ -19,7 +19,15 @@ $taskLabels = (array) config('content.care_task');
   <div class="card">
     <div class="between">
       <h2 class="card__title mb-0">আজকের কাজ</h2>
-      <span class="chip <?= $todayTasks === [] ? 'chip--low' : 'chip--medium' ?>"><?= e(bn_num(count($todayTasks))) ?>টি</span>
+      <?php if ($totalTodayCount > 0): ?>
+        <div class="progress-ring progress-<?= e((string) pct_step((float) $doneTodayCount, (float) $totalTodayCount)) ?>"
+             data-ring-done="<?= e((string) $doneTodayCount) ?>" data-ring-total="<?= e((string) $totalTodayCount) ?>"
+             role="img" aria-label="<?= e(bn_num($doneTodayCount) . '/' . bn_num($totalTodayCount) . ' কাজ সম্পন্ন') ?>">
+          <span class="progress-ring__label"><?= e(bn_num($doneTodayCount) . '/' . bn_num($totalTodayCount)) ?></span>
+        </div>
+      <?php else: ?>
+        <span class="chip <?= $todayTasks === [] ? 'chip--low' : 'chip--medium' ?>"><?= e(bn_num(count($todayTasks))) ?>টি</span>
+      <?php endif; ?>
     </div>
 
     <?php if ($todayTasks === []): ?>
@@ -107,7 +115,7 @@ $taskLabels = (array) config('content.care_task');
     <div class="stack">
       <?php foreach ($questions as $q): ?>
         <a class="card card--link" href="/app/qa/<?= e((string) $q['id']) ?>">
-          <h3 class="card__title" style="font-size:var(--step-0)"><?= e((string) $q['title']) ?></h3>
+          <h3 class="card__title text-step-0"><?= e((string) $q['title']) ?></h3>
           <p class="small muted mb-0"><?= e(bn_num((int) $q['answer_count'])) ?>টি উত্তর</p>
         </a>
       <?php endforeach; ?>

@@ -65,11 +65,11 @@ $partLabels = (array) config('content.body_parts');
   <div class="grid grid--2">
     <div class="field">
       <label for="pr-organic">জৈব সমাধান (PAID, প্রথমে দেখানো হয়)</label>
-      <textarea class="input" id="pr-organic" name="organic_remedy_bn" style="min-height:10rem"><?= e((string) ($problem['organic_remedy_bn'] ?? '')) ?></textarea>
+      <textarea class="input min-h-sm" id="pr-organic" name="organic_remedy_bn"><?= e((string) ($problem['organic_remedy_bn'] ?? '')) ?></textarea>
     </div>
     <div class="field">
       <label for="pr-chem">রাসায়নিক সমাধান (PAID, মাত্রাসহ)</label>
-      <textarea class="input" id="pr-chem" name="chemical_remedy_bn" style="min-height:10rem"><?= e((string) ($problem['chemical_remedy_bn'] ?? '')) ?></textarea>
+      <textarea class="input min-h-sm" id="pr-chem" name="chemical_remedy_bn"><?= e((string) ($problem['chemical_remedy_bn'] ?? '')) ?></textarea>
     </div>
   </div>
 
@@ -88,7 +88,7 @@ $partLabels = (array) config('content.body_parts');
     <legend>লক্ষণ ও গুরুত্ব (weight ১–১০, ০ = সংযুক্ত নয়)</legend>
     <?php foreach ($byPart as $part => $rows): ?>
       <p class="small muted mb-0"><?= e($partLabels[$part] ?? $part) ?></p>
-      <div class="grid grid--3" style="margin-bottom:1rem">
+      <div class="grid grid--3 mb-1">
         <?php foreach ($rows as $symptom): ?>
           <div class="field mb-0">
             <label for="sym-<?= e((string) $symptom['id']) ?>" class="small"><?= e((string) $symptom['name_bn']) ?></label>
@@ -101,7 +101,7 @@ $partLabels = (array) config('content.body_parts');
     <?php endforeach; ?>
   </fieldset>
 
-  <label class="check" style="margin-bottom:1.5rem">
+  <label class="check mb-1-5">
     <input type="checkbox" name="is_published" value="1" <?= (int) ($problem['is_published'] ?? 0) === 1 ? ' checked' : '' ?>>
     <span>Published</span>
   </label>
@@ -110,8 +110,8 @@ $partLabels = (array) config('content.body_parts');
 </form>
 
 <?php if (!$isNew): ?>
-  <form method="post" action="/admin/problems/<?= e((string) $problem['id']) ?>/delete"
-        data-confirm="মুছে ফেলবেন?" style="margin-top:1rem">
+  <form class="mt-1" method="post" action="/admin/problems/<?= e((string) $problem['id']) ?>/delete"
+        data-confirm="মুছে ফেলবেন?">
     <?= csrf_field() ?>
     <button class="btn btn--danger" type="submit">মুছুন</button>
   </form>

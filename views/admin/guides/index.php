@@ -12,8 +12,8 @@ $this->layout('layouts/admin', ['title' => 'গাইড']);
   </div>
 </div>
 
-<form method="get" action="/admin/guides" class="cluster" style="margin-bottom:1.5rem">
-  <input class="input" type="search" name="q" value="<?= e($query) ?>" placeholder="শিরোনাম বা slug খুঁজুন" style="max-width:300px">
+<form method="get" action="/admin/guides" class="cluster mb-1-5">
+  <input class="input max-w-2xs" type="search" name="q" value="<?= e($query) ?>" placeholder="শিরোনাম বা slug খুঁজুন">
   <button class="btn btn--sm" type="submit">খুঁজুন</button>
 </form>
 

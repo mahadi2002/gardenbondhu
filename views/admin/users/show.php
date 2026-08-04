@@ -17,7 +17,7 @@ $this->layout('layouts/admin', ['title' => '01••••' . $user['msisdn_last
   </p>
 </div>
 
-<div class="cluster" style="margin-bottom:1.5rem">
+<div class="cluster mb-1-5">
   <form method="post" action="/admin/users/<?= e((string) $user['id']) ?>"><?= csrf_field() ?>
     <input type="hidden" name="action" value="<?= $user['status'] === 'blocked' ? 'unblock' : 'block' ?>">
     <button class="btn btn--sm <?= $user['status'] === 'blocked' ? '' : 'btn--danger' ?>" type="submit">
@@ -32,7 +32,7 @@ $this->layout('layouts/admin', ['title' => '01••••' . $user['msisdn_last
   </form>
   <form method="post" action="/admin/users/<?= e((string) $user['id']) ?>" class="cluster"><?= csrf_field() ?>
     <input type="hidden" name="action" value="extend_grace">
-    <input class="input" type="number" name="hours" value="48" min="1" max="168" style="width:80px">
+    <input class="input w-80" type="number" name="hours" value="48" min="1" max="168">
     <button class="btn btn--sm btn--ghost" type="submit">Grace দিন</button>
   </form>
 </div>
@@ -44,7 +44,7 @@ $this->layout('layouts/admin', ['title' => '01••••' . $user['msisdn_last
 
 <h2>Subscription History</h2>
 <?php foreach ($subs as $sub): ?>
-  <div class="card" style="margin-bottom:1rem">
+  <div class="card mb-1">
     <div class="between">
       <strong><?= e((string) $sub['status']) ?></strong>
       <span class="small mono">#<?= e((string) $sub['id']) ?></span>
@@ -55,7 +55,7 @@ $this->layout('layouts/admin', ['title' => '01••••' . $user['msisdn_last
     </p>
 
     <?php if (!empty($charges[(int) $sub['id']])): ?>
-      <div class="table-wrap" style="margin-top:.75rem">
+      <div class="table-wrap mt-0-75">
         <table>
           <thead><tr><th>তারিখ</th><th>Amount</th><th>Status</th><th>Reason</th></tr></thead>
           <tbody>

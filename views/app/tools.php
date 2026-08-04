@@ -50,10 +50,10 @@ $this->layout('layouts/app', ['title' => 'হিসাবের টুল']);
     </form>
 
     <?php if (($tool ?? null) === 'water' && $result): ?>
-      <div class="formula" style="margin-top:1rem">
+      <div class="formula mt-1">
         <p class="mb-0"><strong><?= e((string) $result['litres']) ?> লিটার</strong>, প্রতি <?= e(bn_num($result['interval'])) ?> দিনে একবার</p>
         <p class="small mb-0"><?= e($result['formula']) ?></p>
-        <?php if ($result['warning']): ?><p class="small mb-0" style="color:var(--brick)"><?= e($result['warning']) ?></p><?php endif; ?>
+        <?php if ($result['warning']): ?><p class="small mb-0 text-brick"><?= e($result['warning']) ?></p><?php endif; ?>
       </div>
     <?php endif; ?>
   </div>
@@ -81,11 +81,11 @@ $this->layout('layouts/app', ['title' => 'হিসাবের টুল']);
     </form>
 
     <?php if (($tool ?? null) === 'fertilizer' && $result): ?>
-      <div class="formula" style="margin-top:1rem">
+      <div class="formula mt-1">
         <p class="mb-0"><strong><?= e((string) $result['grams']) ?> গ্রাম</strong> (<?= e($result['label']) ?>), প্রতি <?= e(bn_num($result['interval'])) ?> দিনে</p>
         <p class="small mb-0"><?= e($result['formula']) ?></p>
         <p class="small mb-0"><?= e($result['note']) ?></p>
-        <?php if ($result['warning']): ?><p class="small mb-0" style="color:var(--brick)"><?= e($result['warning']) ?></p><?php endif; ?>
+        <?php if ($result['warning']): ?><p class="small mb-0 text-brick"><?= e($result['warning']) ?></p><?php endif; ?>
       </div>
     <?php endif; ?>
   </div>
@@ -116,7 +116,7 @@ $this->layout('layouts/app', ['title' => 'হিসাবের টুল']);
     </form>
 
     <?php if (($tool ?? null) === 'pot' && $result): ?>
-      <div class="formula" style="margin-top:1rem">
+      <div class="formula mt-1">
         <p class="mb-0"><strong>ব্যাস <?= e(bn_num($result['diameter'])) ?> সেমি</strong>, গভীরতা <?= e(bn_num($result['depth'])) ?> সেমি</p>
         <p class="small mb-0"><?= e($result['formula']) ?></p>
         <p class="small mb-0"><?= e($result['note']) ?></p>

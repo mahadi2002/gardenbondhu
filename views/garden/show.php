@@ -49,7 +49,7 @@ $taskLabels = (array) config('content.care_task');
       <textarea class="input" id="e-notes" name="notes" maxlength="2000"><?= e((string) ($plant['notes'] ?? '')) ?></textarea>
     </div>
 
-    <label class="check" style="margin-bottom:1rem">
+    <label class="check mb-1">
       <input type="checkbox" name="is_archived" value="1" <?= (int) $plant['is_archived'] === 1 ? ' checked' : '' ?>>
       <span>আর্কাইভ করুন (তালিকা থেকে লুকান)</span>
     </label>
@@ -82,8 +82,8 @@ $taskLabels = (array) config('content.care_task');
   </div>
 </div>
 
-<form method="post" action="/app/garden/<?= e((string) $plant['id']) ?>/delete"
-      data-confirm="গাছটি স্থায়ীভাবে মুছে ফেলবেন?" style="margin-top:1.5rem">
+<form class="mt-1-5" method="post" action="/app/garden/<?= e((string) $plant['id']) ?>/delete"
+      data-confirm="গাছটি স্থায়ীভাবে মুছে ফেলবেন?">
   <?= csrf_field() ?>
   <button class="btn btn--danger" type="submit">গাছটি মুছে ফেলুন</button>
 </form>

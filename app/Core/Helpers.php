@@ -157,6 +157,20 @@ if (!function_exists('slugify')) {
     }
 }
 
+if (!function_exists('pct_step')) {
+    /**
+     * Round a 0-100 value to the nearest 5 for the .w-pct-N / .h-pct-N /
+     * .progress-N utility classes — the CSP has no unsafe-inline, so a
+     * dynamic percentage can never be written as style="width:N%".
+     */
+    function pct_step(float $value, float $max = 100.0): int
+    {
+        $pct = $max > 0 ? ($value / $max) * 100 : 0.0;
+        $pct = max(0.0, min(100.0, $pct));
+        return (int) (round($pct / 5) * 5);
+    }
+}
+
 if (!function_exists('dd')) {
     function dd(mixed ...$vars): never
     {

@@ -9,7 +9,7 @@ $tabs = ['pending' => 'যাচাইয়ের অপেক্ষায়',
 ?>
 <div class="page-head"><h1>প্রশ্ন-উত্তর মডারেশন</h1></div>
 
-<nav class="cluster" style="margin-bottom:1.5rem">
+<nav class="cluster mb-1-5">
   <?php foreach ($tabs as $value => $label): ?>
     <a class="btn btn--sm <?= $status === $value ? '' : 'btn--ghost' ?>" href="/admin/qa?status=<?= e($value) ?>"><?= e($label) ?></a>
   <?php endforeach; ?>

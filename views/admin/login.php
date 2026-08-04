@@ -12,7 +12,7 @@
 </head>
 <body>
 <main class="section" id="main">
-  <div class="wrap" style="max-width:420px">
+  <div class="wrap max-w-sm">
     <?= \App\Core\View::partial('partials/flash', ['notice' => $notice ?? null]) ?>
 
     <div class="otp-box">

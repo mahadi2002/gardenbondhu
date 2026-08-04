@@ -18,7 +18,7 @@ $icon = match ((string) $notice['type']) {
     default   => 'i',
 };
 ?>
-<div class="notice <?= e($class) ?>" role="status">
+<div class="notice <?= e($class) ?>" role="status" data-flash="<?= e((string) $notice['type']) ?>">
   <span class="notice__icon" aria-hidden="true"><?= e($icon) ?></span>
   <span><?= e((string) $notice['text']) ?></span>
 </div>

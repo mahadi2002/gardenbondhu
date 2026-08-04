@@ -39,6 +39,9 @@
 
   hotspots.forEach(function (spot) {
     spot.addEventListener('click', function () {
+      // The pulse is an invitation to tap; once the visitor has, it's done its job.
+      figure.dataset.pulse = 'false';
+
       var already = spot.getAttribute('aria-pressed') === 'true';
       showPart(already ? 'all' : spot.dataset.part);
 

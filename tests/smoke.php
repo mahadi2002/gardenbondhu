@@ -54,9 +54,11 @@ fwrite(STDOUT, "\n== Operators ==\n");
 check('normalizes 8801XXXXXXXXX', Operators::normalize('8801712345678') === '01712345678');
 check('normalizes +8801XXXXXXXXX', Operators::normalize('+8801812345678') === '01812345678');
 check('rejects short numbers', Operators::normalize('012345') === null);
-check('016 detected as robi', Operators::detect('01612345678') === 'robi');
+check('018 detected as robi', Operators::detect('01812345678') === 'robi');
+check('016 detected as airtel', Operators::detect('01612345678') === 'airtel');
 check('017 detected as grameenphone', Operators::detect('01712345678') === 'grameenphone');
-check('robi is allowed', Operators::isAllowed('01612345678'));
+check('robi is allowed', Operators::isAllowed('01812345678'));
+check('airtel is allowed', Operators::isAllowed('01612345678'));
 check('grameenphone is not allowed', !Operators::isAllowed('01712345678'));
 check('mask hides the middle', Operators::mask('01712345678') === '01712****78');
 

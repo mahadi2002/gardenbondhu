@@ -34,9 +34,14 @@ final class DashboardController extends Controller
             static fn(array $t): bool => $t['done_at'] === null && $t['due_on'] > $today
         ));
 
+        $dueToday     = array_filter($tasks, static fn(array $t): bool => $t['due_on'] === $today);
+        $doneToday    = array_filter($dueToday, static fn(array $t): bool => $t['done_at'] !== null);
+
         return $this->view('app/dashboard', [
             'todayTasks'  => $todayTasks,
             'weekTasks'   => array_slice($weekTasks, 0, 12),
+            'doneTodayCount'  => count($doneToday),
+            'totalTodayCount' => count($dueToday),
             'plantCount'  => $userPlant->countForUser($userId),
             'myPlants'    => array_slice($userPlant->forUser($userId), 0, 4),
             'picks'       => (new PlantRepo())->beginnerPicks(4),

@@ -13,8 +13,8 @@ $this->layout('layouts/app', ['title' => 'প্রশ্ন-উত্তর']);
   </div>
 </div>
 
-<form method="get" action="/app/qa" class="cluster" style="margin-bottom:1.5rem">
-  <input class="input" type="search" name="q" value="<?= e($query) ?>" placeholder="প্রশ্ন খুঁজুন" style="max-width:320px">
+<form method="get" action="/app/qa" class="cluster mb-1-5">
+  <input class="input max-w-xs" type="search" name="q" value="<?= e($query) ?>" placeholder="প্রশ্ন খুঁজুন">
   <button class="btn btn--sm" type="submit">খুঁজুন</button>
 </form>
 
@@ -29,7 +29,7 @@ $this->layout('layouts/app', ['title' => 'প্রশ্ন-উত্তর']);
     <?php foreach ($questions as $q): ?>
       <a class="card card--link" href="/app/qa/<?= e((string) $q['id']) ?>">
         <div class="between">
-          <h2 class="card__title mb-0" style="font-size:var(--step-0)"><?= e((string) $q['title']) ?></h2>
+          <h2 class="card__title mb-0 text-step-0"><?= e((string) $q['title']) ?></h2>
           <?php if ((int) $q['role'] === 1 || $q['role'] === 'expert'): ?>
             <span class="chip chip--low">বিশেষজ্ঞ</span>
           <?php endif; ?>

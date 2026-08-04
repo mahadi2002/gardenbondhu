@@ -13,7 +13,7 @@ $this->layout('layouts/app', ['title' => 'প্রশ্ন করুন']);
     <span>আজকের জন্য প্রশ্নের সীমা শেষ (৫টি)। আগামীকাল আবার করতে পারবেন।</span>
   </div>
 <?php else: ?>
-  <form class="card" method="post" action="/app/qa" enctype="multipart/form-data" data-guard style="max-width:680px">
+  <form class="card max-w-lg" method="post" action="/app/qa" enctype="multipart/form-data" data-guard>
     <?= csrf_field() ?>
 
     <div class="field<?= error_for('title') ? ' field--error' : '' ?>">

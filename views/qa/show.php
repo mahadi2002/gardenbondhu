@@ -27,14 +27,14 @@ $statusLabels = ['pending' => 'যাচাইয়ের অপেক্ষা
 </div>
 
 <div class="card">
-  <p style="white-space:pre-line"><?= e((string) $question['body']) ?></p>
+  <p class="pre-line"><?= e((string) $question['body']) ?></p>
   <?php if (!empty($question['image'])): ?>
-    <img src="/media/<?= e(ImageService::toToken((string) $question['image'])) ?>" alt="" loading="lazy" style="border-radius:var(--radius-s)">
+    <img class="rounded-s" src="/media/<?= e(ImageService::toToken((string) $question['image'])) ?>" alt="" loading="lazy">
   <?php endif; ?>
 </div>
 
 <?php if ($isOwner && $question['status'] === 'pending'): ?>
-  <div class="notice notice--info" style="margin-top:1rem">
+  <div class="notice notice--info mt-1">
     <span class="notice__icon" aria-hidden="true">i</span>
     <span>প্রশ্নটি যাচাইয়ের অপেক্ষায়। অনুমোদনের পর সবাই দেখতে ও উত্তর দিতে পারবেন।</span>
   </div>
@@ -52,20 +52,20 @@ $statusLabels = ['pending' => 'যাচাইয়ের অপেক্ষা
           </strong>
           <?php if ((int) $answer['is_expert'] === 1): ?><span class="chip chip--low">বিশেষজ্ঞ</span><?php endif; ?>
         </div>
-        <p class="mb-0" style="white-space:pre-line"><?= e((string) $answer['body']) ?></p>
+        <p class="mb-0 pre-line"><?= e((string) $answer['body']) ?></p>
         <p class="small muted mb-0"><?= e(bn_date((string) $answer['created_at'])) ?></p>
       </div>
     <?php endforeach; ?>
   </div>
 
   <?php if (in_array((string) $question['status'], ['approved', 'answered'], true)): ?>
-    <form class="card" method="post" action="/app/qa/<?= e((string) $question['id']) ?>/answer" data-guard style="margin-top:1rem">
+    <form class="card mt-1" method="post" action="/app/qa/<?= e((string) $question['id']) ?>/answer" data-guard>
       <?= csrf_field() ?>
       <div class="field mb-0">
         <label for="ans-body">উত্তর লিখুন</label>
         <textarea class="input" id="ans-body" name="body" maxlength="4000" required></textarea>
       </div>
-      <button class="btn" type="submit" style="margin-top:.75rem">উত্তর দিন</button>
+      <button class="btn mt-0-75" type="submit">উত্তর দিন</button>
     </form>
   <?php endif; ?>
 </section>

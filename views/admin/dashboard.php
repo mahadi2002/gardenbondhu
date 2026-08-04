@@ -22,12 +22,12 @@ $maxTrend = max(1, ...array_map(static fn($r) => max((int) $r['success'], (int) 
     <h2 class="card__title">Charge trend (14 days)</h2>
     <div class="bar-chart">
       <?php foreach ($trend as $day): ?>
-        <div style="height:<?= e((string) max(2, round(((int) $day['success']) / $maxTrend * 90))) ?>px" title="<?= e((string) $day['day']) ?> success"></div>
+        <div class="h-pct-<?= e((string) pct_step((float) $day['success'], (float) $maxTrend)) ?>" title="<?= e((string) $day['day']) ?> success"></div>
       <?php endforeach; ?>
     </div>
     <div class="bar-chart">
       <?php foreach ($trend as $day): ?>
-        <div class="fail" style="height:<?= e((string) max(2, round(((int) $day['failed']) / $maxTrend * 90))) ?>px" title="<?= e((string) $day['day']) ?> failed"></div>
+        <div class="fail h-pct-<?= e((string) pct_step((float) $day['failed'], (float) $maxTrend)) ?>" title="<?= e((string) $day['day']) ?> failed"></div>
       <?php endforeach; ?>
     </div>
     <p class="small muted mb-0">সবুজ = সফল, লাল = ব্যর্থ</p>
@@ -43,7 +43,7 @@ $maxTrend = max(1, ...array_map(static fn($r) => max((int) $r['success'], (int) 
       </table>
     </div>
 
-    <h3 style="margin-top:1.5rem">Operator breakdown</h3>
+    <h3 class="mt-1-5">Operator breakdown</h3>
     <div class="table-wrap">
       <table>
         <?php foreach ($byOperator as $operator => $count): ?>
@@ -77,7 +77,7 @@ $maxTrend = max(1, ...array_map(static fn($r) => max((int) $r['success'], (int) 
   <?php endif; ?>
 </div>
 
-<div class="kpi-grid" style="margin-top:1.5rem">
+<div class="kpi-grid mt-1-5">
   <div class="kpi"><p class="kpi__n mb-0"><?= e(bn_num($content['plants'])) ?></p><p class="kpi__l mb-0">Published plants</p></div>
   <div class="kpi"><p class="kpi__n mb-0"><?= e(bn_num($content['problems'])) ?></p><p class="kpi__l mb-0">Published problems</p></div>
   <div class="kpi"><p class="kpi__n mb-0"><?= e(bn_num($content['guides'])) ?></p><p class="kpi__l mb-0">Published guides</p></div>

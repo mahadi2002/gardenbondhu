@@ -7,8 +7,8 @@ $this->layout('layouts/admin', ['title' => 'ব্যবহারকারী'])
 ?>
 <div class="page-head"><h1>ব্যবহারকারী</h1></div>
 
-<form method="get" action="/admin/users" class="cluster" style="margin-bottom:1.5rem">
-  <input class="input" type="text" name="last4" value="<?= e($last4) ?>" placeholder="শেষ ৪ ডিজিট" maxlength="4" pattern="[0-9]{4}" style="max-width:180px">
+<form method="get" action="/admin/users" class="cluster mb-1-5">
+  <input class="input max-w-3xs" type="text" name="last4" value="<?= e($last4) ?>" placeholder="শেষ ৪ ডিজিট" maxlength="4" pattern="[0-9]{4}">
   <button class="btn btn--sm" type="submit">খুঁজুন</button>
   <span class="small muted">নম্বর শুধু শেষ ৪ ডিজিট দিয়ে খোঁজা যায় — সম্পূর্ণ নম্বর কোথাও দেখানো হয় না।</span>
 </form>

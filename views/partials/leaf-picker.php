@@ -7,7 +7,7 @@
  * @var array<string,string> $bodyParts  slug → Bangla label
  */
 ?>
-<figure class="plant-figure" data-diagnoser>
+<figure class="plant-figure" data-diagnoser data-pulse="true">
   <svg viewBox="0 0 320 380" role="img" aria-label="গাছের ছবি — যে অংশে সমস্যা, সেটি বেছে নিন">
     <!-- soil -->
     <path d="M40 330h240l-14 34H54z" fill="#6B5138" opacity=".85"/>

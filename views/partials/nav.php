@@ -10,7 +10,9 @@ $isLoggedIn = \App\Core\Session::userId() !== null;
 ?>
 <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav">
   <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-    <path d="M4 7h16M4 12h16M4 17h16"/>
+    <path class="bar bar-1" d="M4 7h16"/>
+    <path class="bar bar-2" d="M4 12h16"/>
+    <path class="bar bar-3" d="M4 17h16"/>
   </svg>
   <span class="visually-hidden">মেনু</span>
 </button>

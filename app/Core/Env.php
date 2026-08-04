@@ -31,9 +31,11 @@ final class Env
             $key   = trim($key);
             $value = trim($value);
 
-            // Strip a trailing unquoted comment.
+            // Strip a trailing unquoted comment. Matches both "value  # note"
+            // and a value that is nothing but a comment ("   # note") — the
+            // latter must resolve to an empty value, not the comment text.
             if ($value !== '' && $value[0] !== '"' && $value[0] !== "'") {
-                $value = trim(preg_split('/\s+#/', $value, 2)[0] ?? '');
+                $value = trim((string) preg_replace('/(^|\s)#.*$/', '', $value));
             }
 
             $len = strlen($value);
