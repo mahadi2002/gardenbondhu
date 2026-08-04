@@ -26,6 +26,7 @@ $isLoggedIn = \App\Core\Session::userId() !== null;
     <a href="/app">আমার অ্যাকাউন্ট</a>
     <a class="price-badge header-cta" href="/app">অ্যাপে যান</a>
   <?php else: ?>
+    <a href="/login">লগইন করুন</a>
     <a class="price-badge header-cta" href="/subscribe">
       <span class="amount">৳<?= e($dailyAmount) ?></span><span class="per">/day</span>
     </a>

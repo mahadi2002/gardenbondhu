@@ -21,7 +21,7 @@ $what ??= 'বাকি অংশ';
     <li>নিজের বাগানের রেকর্ড আর কাজের রিমাইন্ডার</li>
   </ul>
 
-  <p class="mono"><strong>৳<?= e($dailyAmount) ?>/day</strong> · মাসে মাত্র ৮৩ টাকা</p>
+  <p class="mono"><strong>৳<?= e($dailyAmount) ?>/day</strong></p>
   <p><a class="btn btn--accent btn--lg" href="/subscribe">Subscribe Now</a></p>
   <p class="small muted mb-0">Robi &amp; Airtel Users Only &nbsp;|&nbsp; যেকোনো সময় Unsubscribe করুন</p>
 </section>

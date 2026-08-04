@@ -1,8 +1,11 @@
 <?php
-/** @var string $next */
+/**
+ * @var string $next
+ * @var bool   $isLogin
+ */
 use App\Core\View;
 
-$this->layout('layouts/public', ['title' => 'Subscribe করুন']);
+$this->layout('layouts/public', ['title' => $isLogin ? 'Login করুন' : 'Subscribe করুন']);
 ?>
 <section class="section">
   <div class="wrap">

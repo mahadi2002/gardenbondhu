@@ -29,11 +29,7 @@ final class AuthController extends Controller
 
     public function phoneForm(Request $request): Response
     {
-        Session::put(self::STARTED_KEY, time());
-
-        return $this->view('auth/phone', [
-            'next' => $this->safeNext($request->str('next')),
-        ]);
+        return $this->renderPhoneForm($request, false);
     }
 
     public function requestOtp(Request $request): Response
@@ -137,10 +133,15 @@ final class AuthController extends Controller
         return $this->sendOtp($msisdn, $request, true);
     }
 
-    /** GET /login — the spec keeps one funnel; this is just an alias. */
+    /**
+     * GET /login — same OTP mechanism as /subscribe (a returning subscriber's
+     * number is recognised and logged straight in — see completeSubscribe()),
+     * but framed as a login screen rather than a sales page for people who
+     * are already paying and just want back in.
+     */
     public function login(Request $request): Response
     {
-        return $this->redirect('/subscribe', 301);
+        return $this->renderPhoneForm($request, true);
     }
 
     public function logout(Request $request): Response
@@ -157,6 +158,16 @@ final class AuthController extends Controller
     }
 
     // ── internals ───────────────────────────────────────────────────────
+
+    private function renderPhoneForm(Request $request, bool $isLogin): Response
+    {
+        Session::put(self::STARTED_KEY, time());
+
+        return $this->view('auth/phone', [
+            'next'    => $this->safeNext($request->str('next')),
+            'isLogin' => $isLogin,
+        ]);
+    }
 
     private function sendOtp(string $msisdn, Request $request, bool $isResend): Response
     {

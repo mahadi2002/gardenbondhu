@@ -1,12 +1,24 @@
 <?php
 /**
- * The required subscribe box (spec §5.1). Every string here is verbatim.
- * It posts straight to the real OTP route — this is the funnel, not a demo.
+ * The required subscribe box (spec §5.1). Every string here is verbatim
+ * *when called from the landing page*, which never passes $isLogin.
+ *
+ * Also reused on /subscribe and /login (same OTP mechanism serves both —
+ * a returning subscriber's number just logs them straight in). $isLogin
+ * swaps the heading/subhead/button for a login-flavored framing there,
+ * without touching the spec-locked landing-page copy.
+ *
+ * @var bool $isLogin
  */
+$isLogin ??= false;
 ?>
 <div class="otp-box" id="otp-box">
-  <h2>আপনার Robi বা Airtel Number দিন</h2>
-  <p class="sub">Instant Access পাবেন সব গার্ডেনিং Content-এ!</p>
+  <h2><?= $isLogin ? 'লগইন করুন' : 'আপনার Robi বা Airtel Number দিন' ?></h2>
+  <p class="sub">
+    <?= $isLogin
+        ? 'আগে থেকে Subscribed? নম্বর দিয়ে সরাসরি Login করুন।'
+        : 'Instant Access পাবেন সব গার্ডেনিং Content-এ!' ?>
+  </p>
 
   <?php if ($error = error_for('msisdn')): ?>
     <div class="notice notice--error" role="alert">
@@ -31,8 +43,12 @@
       <p class="help" id="msisdn-landing-help"><?= e($operatorNote) ?></p>
     </div>
 
-    <p class="badge-line">⚡ Daily মাত্র ৳<?= e($dailyAmount) ?> — যেকোনো সময় Unsubscribe করুন</p>
+    <?php if (!$isLogin): ?>
+      <p class="badge-line">⚡ Daily মাত্র ৳<?= e($dailyAmount) ?> — যেকোনো সময় Unsubscribe করুন</p>
+    <?php endif; ?>
 
-    <button class="btn btn--accent btn--block btn--lg" type="submit">OTP পাঠান →</button>
+    <button class="btn btn--accent btn--block btn--lg" type="submit">
+      <?= $isLogin ? 'Login করুন →' : 'OTP পাঠান →' ?>
+    </button>
   </form>
 </div>

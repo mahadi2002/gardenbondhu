@@ -37,7 +37,7 @@ return [
     ['GET',  '/subscribe/verify',    'AuthController@otpForm',        ['guest']],
     ['POST', '/subscribe/verify',    'AuthController@verifyOtp',      ['guest', 'csrf', 'rl:otp_verify']],
     ['POST', '/subscribe/resend',    'AuthController@resendOtp',      ['guest', 'csrf', 'rl:otp_request']],
-    ['GET',  '/login',               'AuthController@login',          []],
+    ['GET',  '/login',               'AuthController@login',          ['guest']],
     ['POST', '/logout',              'AuthController@logout',         ['auth', 'csrf']],
 
     // ── Gated app ───────────────────────────────────────────────────────
