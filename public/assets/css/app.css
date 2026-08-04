@@ -734,7 +734,13 @@ legend { font-weight: 600; font-size: var(--step--1); padding-inline: .4rem; }
 
 @media (max-width: 899px) {
   .nav-toggle { display: inline-flex; }
-  .nav {
+
+  /* Scoped to #primary-nav (the public site's hamburger menu) specifically —
+     NOT the generic .nav class. The gated app's topbar (Account/theme
+     toggle/Logout, in layouts/app.php) also uses .nav for its link styling
+     but has no hamburger to reopen it, so it must never be collapsed here;
+     it stays a plain always-visible row at every width. */
+  #primary-nav {
     display: none;
     position: absolute;
     inset-inline: 0;
@@ -748,11 +754,19 @@ legend { font-weight: 600; font-size: var(--step--1); padding-inline: .4rem; }
     border-bottom: 1px solid var(--line);
     box-shadow: var(--shadow-md);
   }
-  .nav[data-open='true'] { display: flex; }
+  #primary-nav[data-open='true'] { display: flex; }
   .nav a { padding: .7rem .8rem; font-size: var(--step-0); }
   .site-header__inner { position: relative; }
   .header-cta { display: none; }
-  .nav .header-cta { display: inline-flex; justify-content: center; margin-top: .5rem; }
+  #primary-nav .header-cta { display: inline-flex; justify-content: center; margin-top: .5rem; }
+}
+
+/* The gated app's topbar nav (Account / theme toggle / Logout) is a short,
+   fixed set of controls — always visible, wraps rather than disappears on
+   very narrow screens. */
+@media (max-width: 420px) {
+  .app-topbar .nav { gap: .4rem; }
+  .app-topbar .nav a { padding: .4rem .55rem; font-size: var(--step--1); }
 }
 
 .site-footer {
