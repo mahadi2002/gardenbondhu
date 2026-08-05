@@ -24,6 +24,12 @@
 - Get real the carrier billing provider credentials, flip CARRIER_DRIVER to `carrier`, test one real charge.
 - Nightly mysqldump + actually test a restore once, not just assume it works.
 - Run a proper security scan (ZAP or similar) against a staging copy.
+- Actually deploy it somewhere (see docs/DEPLOYMENT.md) and point an uptime
+  monitor at `/health` — right now this only exists on a local dev server,
+  so it has zero real uptime by definition, not because of a code problem.
+- Set SUPPORT_EMAIL in .env once there's a real inbox to send it to. Without
+  it, contact-form submissions still land in /admin/contact just fine — the
+  email is a nice-to-have heads-up, not the only way to see them.
 
 ## Nice to have, not urgent
 - FULLTEXT search only works on real MySQL — MariaDB doesn't ship the ngram parser,

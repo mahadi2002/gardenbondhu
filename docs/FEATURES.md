@@ -89,3 +89,14 @@ New questions start `pending` and only the asker can see their own pending
 question. An admin approves or rejects. Anyone with an active subscription
 can answer an approved question; answers from users flagged as `expert`
 (admin sets that flag) get a badge and sort first.
+
+## Contact / support inbox
+
+The public `/contact` form writes to `contact_messages`, not just the audit
+log — the audit entry is a paper trail, the table is what actually shows up
+in `/admin/contact`. New submissions start as `new`, flip to `read` the
+moment an admin opens one, and `resolved` once someone marks it done. If
+`SUPPORT_EMAIL` is set in `.env`, opening a message also fires a best-effort
+heads-up email (`App\Services\Notifier`, plain `mail()`, no SMTP library) —
+but the inbox itself is the real source of truth, so a bounced or unset
+email is never the only way to find out someone wrote in.

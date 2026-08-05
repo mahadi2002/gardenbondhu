@@ -9,6 +9,7 @@ $links = [
     '/admin/guides'   => 'গাইড',
     '/admin/qa'       => 'প্রশ্ন-উত্তর',
     '/admin/users'    => 'ব্যবহারকারী',
+    '/admin/contact'  => 'Contact Inbox',
     '/admin/logs'     => 'Audit log',
 ];
 ?>

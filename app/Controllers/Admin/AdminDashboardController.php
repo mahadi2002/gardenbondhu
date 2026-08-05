@@ -7,6 +7,7 @@ use App\Core\Controller;
 use App\Core\Db;
 use App\Core\Request;
 use App\Core\Response;
+use App\Repositories\ContactRepo;
 use App\Repositories\GuideRepo;
 use App\Repositories\OperatorRepo;
 use App\Repositories\PlantRepo;
@@ -29,6 +30,7 @@ final class AdminDashboardController extends Controller
             'statusBreakdown' => $subs->statusBreakdown(),
             'failures'       => $subs->recentFailures(10),
             'pendingQuestions' => (new QuestionRepo())->pendingCount(),
+            'newContacts'    => (new ContactRepo())->newCount(),
             'byOperator'     => (new OperatorRepo())->activeByOperator(),
             'trend'          => (new OperatorRepo())->chargeTrend(14),
             'content'        => [

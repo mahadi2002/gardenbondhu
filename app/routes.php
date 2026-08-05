@@ -11,6 +11,9 @@ declare(strict_types=1);
  * (e.g. /app/plants/finder before /app/plants/{slug}).
  */
 return [
+    // ── Ops ─────────────────────────────────────────────────────────────
+    ['GET',  '/health',              'HealthController@check',        []],
+
     // ── Public ──────────────────────────────────────────────────────────
     ['GET',  '/',                    'HomeController@index',          []],
     ['GET',  '/privacy',             'HomeController@privacy',        []],
@@ -117,6 +120,10 @@ return [
     ['GET',  '/admin/users',             'Admin/AdminUserController@index',    ['admin']],
     ['GET',  '/admin/users/{id}',        'Admin/AdminUserController@show',     ['admin']],
     ['POST', '/admin/users/{id}',        'Admin/AdminUserController@update',   ['admin', 'csrf']],
+
+    ['GET',  '/admin/contact',           'Admin/AdminContactController@index',   ['admin']],
+    ['GET',  '/admin/contact/{id}',      'Admin/AdminContactController@show',    ['admin']],
+    ['POST', '/admin/contact/{id}/resolve', 'Admin/AdminContactController@resolve', ['admin', 'csrf']],
 
     ['GET',  '/admin/logs',              'Admin/AdminDashboardController@logs', ['admin']],
 ];

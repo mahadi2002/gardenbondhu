@@ -1,6 +1,6 @@
 <?php
 /**
- * @var int   $activeSubs, $newUsers7d, $pendingQuestions
+ * @var int   $activeSubs, $newUsers7d, $pendingQuestions, $newContacts
  * @var array $chargesToday, $statusBreakdown, $failures, $byOperator, $trend, $content
  */
 $this->layout('layouts/admin', ['title' => 'Dashboard']);
@@ -15,6 +15,7 @@ $maxTrend = max(1, ...array_map(static fn($r) => max((int) $r['success'], (int) 
   <div class="kpi"><p class="kpi__n mb-0"><?= e(bn_num($chargesToday['success'] ?? 0)) ?></p><p class="kpi__l mb-0">Charges succeeded today</p></div>
   <div class="kpi"><p class="kpi__n mb-0"><?= e(bn_num($chargesToday['failed'] ?? 0)) ?></p><p class="kpi__l mb-0">Charges failed today</p></div>
   <div class="kpi"><p class="kpi__n mb-0"><?= e(bn_num($pendingQuestions)) ?></p><p class="kpi__l mb-0">Questions pending review</p></div>
+  <div class="kpi"><a href="/admin/contact"><p class="kpi__n mb-0"><?= e(bn_num($newContacts)) ?></p><p class="kpi__l mb-0">New contact messages</p></a></div>
 </div>
 
 <div class="grid grid--2">

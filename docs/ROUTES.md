@@ -7,6 +7,12 @@ requires a login, `sub` requires an *active* subscription (re-checked from
 the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
 `rl:name` rate-limits against the bucket of that name.
 
+## Ops
+
+| Route | What it does |
+|---|---|
+| `GET /health` | Hits the DB with `SELECT 1` and returns JSON — point an uptime monitor or a load balancer health check at this, not at `/` |
+
 ## Public
 
 | Route | What it does |
@@ -66,5 +72,5 @@ the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
 Separate login (email+password, not phone+OTP — admins might not have a
 Robi number). Standard CRUD for plants, problems, guides, and Q&A
 moderation, a users list that only ever shows the last 4 digits of a phone
-number, and an audit log viewer. Nothing exotic — see
-`app/Controllers/Admin/` if you need the specifics.
+number, a contact-form inbox (`/admin/contact`), and an audit log viewer.
+Nothing exotic — see `app/Controllers/Admin/` if you need the specifics.

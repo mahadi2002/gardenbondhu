@@ -47,6 +47,27 @@ that matters, systemd timers instead of cron. None of that is set up here
 because none of it was needed at this scale, but nothing about the
 architecture assumes shared hosting specifically.
 
+## Uptime monitoring
+
+`GET /health` actually runs a query (`SELECT 1`) instead of just returning
+200 for "PHP is alive" — point an external monitor at it, not at `/`.
+UptimeRobot's free tier is enough to start: a 5-minute HTTP check against
+`https://yourdomain/health` that alerts on anything but a 200. Nothing about
+this app pings that URL itself — it's a passive endpoint, the monitoring
+service is the thing that has to actually exist and be configured.
+
+## Scaling past one server
+
+Nothing in the request path assumes a single machine — sessions live in
+MySQL, not local files, so you can put two app servers behind a load
+balancer and either one can serve either user's session. The one thing that
+doesn't survive that split as-is is `storage/uploads` (Q&A images): those
+land on local disk, so a second app server won't see what the first one
+saved. Fine at one-server scale; if you ever actually need a second app
+server, that's the one piece to move to shared/object storage first —
+`app/Services/ImageService.php` is the only file that touches the upload
+path, so it's a contained change.
+
 ## Backups
 
 ```

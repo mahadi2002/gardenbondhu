@@ -37,6 +37,10 @@ return [
 
     'log_level' => env('LOG_LEVEL', 'info'),
 
+    // Blank until someone sets it in .env — the admin inbox at /admin/contact
+    // is the real source of truth either way, this is just a heads-up email.
+    'support_email' => env('SUPPORT_EMAIL', ''),
+
     'retention' => [
         'otp_hours'      => (int) env('RETAIN_OTP_HOURS', 24),
         'ratelimit_days' => (int) env('RETAIN_RATELIMIT_DAYS', 7),

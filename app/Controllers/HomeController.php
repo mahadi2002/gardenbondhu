@@ -8,10 +8,12 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Core\Validator;
+use App\Repositories\ContactRepo;
 use App\Repositories\GuideRepo;
 use App\Repositories\PlantRepo;
 use App\Repositories\ProblemRepo;
 use App\Services\AuditService;
+use App\Services\Notifier;
 use App\Services\SearchService;
 
 final class HomeController extends Controller
@@ -75,10 +77,18 @@ final class HomeController extends Controller
             return $this->redirect('/contact');
         }
 
-        AuditService::log('contact.submitted', 'user', null, 'contact', null, [
-            'name'    => $validator->get('name'),
-            'preview' => str_excerpt((string) $validator->get('message'), 120),
+        $name    = (string) $validator->get('name');
+        $message = (string) $validator->get('message');
+        $preview = str_excerpt($message, 120);
+
+        $messageId = (new ContactRepo())->create($name, (string) $validator->get('contact'), $message, $request->ipHash());
+
+        AuditService::log('contact.submitted', 'user', null, 'contact', $messageId, [
+            'name'    => $name,
+            'preview' => $preview,
         ], $request->ipHash());
+
+        Notifier::contactReceived($messageId, $name, $preview);
 
         Session::notify('success', 'বার্তা পেয়েছি। আমরা শীঘ্রই যোগাযোগ করব।');
 
