@@ -29,6 +29,9 @@ $status = $sub['status'] ?? 'expired';
       <p class="cluster">
         <a class="btn btn--accent btn--lg" href="/subscribe">আবার Subscribe করুন</a>
         <a class="btn btn--ghost" href="/account">Account দেখুন</a>
+        <?php if ($status !== 'unsubscribed'): ?>
+          <a class="btn btn--danger btn--sm" href="/account/unsubscribe">Unsubscribe করুন</a>
+        <?php endif; ?>
       </p>
 
       <?php if (!empty($sub['current_period_end'])): ?>

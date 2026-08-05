@@ -53,16 +53,19 @@ $chargeLabels = ['success' => 'সফল', 'failed' => 'ব্যর্থ', 'pe
             </div>
           </dl>
 
-          <?php if ($hasAccess): ?>
-            <p class="cluster">
+          <p class="cluster">
+            <?php if ($hasAccess): ?>
               <a class="btn" href="/app">অ্যাপে যান</a>
-              <a class="btn btn--danger btn--sm" href="/account/unsubscribe">Unsubscribe</a>
-            </p>
-          <?php else: ?>
-            <p class="cluster">
+            <?php elseif ((string) $sub['status'] !== 'unsubscribed'): ?>
               <a class="btn btn--accent" href="/subscribe">আবার শুরু করুন</a>
-            </p>
-          <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if ((string) $sub['status'] !== 'unsubscribed'): ?>
+              <a class="btn btn--danger btn--sm" href="/account/unsubscribe">Unsubscribe</a>
+            <?php else: ?>
+              <a class="btn btn--accent" href="/subscribe">আবার শুরু করুন</a>
+            <?php endif; ?>
+          </p>
         <?php endif; ?>
       </div>
 
