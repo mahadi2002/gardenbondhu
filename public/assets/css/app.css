@@ -529,6 +529,7 @@ th { font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
 }
 .price-badge .amount { font-family: var(--font-mono); font-size: var(--step-0); }
 .price-badge .per { font-size: var(--step--1); font-weight: 600; }
+.price-badge .vat-note { font-size: .65rem; font-weight: 600; opacity: .75; }
 .price-badge:hover { box-shadow: var(--glow-marigold); color: var(--ink); transform: translateY(-1px); }
 
 /* --------------------------------------------------------------------------
@@ -1161,7 +1162,7 @@ legend { font-weight: 600; font-size: var(--step--1); padding-inline: .4rem; }
 /* --------------------------------------------------------------------------
    12. Paywall
    The content is truncated server-side; this gradient is only the visual
-   signal that there is more. Nothing here is a security control (§9.1).
+   signal that there is more. Nothing here is a security control.
    -------------------------------------------------------------------------- */
 .paywall-cut { position: relative; }
 .paywall-cut::after {

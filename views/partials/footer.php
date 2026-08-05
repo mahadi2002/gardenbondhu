@@ -26,12 +26,12 @@
 
       <div>
         <h4>Billing</h4>
-        <p class="small">Powered by the carrier billing provider<br>Robi &amp; Airtel Bangladesh</p>
+        <p class="small">Robi &amp; Airtel Mobile Billing</p>
       </div>
     </div>
 
     <p class="charge-warning">
-      ⚠️ এই Service the carrier billing provider-এর মাধ্যমে Charge করা হয়। Daily ৳<?= e($dailyAmount) ?> আপনার Robi /Airtel Account
+      ⚠️ Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC) আপনার Robi /Airtel Account
       থেকে কাটা হবে। Unsubscribe করতে STOP লিখে <?= e($shortcode) ?> নম্বরে SMS করুন।
     </p>
 

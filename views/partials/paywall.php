@@ -4,7 +4,7 @@
  *
  * There is nothing to hide here: the paid text was never SELECTed, so it is
  * not in the HTML, not in a data attribute, and not one devtools toggle away.
- * The gradient above is decoration; PHP truncation is the control (§9.1).
+ * The gradient above is decoration; PHP truncation is the actual control.
  *
  * @var string|null $what  what is behind the wall, e.g. 'এই গাছের পূর্ণ যত্ন-নির্দেশিকা'
  */
@@ -22,6 +22,7 @@ $what ??= 'বাকি অংশ';
   </ul>
 
   <p class="mono"><strong>৳<?= e($dailyAmount) ?>/day</strong></p>
+  <p class="small muted mb-0">Incl. VAT, SD &amp; SC</p>
   <p><a class="btn btn--accent btn--lg" href="/subscribe">Subscribe Now</a></p>
   <p class="small muted mb-0">Robi &amp; Airtel Users Only &nbsp;|&nbsp; যেকোনো সময় Unsubscribe করুন</p>
 </section>

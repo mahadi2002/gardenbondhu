@@ -14,7 +14,7 @@
     <h2>নম্বর কোথায় ব্যবহৃত হয়</h2>
     <ul>
       <li>OTP পাঠানো ও যাচাই করার জন্য</li>
-      <li>দৈনিক Subscription Charge করার জন্য (the carrier billing provider-এর মাধ্যমে)</li>
+      <li>দৈনিক Subscription Charge করার জন্য (Mobile Operator Billing-এর মাধ্যমে)</li>
       <li>Account সংক্রান্ত জরুরি বার্তা পাঠানোর জন্য</li>
     </ul>
     <p>নম্বরটি কোনো তৃতীয় পক্ষের কাছে বিক্রি বা বিজ্ঞাপনের জন্য শেয়ার করা হয় না।</p>

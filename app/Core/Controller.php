@@ -34,7 +34,7 @@ abstract class Controller
         return Response::json($data, $status);
     }
 
-    /** IDOR and missing rows both end here — never confirm existence (§10). */
+    /** IDOR and missing rows both end here — never confirm existence either way. */
     protected function notFound(): never
     {
         throw new HttpException(404);

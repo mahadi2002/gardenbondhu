@@ -28,10 +28,10 @@ return [
     ['GET',  '/guides',              'GuideController@index',         []],
     ['GET',  '/guides/{slug}',       'GuideController@show',          []],
 
-    // Uploaded images are never web-accessible; they are served through PHP (§9.5).
+    // Uploaded images are never web-accessible; they are served through PHP.
     ['GET',  '/media/{slug}',        'MediaController@show',          []],
 
-    // ── Auth (the carrier billing provider OTP) ───────────────────────────────────────────────
+    // ── Auth (mobile OTP) ────────────────────────────────────────────────
     ['GET',  '/subscribe',           'AuthController@phoneForm',      ['guest']],
     ['POST', '/subscribe/otp',       'AuthController@requestOtp',     ['guest', 'csrf', 'rl:otp_request']],
     ['GET',  '/subscribe/verify',    'AuthController@otpForm',        ['guest']],
@@ -80,7 +80,7 @@ return [
     ['POST', '/account/delete',      'AccountController@destroy',         ['auth', 'csrf']],
     ['GET',  '/expired',             'AccountController@expired',         ['auth']],
 
-    // ── Webhooks (no CSRF — signature + IP allowlist instead, §7.6) ─────
+    // ── Webhooks (no CSRF — signature + IP allowlist instead) ───────────
     ['POST', '/webhooks/carrier',     'WebhookController@carrier',          []],
 
     // ── Admin ───────────────────────────────────────────────────────────

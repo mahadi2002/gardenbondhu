@@ -123,7 +123,7 @@ final class RateLimit
         return null;
     }
 
-    /** "৫৯ মিনিট" / "৪৫ সেকেন্ড" — for the §10 error messages. */
+    /** "৫৯ মিনিট" / "৪৫ সেকেন্ড" — turns a raw second count into the wording we show on rate-limit screens. */
     public static function humanWait(int $seconds): string
     {
         if ($seconds < 60) {

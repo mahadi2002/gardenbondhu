@@ -62,7 +62,7 @@ final class SubscriptionService
         return (new SubscriptionRepo())->latestForUser($userId);
     }
 
-    /** Grace users get a warning banner on every page (§10). */
+    /** Grace users get a warning banner on every page — nudge them to recharge before access drops. */
     public static function graceNotice(int $userId): ?string
     {
         $sub = self::current($userId);

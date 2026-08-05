@@ -31,8 +31,8 @@ $isLoggedIn = \App\Core\Session::userId() !== null;
     <a class="price-badge header-cta" href="/app">অ্যাপে যান</a>
   <?php else: ?>
     <a href="/login">লগইন করুন</a>
-    <a class="price-badge header-cta" href="/subscribe">
-      <span class="amount">৳<?= e($dailyAmount) ?></span><span class="per">/day</span>
+    <a class="price-badge header-cta" href="/subscribe" title="Incl. VAT, SD &amp; SC">
+      <span class="amount">৳<?= e($dailyAmount) ?></span><span class="per">/day</span><span class="vat-note">+VAT</span>
     </a>
   <?php endif; ?>
 

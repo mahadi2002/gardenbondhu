@@ -7,8 +7,8 @@
     <h2>Subscription ও Billing</h2>
     <p>
       বাগানবন্ধু একটি Daily Micro-Subscription Service, যার মূল্য দিনে ৳<?= e($dailyAmount) ?>
-      (Incl. VAT, SD &amp; SC)। এটি শুধুমাত্র Robi ও Airtel নম্বরের জন্য the carrier billing provider-এর মাধ্যমে
-      পরিচালিত হয়। Subscribe করলে প্রতিদিন আপনার Mobile Account থেকে টাকা কাটা হবে,
+      (Incl. VAT, SD &amp; SC)। এটি শুধুমাত্র Robi ও Airtel নম্বরের জন্য Direct Carrier Billing-এর
+      মাধ্যমে পরিচালিত হয়। Subscribe করলে প্রতিদিন আপনার Mobile Account থেকে টাকা কাটা হবে,
       যতক্ষণ না আপনি Unsubscribe করেন।
     </p>
 

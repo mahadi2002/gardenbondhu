@@ -19,8 +19,9 @@ use App\Services\SubscriptionService;
 use App\Support\Operators;
 
 /**
- * The subscribe funnel. Every row of the §10 error matrix that concerns OTP
- * is implemented here, with the exact Bangla message from the spec.
+ * The subscribe funnel. Every OTP failure case gets its own exact Bangla
+ * message here — "wrong code" and "too many tries" read very differently
+ * to someone who's never used an OTP flow before.
  */
 final class AuthController extends Controller
 {
@@ -34,7 +35,7 @@ final class AuthController extends Controller
 
     public function requestOtp(Request $request): Response
     {
-        // Honeypot + minimum fill time (§9.7) — cheaper and kinder than a CAPTCHA.
+        // Honeypot + minimum fill time — cheaper and kinder than a CAPTCHA.
         if ($request->str('website') !== '') {
             return $this->redirect('/subscribe');
         }
@@ -225,7 +226,7 @@ final class AuthController extends Controller
             'msisdn_last4' => Operators::last4($msisdn),
         ], $request->ipHash(), $request->uaHash());
 
-        // Already an active subscriber — just let them in (§10).
+        // Already an active subscriber — just let them in.
         if (SubscriptionService::hasAccess($userId)) {
             Session::notify('success', 'আপনি আগে থেকেই Subscribed। স্বাগতম!');
             return $this->redirect($this->safeNext((string) Session::get('_next', '')) ?: '/app');

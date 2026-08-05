@@ -42,7 +42,8 @@ final class OtpService
         $msisdnHash = Crypto::blindIndex($msisdn);
 
         // Per-number throttle. The route middleware already applied the per-IP
-        // half of the bucket; §9.7 requires both to pass.
+        // half of the bucket — both need to pass, otherwise one shared IP
+        // (an office, a family plan) locks out everyone behind it.
         $retry = RateLimit::hit('otp_request', 'msisdn:' . $msisdnHash);
         if ($retry !== null) {
             throw new OtpException(
@@ -112,7 +113,7 @@ final class OtpService
 
     /**
      * @return string subscriber_ref from the gateway
-     * @throws OtpException with the exact Bangla message for each §10 row
+     * @throws OtpException with a Bangla message specific to what went wrong
      */
     public function verify(string $msisdn, string $code, Request $request): string
     {

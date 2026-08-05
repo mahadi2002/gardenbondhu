@@ -42,7 +42,7 @@ $mistakes = [
 
 $faqs = [
     ['টাকা কীভাবে কাটা হবে?',
-     'প্রতিদিন ৳' . $dailyAmount . ' আপনার Robi/Airtel ব্যালেন্স থেকে। আলাদা কার্ড বা bKash লাগবে না।'],
+     'প্রতিদিন ৳' . $dailyAmount . ' (VAT, SD ও SC সহ) আপনার Robi/Airtel ব্যালেন্স থেকে। আলাদা কার্ড বা bKash লাগবে না।'],
     ['বন্ধ করব কীভাবে?',
      'STOP লিখে ' . $shortcode . ' নম্বরে SMS করুন, অথবা Account পেজ থেকে Unsubscribe করুন। সাথে সাথেই বন্ধ হবে।'],
     ['Grameenphone/Banglalink দিয়ে হবে?',
@@ -217,10 +217,10 @@ $steps = [
   <div class="wrap">
     <div class="cta-block reveal">
       <h2>🚀 এখনই Start করুন — মাত্র ৳<?= e($dailyAmount) ?>/day</h2>
-      <p>Robi &amp; Airtel Users Only &nbsp;|&nbsp; যেকোনো সময় Unsubscribe করুন</p>
+      <p>Robi &amp; Airtel Users Only &nbsp;|&nbsp; Incl. VAT, SD &amp; SC &nbsp;|&nbsp; যেকোনো সময় Unsubscribe করুন</p>
 
       <div class="value-copy">একটা মরে যাওয়া গাছের দাম ২০০ টাকা। একটা ভুল সারের প্যাকেট ১৫০ টাকা।
-বাগানবন্ধু — দিনে মাত্র ৳<?= e($dailyAmount) ?>।
+বাগানবন্ধু — দিনে মাত্র ৳<?= e($dailyAmount) ?> (VAT, SD ও SC সহ)।
 
 প্রতিদিন ৳<?= e($dailyAmount) ?>-তে আপনি পাচ্ছেন:
 • ৬০+ গাছের পূর্ণ যত্ন-নির্দেশিকা — মাটি, পানি, রোদ, সার, ছাঁটাই
