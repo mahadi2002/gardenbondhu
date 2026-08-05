@@ -15,7 +15,7 @@ return [
         'cookie'         => env('SESSION_COOKIE_NAME', 'gb_sid'),
         'lifetime_min'   => (int) env('SESSION_LIFETIME_MINUTES', 1440),
         'absolute_days'  => (int) env('SESSION_ABSOLUTE_DAYS', 30),
-        'secure'         => env('SESSION_SECURE', 'true') !== 'false',
+        'secure'         => (bool) env('SESSION_SECURE', true),
     ],
 
     'otp' => [

@@ -10,39 +10,60 @@
 
 /* --------------------------------------------------------------------------
    1. Fonts
-   Self-hosted woff2, Bangla + Latin subset. Drop the files into
-   public/assets/fonts/ and these rules light up; until then the stack falls
-   back to whatever Bangla face the device has, which is still readable.
-   Google Fonts is deliberately not used: it needs a CSP exception and leaks
-   every visitor's IP to a third party.
+   Self-hosted woff2, split by script subset so a visitor only downloads the
+   half their page actually needs (Bengali glyphs vs Latin punctuation/
+   numerals). See FONT_LICENSE.md — all three are SIL OFL 1.1.
+   Google Fonts is deliberately not used at runtime: it needs a CSP exception
+   and leaks every visitor's IP to a third party on every page load.
    -------------------------------------------------------------------------- */
 @font-face {
   font-family: 'Noto Sans Bengali';
-  src: url('../fonts/noto-sans-bengali-400.woff2') format('woff2');
+  src: url('../fonts/noto-sans-bengali-400-bengali.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
-  unicode-range: U+0980-09FF, U+0000-00FF, U+2000-206F, U+20B9-20BE;
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+200C-200D, U+20B9, U+25CC;
 }
 @font-face {
   font-family: 'Noto Sans Bengali';
-  src: url('../fonts/noto-sans-bengali-600.woff2') format('woff2');
+  src: url('../fonts/noto-sans-bengali-400-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+2122;
+}
+@font-face {
+  font-family: 'Noto Sans Bengali';
+  src: url('../fonts/noto-sans-bengali-600-bengali.woff2') format('woff2');
   font-weight: 600;
   font-display: swap;
-  unicode-range: U+0980-09FF, U+0000-00FF, U+2000-206F, U+20B9-20BE;
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+200C-200D, U+20B9, U+25CC;
+}
+@font-face {
+  font-family: 'Noto Sans Bengali';
+  src: url('../fonts/noto-sans-bengali-600-latin.woff2') format('woff2');
+  font-weight: 600;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+2122;
 }
 @font-face {
   font-family: 'Baloo Da 2';
-  src: url('../fonts/baloo-da-2-700.woff2') format('woff2');
+  src: url('../fonts/baloo-da-2-700-bengali.woff2') format('woff2');
   font-weight: 700;
   font-display: swap;
-  unicode-range: U+0980-09FF, U+0000-00FF;
+  unicode-range: U+0951-0952, U+0964-0965, U+0980-09FE, U+200C-200D, U+20B9, U+25CC;
+}
+@font-face {
+  font-family: 'Baloo Da 2';
+  src: url('../fonts/baloo-da-2-700-latin.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F, U+2122;
 }
 @font-face {
   font-family: 'IBM Plex Mono';
-  src: url('../fonts/ibm-plex-mono-500.woff2') format('woff2');
+  src: url('../fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
   font-weight: 500;
   font-display: swap;
-  unicode-range: U+0000-00FF;
+  unicode-range: U+0000-00FF, U+2000-206F, U+2122;
 }
 
 /* --------------------------------------------------------------------------
