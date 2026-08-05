@@ -6,7 +6,7 @@ namespace App\Services;
 use App\Core\Db;
 
 /**
- * Weighted symptom scoring (spec §8.3).
+ * Weighted symptom scoring for the leaf-picker diagnosis tool.
  *
  * Confidence = matched weight ÷ total weight for that problem, so a problem
  * that has ten symptoms is not unfairly favoured over one that has three.

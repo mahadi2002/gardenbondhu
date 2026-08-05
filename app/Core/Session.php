@@ -6,7 +6,7 @@ namespace App\Core;
 use SessionHandlerInterface;
 
 /**
- * DB-backed session handler (spec §9.6).
+ * DB-backed session handler.
  *
  * Storing sessions in MySQL is what makes server-side revocation possible:
  * when a subscription lapses, SubscriptionService deletes the user's rows and

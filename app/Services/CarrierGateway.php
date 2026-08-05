@@ -10,7 +10,8 @@ use App\Support\Operators;
 
 /**
  * Production gateway. Every response is normalised inside this class, so no
- * other file in the project knows the carrier billing provider exists (spec §7.3).
+ * other file in the project knows the carrier billing provider exists — swap providers later and
+ * this is the only file that has to change.
  *
  * When the developer-portal docs arrive, only the constants below and the
  * three payload/response mapping methods at the bottom change.

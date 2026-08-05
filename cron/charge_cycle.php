@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Hourly billing cycle (spec §7.5).
+ * Hourly billing cycle.
  *
  * Cron entry (cPanel):
  *   0 * * * *  /usr/local/bin/php /home/USER/gardenbondhu/cron/charge_cycle.php

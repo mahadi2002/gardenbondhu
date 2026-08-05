@@ -12,7 +12,7 @@ use App\Services\AuditService;
 use App\Services\GatewayFactory;
 
 /**
- * Inbound the carrier billing provider callbacks (spec §7.6).
+ * Inbound the carrier billing provider callbacks.
  *
  * Verify → record (idempotent on event_id) → respond 200 IMMEDIATELY → queue.
  * The state change is applied by queue_worker.php, never inline: a slow write

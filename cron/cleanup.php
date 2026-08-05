@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Daily 03:00 — retention purge (spec §9.12).
+ * Daily 03:00 — retention purge.
  *
  * Cron entry:
  *   0 3 * * *  /usr/local/bin/php /home/USER/gardenbondhu/cron/cleanup.php

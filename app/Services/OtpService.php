@@ -12,7 +12,7 @@ use App\Exceptions\OtpException;
 use App\Support\Operators;
 
 /**
- * OTP lifecycle (spec §9.8):
+ * OTP lifecycle:
  *   6 digits from random_int(), stored as password_hash(), never plaintext,
  *   never logged in production. TTL 5 min, single use, 3 wrong attempts kills
  *   the row, resend allowed after 60 s.

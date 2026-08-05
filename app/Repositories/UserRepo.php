@@ -27,8 +27,8 @@ final class UserRepo
 
     /**
      * Create on first subscribe, or return the existing row for a returning
-     * number. The users row is never duplicated and never deleted — history
-     * lives in subscriptions (spec §7.2).
+     * number. The users row is never duplicated and never deleted — billing
+     * history lives in the subscriptions table, keyed off this one row.
      */
     public function findOrCreate(string $msisdn): array
     {
@@ -84,8 +84,9 @@ final class UserRepo
     }
 
     /**
-     * Irreversibly strip the identifiers while keeping the row, so foreign keys
-     * and billing history stay intact (spec §9.12).
+     * Irreversibly strip the identifiers while keeping the row, so foreign
+     * keys and billing history stay intact — this is how "delete my account"
+     * actually gets implemented without breaking every table that references it.
      */
     public function anonymize(int $userId): void
     {

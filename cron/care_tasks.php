@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Daily 05:00 — generate/roll care_tasks for every user_plants row (spec §8.5).
+ * Daily 05:00 — generate/roll care_tasks for every user_plants row.
  *
  * Cron entry:
  *   0 5 * * *  /usr/local/bin/php /home/USER/gardenbondhu/cron/care_tasks.php

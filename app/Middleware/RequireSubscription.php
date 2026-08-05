@@ -9,8 +9,9 @@ use App\Core\Session;
 use App\Services\SubscriptionService;
 
 /**
- * The core rule (spec §4): every gated request re-reads the database.
- * No session flag, no cookie, no token claim decides access.
+ * The one rule this whole gate exists to enforce: every gated request
+ * re-reads the database. No session flag, no cookie, no token claim ever
+ * decides access on its own.
  */
 final class RequireSubscription implements Middleware
 {

@@ -8,7 +8,7 @@ use App\Core\Db;
 /**
  * Every method takes $userId and scopes the query by it. A row belonging to
  * someone else is simply not found — the controller turns that into a 404,
- * never a 403, so existence is not confirmed (spec §10).
+ * never a 403, so we're not confirming to a stranger that some other row exists.
  */
 final class UserPlantRepo
 {

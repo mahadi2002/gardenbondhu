@@ -8,8 +8,11 @@ use Throwable;
 /**
  * Daily rotating file logger.
  *
- * NEVER log: a full MSISDN, an OTP code, a session id, APP_KEY (spec §9.12).
- * Log msisdn_last4 and a short msisdn_hash prefix instead.
+ * NEVER log: a full MSISDN, an OTP code, a session id, or APP_KEY — a log
+ * file is the easiest place for a secret to leak, and the least likely
+ * place anyone thinks to check for one. Log msisdn_last4 and a short
+ * msisdn_hash prefix instead, enough to correlate entries without exposing
+ * anything.
  */
 final class Logger
 {

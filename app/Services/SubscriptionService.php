@@ -9,7 +9,7 @@ use App\Core\Session;
 use App\Repositories\SubscriptionRepo;
 
 /**
- * The subscription state machine (spec §7.2).
+ * The subscription state machine.
  *
  *   [none] --OTP verified--> pending --first charge ok--> active
  *   active --charge fail--> grace (48h, access allowed) --recharge ok--> active
@@ -32,9 +32,9 @@ final class SubscriptionService
     }
 
     /**
-     * THE gate (spec §4). Always a fresh DB read — memoised per request only,
-     * so two checks in one page render do not double-query, but nothing is
-     * carried across requests.
+     * The gate everything else in this app funnels through. Always a fresh
+     * DB read — memoised per request only, so two checks in one page render
+     * don't double-query, but nothing is ever carried across requests.
      */
     public static function hasAccess(int $userId): bool
     {
@@ -77,7 +77,7 @@ final class SubscriptionService
     /**
      * Called right after OTP verification. Reuses the users row for a returning
      * subscriber and always creates a NEW subscriptions row — history is never
-     * deleted (spec §7.2).
+     * deleted, even for someone who's cancelled and come back three times.
      */
     public function startPending(int $userId, string $subscriberRef): int
     {
@@ -127,7 +127,8 @@ final class SubscriptionService
     /**
      * A successful renewal. The new period end is measured from the PREVIOUS
      * period end, not from NOW() — otherwise cron drift steals hours from the
-     * user, every single day (spec §7.2).
+     * user every single day. If the hourly cron runs 20 minutes late today,
+     * that shouldn't be the user's problem tomorrow too.
      */
     public function renew(int $subscriptionId): void
     {
@@ -211,9 +212,9 @@ final class SubscriptionService
     }
 
     /**
-     * The invariant from spec §4: on losing access, every session row for that
-     * user is deleted. An already-open browser is locked out on its next
-     * request, not on its next login.
+     * On losing access, every session row for that user gets deleted. An
+     * already-open browser is locked out on its next request, not whenever
+     * it happens to log in again.
      */
     private function revokeAccess(int $subscriptionId, string $action, array $meta = []): void
     {

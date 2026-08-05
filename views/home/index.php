@@ -1,7 +1,9 @@
 <?php
 /**
- * The landing page. Section order is fixed by spec §5.2 and every string in
- * the §5.1 table appears verbatim.
+ * The landing page. Section order and the exact wording in a few spots
+ * (the price badge, the OTP box copy) are locked on purpose — this page
+ * gets read closely by people deciding whether to hand over their phone
+ * number, wording changes shouldn't happen casually.
  *
  * @var array $symptoms  body_part => rows
  * @var array $stats

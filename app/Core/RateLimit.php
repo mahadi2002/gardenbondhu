@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 /**
- * Fixed-window rate limiting on the `rate_limits` table (spec §9.7).
+ * Fixed-window rate limiting on the `rate_limits` table.
  * MySQL-backed on purpose — no Redis assumption on shared hosting.
  */
 final class RateLimit

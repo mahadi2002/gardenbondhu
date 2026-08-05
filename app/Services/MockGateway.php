@@ -10,8 +10,8 @@ use App\Exceptions\OtpException;
 use App\Support\Operators;
 
 /**
- * Development gateway (spec §7.4) — lets the whole product be built and tested
- * before the the carrier billing provider API contract is known.
+ * Development gateway — lets the whole product be built and tested without
+ * needing real the carrier billing provider credentials, which weren't available yet.
  *
  *   • sendOtp() generates a real code, writes it to storage/logs/otp-*.log and
  *     (when APP_DEBUG=true) flashes it on screen. It returns the code in the

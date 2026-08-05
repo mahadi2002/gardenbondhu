@@ -68,7 +68,9 @@ if (!function_exists('asset')) {
 if (!function_exists('bn_num')) {
     /**
      * Latin digits → Bangla digits. Use for counts and dates only.
-     * Prices (৳2.78) and phone numbers stay in Latin digits — spec §6.2.
+     * Prices (৳2.78) and phone numbers stay in Latin digits — that's how
+     * people actually read money and phone numbers here, regardless of
+     * which digits the rest of the sentence is in.
      */
     function bn_num(int|float|string $n): string
     {

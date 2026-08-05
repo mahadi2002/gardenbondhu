@@ -6,7 +6,9 @@ namespace App\Core;
 use RuntimeException;
 
 /**
- * AES-256-GCM for MSISDN at rest + a keyed blind index for lookups (spec §9.2).
+ * AES-256-GCM for MSISDN at rest, plus a keyed blind index for lookups —
+ * the ciphertext needs APP_KEY to reverse, the index needs HASH_PEPPER to
+ * forge, and neither secret alone is enough to do anything useful with it.
  *
  * APP_KEY and HASH_PEPPER live in .env only. Rotating HASH_PEPPER invalidates
  * every blind index in the database — it is a migration, not a config change.

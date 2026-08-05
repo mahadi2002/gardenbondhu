@@ -35,8 +35,8 @@ final class PlantRepo
     }
 
     /**
-     * Plant finder (spec §8.1). Every filter is a WHERE clause on an indexed
-     * column, bound as a parameter — nothing is interpolated.
+     * Plant finder. Every filter is a WHERE clause on an indexed column,
+     * bound as a parameter — nothing is interpolated.
      *
      * @param array{space_type?:string, sunlight?:string, water_need?:string,
      *              difficulty?:string, category_id?:int, toxic_to_pets?:string, q?:string} $filters

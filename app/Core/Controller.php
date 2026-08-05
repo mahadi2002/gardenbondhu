@@ -47,7 +47,8 @@ abstract class Controller
 
     /**
      * True when the viewer may see paid content right now.
-     * Always re-read from the DB — never from a session flag (spec §4).
+     * Always re-read from the DB — never from a session flag. Caching this
+     * would mean a lapsed subscription stays "active" until next login.
      */
     protected function isSubscribed(): bool
     {

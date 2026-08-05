@@ -1,7 +1,7 @@
 <?php
 /**
- * One template for both the public teaser and the gated page (spec §3).
- * When $isSubscribed is false, body_bn was never selected — there is nothing
+ * One template for both the public teaser and the gated page. When
+ * $isSubscribed is false, body_bn was never selected — there is nothing
  * in this HTML to un-hide.
  *
  * @var array $plant, $seasons, $problems, $related

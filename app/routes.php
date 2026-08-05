@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * THE route table (spec §3). Format: [method, path, 'Controller@action', [middleware]].
+ * The route table. Format: [method, path, 'Controller@action', [middleware]].
  *
  * Middleware keys: csrf | guest | auth | sub | admin | rl:<bucket>
  * SecurityHeaders is applied globally in public/index.php, not per route.

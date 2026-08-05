@@ -1,12 +1,12 @@
 <?php
 /**
- * The required subscribe box (spec §5.1). Every string here is verbatim
- * *when called from the landing page*, which never passes $isLogin.
+ * The subscribe box. Wording here is locked when called from the landing
+ * page (which never passes $isLogin) — it's been tested against real users.
  *
  * Also reused on /subscribe and /login (same OTP mechanism serves both —
  * a returning subscriber's number just logs them straight in). $isLogin
  * swaps the heading/subhead/button for a login-flavored framing there,
- * without touching the spec-locked landing-page copy.
+ * without touching the landing-page copy.
  *
  * @var bool $isLogin
  */

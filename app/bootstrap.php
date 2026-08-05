@@ -39,7 +39,7 @@ ini_set('display_errors', $isDebug && PHP_SAPI === 'cli' ? '1' : '0');
 ini_set('log_errors', '1');
 error_reporting(E_ALL);
 
-// ── Startup guards (spec §03, "Rules the AI must follow") ───────────────
+// ── Startup guards — fail loud here rather than silently misbehave later ─
 $fatal = static function (string $message): never {
     if (PHP_SAPI === 'cli') {
         fwrite(STDERR, 'FATAL: ' . $message . PHP_EOL);

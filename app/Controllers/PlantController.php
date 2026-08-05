@@ -9,11 +9,12 @@ use App\Core\Response;
 use App\Repositories\PlantRepo;
 
 /**
- * Public and gated routes render the SAME view with an $isSubscribed flag.
- * One template, one source of truth (spec §3).
+ * Public and gated routes render the SAME view with an $isSubscribed flag —
+ * one template, so the free and paid experience can never quietly drift apart.
  *
  * The paywall is enforced by not SELECTing body_bn at all for a non-subscriber
- * — the paid text never enters PHP memory, let alone the HTML (spec §9.1).
+ * — the paid text never enters PHP memory, let alone the HTML. A view-source
+ * check can't leak what was never fetched.
  */
 final class PlantController extends Controller
 {

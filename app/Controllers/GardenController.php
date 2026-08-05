@@ -14,7 +14,8 @@ use App\Services\CareScheduler;
 
 /**
  * "আমার বাগান". Every query is scoped by user_id inside the repository;
- * a row that belongs to someone else is a 404, never a 403 (spec §10).
+ * a row that belongs to someone else comes back as a 404, never a 403 —
+ * no reason to confirm to a stranger that some other user's plant ID exists.
  */
 final class GardenController extends Controller
 {

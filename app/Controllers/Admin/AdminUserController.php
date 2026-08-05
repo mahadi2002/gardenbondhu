@@ -15,7 +15,8 @@ use App\Services\SubscriptionService;
 
 /**
  * Users are searched and displayed by msisdn_last4 ONLY. A full number is
- * never rendered in the admin UI — it is not even selected (spec §11).
+ * never rendered in the admin UI — it's not even selected in the query, so
+ * there's no code path where an admin screen could leak one by accident.
  */
 final class AdminUserController extends Controller
 {

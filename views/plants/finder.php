@@ -1,8 +1,7 @@
 <?php
 /**
- * Gated plant finder (spec §8.1). Same filter shape as plants/index, but
- * always inside the app shell and always subscribed — this view is never
- * reached signed out.
+ * The plant finder. Same filter shape as plants/index, but always inside
+ * the app shell and always subscribed — this view is never reached signed out.
  *
  * @var array $plants, $categories, $filters
  * @var int   $total

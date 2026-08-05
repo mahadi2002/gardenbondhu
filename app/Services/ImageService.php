@@ -8,7 +8,7 @@ use App\Exceptions\HttpException;
 use RuntimeException;
 
 /**
- * Upload handling (spec §9.5).
+ * Upload handling for Q&A photos.
  *
  * finfo check → GD re-encode (destroys any embedded payload and strips EXIF,
  * including GPS) → random filename → storage/uploads/YYYY/MM/ (never under

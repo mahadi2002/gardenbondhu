@@ -10,8 +10,8 @@ use App\Services\ImageService;
 
 /**
  * Uploads live outside the web root and are served through PHP with a fixed
- * Content-Type, nosniff and inline disposition (spec §9.5) — the web server
- * never executes anything a user uploaded.
+ * Content-Type, nosniff, and inline disposition — the web server never
+ * executes anything a user uploaded, because it never has a route to it.
  */
 final class MediaController extends Controller
 {

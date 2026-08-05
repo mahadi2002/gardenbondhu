@@ -5,7 +5,7 @@ namespace App\Services;
 
 /**
  * The only contract the application knows about. No other file in the project
- * is aware that the carrier billing provider exists (spec §7.3) — swap the driver, nothing else moves.
+ * is aware that the carrier billing provider exists — swap the driver, nothing else moves.
  */
 interface SubscriptionGateway
 {

@@ -2,16 +2,13 @@
 declare(strict_types=1);
 
 /**
- * Starter content set — run by database/migrate.php --seed after the SQL seeds.
+ * Content seed — run by database/migrate.php --seed after the SQL seeds.
  *
- * This is a launch-ready STARTER set, not the full spec §12 target (60 plants /
- * 40 problems / 20 guides). It covers the 20 beginner plants named in the brief
- * plus the most common problems and guides, written in plain conversational
- * Bangla (আপনি-form), so the product is genuinely usable and demoable today.
- * Growing this to the full minimum is tracked in PROGRESS.md as the next
- * content batch — spec §12 calls it correctly: this is the real bottleneck,
- * not the code, and it is best done by a native speaker editing AI drafts,
- * not by generating all 60 unattended.
+ * Covers the common plants, problems, and guides for a beginner garden in
+ * Bangladesh, written in plain conversational Bangla (আপনি-form) rather than
+ * translated from an English gardening article. Still growing — see TODO.md.
+ * Writing this well is genuinely the slow part of the whole project; the
+ * code was the easy half.
  */
 
 use App\Core\Crypto;
@@ -866,8 +863,8 @@ if (!$exists) {
 //
 // Dev/demo convenience only — a subscriber account with an already-active
 // subscription, so /login can be tested immediately without stepping
-// through the OTP → first-charge flow every time. DELETE before production
-// (see the pre-launch checklist in README.md / spec §9.13).
+// through the OTP → first-charge flow every time. DELETE before production,
+// same as the seeded admin account below — see TODO.md.
 
 $demoMsisdn = '01812345678'; // Robi range, normal ending — no mock 00/99 quirks
 $demoHash   = Crypto::blindIndex($demoMsisdn);

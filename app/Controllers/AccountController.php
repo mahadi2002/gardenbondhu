@@ -101,7 +101,7 @@ final class AccountController extends Controller
         }
 
         // The row survives so billing history and foreign keys stay intact;
-        // every identifier on it does not (spec §9.12).
+        // every identifier on it does not.
         (new UserRepo())->anonymize($userId);
 
         AuditService::log('account.deleted', 'user', $userId, 'user', $userId, [], $request->ipHash());

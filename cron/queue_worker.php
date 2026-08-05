@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Drains the `jobs` table (spec §7.6). Runs every minute from cron.
+ * Drains the `jobs` table. Runs every minute from cron.
  *
  * The only job type today is webhook.apply — applying a carrier billing callback is
  * deferred here so WebhookController can respond 200 immediately; a slow

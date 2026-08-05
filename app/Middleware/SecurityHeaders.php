@@ -7,8 +7,8 @@ use App\Core\Request;
 use App\Core\Response;
 
 /**
- * Applied globally (spec §9.9). No 'unsafe-inline' anywhere — data that JS
- * needs from PHP travels in <script type="application/json"> and is JSON.parse'd.
+ * Applied globally. No 'unsafe-inline' anywhere — data that JS needs from
+ * PHP travels in <script type="application/json"> and is JSON.parse'd instead.
  */
 final class SecurityHeaders implements Middleware
 {

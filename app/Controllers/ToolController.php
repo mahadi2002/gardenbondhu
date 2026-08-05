@@ -9,8 +9,9 @@ use App\Core\Response;
 use App\Core\Validator;
 
 /**
- * Calculators (spec §8.4). All server-side, and every result shows the formula
- * it used — an estimate presented as an oracle is worse than no estimate.
+ * Water/fertilizer/pot-size calculators. All server-side, and every result
+ * shows the formula it used — an estimate presented as an oracle is worse
+ * than no estimate.
  */
 final class ToolController extends Controller
 {

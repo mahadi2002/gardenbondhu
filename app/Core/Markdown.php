@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Core;
 
 /**
- * Whitelist Markdown → HTML renderer (spec §9.4).
+ * Whitelist Markdown → HTML renderer.
  *
  * Permits only: p h2 h3 ul ol li strong em a[href^=https] img[src^=/]
  * blockquote code pre table thead tbody tr th td hr br.

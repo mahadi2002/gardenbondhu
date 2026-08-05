@@ -6,7 +6,7 @@ namespace App\Services;
 use App\Core\Db;
 
 /**
- * Generates care_tasks for the coming week (spec §8.5).
+ * Generates care_tasks for the coming week.
  *
  * Runs daily from cron for everybody, and once inline when a plant is first
  * added — so the user sees a schedule immediately rather than tomorrow.

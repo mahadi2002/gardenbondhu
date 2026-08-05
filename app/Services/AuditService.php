@@ -9,7 +9,8 @@ use Throwable;
 
 /**
  * Append-only trail for anything that touches identity or money.
- * NEVER put a full MSISDN or an OTP in `meta` (spec §9.12).
+ * NEVER put a full MSISDN or an OTP in `meta` — an audit log that leaks the
+ * thing it's supposed to be auditing access to isn't much of an audit log.
  */
 final class AuditService
 {

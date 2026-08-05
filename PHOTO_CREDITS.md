@@ -1,10 +1,10 @@
 # Photo Credits
 
-Every plant photo on বাগানবন্ধু is sourced from Wikimedia Commons under a
-verified open license (Public Domain, CC0, CC-BY, or CC-BY-SA) — never
-scraped from an unlicensed source. This file is the canonical attribution
-record; the same data lives machine-readably in
-`database/seeds/plant_photo_credits.json` and `plant_photo_credits_batch2.json`.
+Every plant photo comes from Wikimedia Commons, each one checked for an
+actual license (Public Domain, CC0, CC-BY, or CC-BY-SA) rather than just
+pulled off a search results page. Same data in machine-readable form at
+`database/seeds/plant_photo_credits.json`, in case you ever need to script
+against it.
 
 | Plant | Author | License | Source |
 |---|---|---|---|
