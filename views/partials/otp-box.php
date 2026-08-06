@@ -44,7 +44,7 @@ $isLogin ??= false;
     </div>
 
     <?php if (!$isLogin): ?>
-      <p class="badge-line">⚡ Daily মাত্র ৳<?= e($dailyAmount) ?> (VAT, SD ও SC সহ) — যেকোনো সময় Unsubscribe করুন</p>
+      <p class="badge-line">⚡ Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC) — যেকোনো সময় Unsubscribe করুন</p>
     <?php endif; ?>
 
     <button class="btn btn--accent btn--block btn--lg" type="submit">

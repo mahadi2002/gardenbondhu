@@ -37,7 +37,7 @@
 
     <div class="footer-bottom">
       <span>© <?= e(date('Y')) ?> <?= e($appName) ?> — সর্বস্বত্ব সংরক্ষিত</span>
-      <span class="mono">৳<?= e($dailyAmount) ?>/day · Incl. VAT, SD &amp; SC</span>
+      <span class="mono">Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC)</span>
     </div>
   </div>
 </footer>
