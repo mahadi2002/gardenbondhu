@@ -84,7 +84,7 @@ return [
     ['GET',  '/expired',             'AccountController@expired',         ['auth']],
 
     // ── Webhooks (no CSRF — signature + IP allowlist instead) ───────────
-    ['POST', '/webhooks/carrier',     'WebhookController@carrier',          []],
+    ['POST', '/webhooks/carrier',    'WebhookController@carrier',         []],
 
     // ── Admin ───────────────────────────────────────────────────────────
     ['GET',  '/admin/login',         'Admin/AdminAuthController@form',    []],

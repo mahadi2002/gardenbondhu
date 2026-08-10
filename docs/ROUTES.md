@@ -65,7 +65,7 @@ the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
 
 | Route | What it does |
 |---|---|
-| `POST /webhooks/carrier` | the carrier billing provider calling us back — no CSRF (can't, it's not a browser), verified by signature/IP instead |
+| `POST /webhooks/carrier` | Carrier billing provider calling us back — no CSRF (can't, it's not a browser), verified by signature/IP instead |
 
 ## Admin (`/admin/*`)
 

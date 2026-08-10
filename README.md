@@ -4,7 +4,8 @@ Bangla gardening app for people in Bangladesh who are new to growing things.
 Plant care guides, a leaf-symptom checker for figuring out what's wrong with
 a sick plant, a personal garden log with watering/fertilizing reminders, and
 a Q&A section. Free stuff is limited; the rest needs a subscription — ৳2.78 a
-day through the carrier billing provider, works with Robi and Airtel, cancel whenever.
+day billed straight through your mobile carrier, works with Robi and Airtel,
+cancel whenever.
 
 PHP backend, no frameworks, no Composer packages. Runs on cheap shared
 hosting just as well as a VPS, which was the whole point — no build step to
@@ -50,6 +51,21 @@ cd public
 C:\xampp\php\php.exe -S 127.0.0.1:8000 router-dev.php
 ```
 
+### Stopping it
+
+`Ctrl+C` in the PHP server's tab — that's the whole app, stopped. MySQL
+keeps running in the background afterward on purpose (it's shared
+infrastructure, not something to restart every time); shut it down too if
+you actually want it down:
+
+```powershell
+C:\xampp\mysql\bin\mysqladmin.exe -u root shutdown
+```
+
+On Mac/Linux, `Ctrl+C` the PHP server and `mysqladmin -u root shutdown` (or
+`brew services stop mysql` / `sudo service mysql stop`, matching however
+you started it).
+
 ### Logging in without setting up real billing
 
 Two accounts get created by the seed:
@@ -59,7 +75,7 @@ Two accounts get created by the seed:
   `01812345678`, OTP `123456`, at `/login` — skips straight to `/app`.
 
 The billing gateway defaults to a mock implementation, so you don't need
-real the carrier billing provider credentials to test any of this. OTPs actually get generated and
+real carrier billing credentials to test any of this. OTPs actually get generated and
 written to `storage/logs/otp-*.log`, or you can just always type `123456`.
 Want to see a failed subscription? Use a number ending in `00` (simulates
 low balance) or `99` (hard failure). Note: retrying the same number the

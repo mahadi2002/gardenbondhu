@@ -12,11 +12,11 @@ use App\Services\AuditService;
 use App\Services\GatewayFactory;
 
 /**
- * Inbound the carrier billing provider callbacks.
+ * Inbound carrier billing callbacks.
  *
  * Verify → record (idempotent on event_id) → respond 200 IMMEDIATELY → queue.
  * The state change is applied by queue_worker.php, never inline: a slow write
- * here would make the carrier billing provider retry and the event would be applied twice.
+ * here would make the provider retry and the event would be applied twice.
  */
 final class WebhookController extends Controller
 {

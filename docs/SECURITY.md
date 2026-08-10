@@ -44,8 +44,8 @@ Session ID gets regenerated on login and on any role change.
 ## CSRF
 
 Every POST/PUT/DELETE checks a per-session token. The one exception is the
-the carrier billing provider webhook, which obviously can't carry a session token since it's not
-a browser making the request — that's verified by signature and IP
+carrier billing webhook, which obviously can't carry a session token since
+it's not a browser making the request — that's verified by signature and IP
 allowlist instead.
 
 ## Rate limiting
@@ -89,5 +89,5 @@ and no screen anywhere shows a full phone number. Optional IP allowlist via
 ## Before this goes live for real
 
 See TODO.md — fresh encryption keys, delete the seeded test accounts, real
-the carrier billing provider credentials, an actual security scan against a staging copy, and a
-backup restore that's been tested at least once, not just assumed to work.
+carrier billing credentials, an actual security scan against a staging copy,
+and a backup restore that's been tested at least once, not just assumed to work.

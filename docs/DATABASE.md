@@ -55,8 +55,8 @@ tracks what's already applied in a `migrations` table.
   combination (e.g. `otp_request:0:ip:<hash>`).
 - **`audit_log`** — who did what, when. Never stores a full phone number or
   an OTP code, only hashes/prefixes.
-- **`webhook_events`** — every the carrier billing provider callback we've ever received, keyed by
-  their event ID so a retried webhook applies exactly once.
+- **`webhook_events`** — every carrier billing callback we've ever received,
+  keyed by their event ID so a retried webhook applies exactly once.
 - **`jobs`** — a bare-bones queue. Right now the only job type is applying a
   webhook event after it's already been acknowledged.
 

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS subscriptions (
   id                 BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id            BIGINT UNSIGNED NOT NULL,
-  carrier_sub_ref     VARCHAR(128)    DEFAULT NULL COMMENT 'subscriber reference from SDP',
+  carrier_sub_ref    VARCHAR(128)    DEFAULT NULL COMMENT 'subscriber reference from the carrier billing provider',
   status             ENUM('pending','active','grace','expired','unsubscribed') NOT NULL DEFAULT 'pending',
   daily_amount       DECIMAL(6,2)    NOT NULL DEFAULT 2.78,
   started_at         DATETIME        DEFAULT NULL,

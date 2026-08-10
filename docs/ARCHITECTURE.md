@@ -78,8 +78,8 @@ having the hash. See `App\Core\Crypto`.
 two implementations — `MockGateway` for local dev (generates real OTPs,
 simulates charge success/failure based on the phone number's last two
 digits) and `CarrierGateway` for production, which nobody outside this one
-class knows exists. If the carrier billing provider' actual API turns out to look nothing like
-what's stubbed in there, only that file changes.
+class knows exists. If the carrier billing provider's actual API turns out
+to look nothing like what's stubbed in there, only that file changes.
 
 **Uploaded images never touch the web root.** They land in `storage/uploads/`
 and get served back through `MediaController`, re-encoded through GD on the
@@ -94,7 +94,7 @@ don't double-process anything:
 - `charge_cycle.php` — hourly, charges whatever subscriptions are due
 - `queue_worker.php` — every minute, drains the `jobs` table (right now
   that's just applying webhook events after they've already been
-  acknowledged, so the carrier billing provider isn't kept waiting on a slow DB write)
+  acknowledged, so the billing provider isn't kept waiting on a slow DB write)
 - `care_tasks.php` — daily, generates the next week of watering/fertilizing
   tasks for everyone's garden
 - `cleanup.php` — daily, purges old rate-limit rows, expired OTPs, stale

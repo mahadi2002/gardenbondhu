@@ -23,9 +23,9 @@ final class GatewayFactory
         }
 
         return self::$instance = match ($driver) {
-            'mock'   => new MockGateway(),
+            'mock'    => new MockGateway(),
             'carrier' => new CarrierGateway(),
-            default  => throw new RuntimeException('Unknown CARRIER_DRIVER: ' . $driver),
+            default   => throw new RuntimeException('Unknown CARRIER_DRIVER: ' . $driver),
         };
     }
 

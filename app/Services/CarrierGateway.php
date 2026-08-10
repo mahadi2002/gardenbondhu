@@ -10,15 +10,15 @@ use App\Support\Operators;
 
 /**
  * Production gateway. Every response is normalised inside this class, so no
- * other file in the project knows the carrier billing provider exists — swap providers later and
- * this is the only file that has to change.
+ * other file in the project knows which carrier billing provider is behind
+ * it — swap providers later and this is the only file that has to change.
  *
- * When the developer-portal docs arrive, only the constants below and the
- * three payload/response mapping methods at the bottom change.
+ * When the provider's developer-portal docs arrive, only the constants below
+ * and the three payload/response mapping methods at the bottom change.
  */
 final class CarrierGateway implements SubscriptionGateway
 {
-    // ── TODO: fill from the carrier billing provider developer portal (the carrier billing provider's developer portal → your app → API) ──
+    // ── TODO: fill from the carrier billing provider's developer portal ──
     private const EP_OTP_SEND   = '/{{TODO_otp_send_path}}';
     private const EP_OTP_VERIFY = '/{{TODO_otp_verify_path}}';
     private const EP_CHARGE     = '/{{TODO_charge_path}}';
@@ -225,7 +225,7 @@ final class CarrierGateway implements SubscriptionGateway
         return is_array($decoded) ? $decoded : [];
     }
 
-    /** the carrier billing provider generally expects the international form without a '+'. */
+    /** Carrier billing APIs generally expect the international form without a '+'. */
     private function msisdnForApi(string $msisdn): string
     {
         return 'tel:88' . (string) Operators::normalize($msisdn);

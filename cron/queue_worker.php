@@ -6,7 +6,7 @@ declare(strict_types=1);
  *
  * The only job type today is webhook.apply — applying a carrier billing callback is
  * deferred here so WebhookController can respond 200 immediately; a slow
- * inline write would make the carrier billing provider retry and double-apply the event.
+ * inline write would make the provider retry and double-apply the event.
  *
  * Cron entry:
  *   * * * * *  /usr/local/bin/php /home/USER/gardenbondhu/cron/queue_worker.php
@@ -91,7 +91,7 @@ function applyJob(string $job, array $payload): void
 }
 
 /**
- * Interpret a stored the carrier billing provider event and drive the subscription state machine.
+ * Interpret a stored carrier billing event and drive the subscription state machine.
  * Every branch is defensive: an unrecognised or already-processed event is
  * logged and left alone rather than guessed at.
  */

@@ -35,7 +35,7 @@ Then:
 4. Add the four cron entries — each script has the exact crontab line in a
    comment at the top of the file.
 5. `APP_ENV=production`, `APP_DEBUG=false`, `CARRIER_DRIVER=carrier` once you
-   actually have the carrier billing provider credentials. The app refuses to boot if you set
+   actually have carrier billing credentials. The app refuses to boot if you set
    `APP_ENV=production` while still on the mock driver or with debug on —
    that's intentional, not a bug to work around.
 
