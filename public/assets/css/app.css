@@ -372,13 +372,13 @@ blockquote {
    number rounded to the nearest step, not an inline style="" (the CSP has
    no unsafe-inline and never will). Used by the confidence bar, the admin
    charge trend chart, and the progress ring. */
-.w-pct-0    { width: 0%; }    .w-pct-5   { width: 5%; }    .w-pct-10  { width: 10%; }
-.w-pct-15   { width: 15%; }   .w-pct-20  { width: 20%; }   .w-pct-25  { width: 25%; }
-.w-pct-30   { width: 30%; }   .w-pct-35  { width: 35%; }   .w-pct-40  { width: 40%; }
-.w-pct-45   { width: 45%; }   .w-pct-50  { width: 50%; }   .w-pct-55  { width: 55%; }
-.w-pct-60   { width: 60%; }   .w-pct-65  { width: 65%; }   .w-pct-70  { width: 70%; }
-.w-pct-75   { width: 75%; }   .w-pct-80  { width: 80%; }   .w-pct-85  { width: 85%; }
-.w-pct-90   { width: 90%; }   .w-pct-95  { width: 95%; }   .w-pct-100 { width: 100%; }
+.w-pct-0    { width: 0%;   --pct: 0;    }  .w-pct-5   { width: 5%;   --pct: .05; }  .w-pct-10  { width: 10%;  --pct: .1;  }
+.w-pct-15   { width: 15%;  --pct: .15;  }  .w-pct-20  { width: 20%;  --pct: .2;  }  .w-pct-25  { width: 25%;  --pct: .25; }
+.w-pct-30   { width: 30%;  --pct: .3;   }  .w-pct-35  { width: 35%;  --pct: .35; }  .w-pct-40  { width: 40%;  --pct: .4;  }
+.w-pct-45   { width: 45%;  --pct: .45;  }  .w-pct-50  { width: 50%;  --pct: .5;  }  .w-pct-55  { width: 55%;  --pct: .55; }
+.w-pct-60   { width: 60%;  --pct: .6;   }  .w-pct-65  { width: 65%;  --pct: .65; }  .w-pct-70  { width: 70%;  --pct: .7;  }
+.w-pct-75   { width: 75%;  --pct: .75;  }  .w-pct-80  { width: 80%;  --pct: .8;  }  .w-pct-85  { width: 85%;  --pct: .85; }
+.w-pct-90   { width: 90%;  --pct: .9;   }  .w-pct-95  { width: 95%;  --pct: .95; }  .w-pct-100 { width: 100%; --pct: 1;   }
 
 .h-pct-0    { height: 2px; }  .h-pct-5   { height: 5%; }   .h-pct-10  { height: 10%; }
 .h-pct-15   { height: 15%; }  .h-pct-20  { height: 20%; }  .h-pct-25  { height: 25%; }
@@ -458,6 +458,12 @@ th { font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
 .btn--block { width: 100%; }
 .btn--sm { padding: .45em .9em; font-size: var(--step--1); }
 .btn--lg { padding: .9em 1.8em; font-size: var(--step-1); }
+
+/* .btn--sm's own padding falls short of a 44px touch target — fine with a
+   mouse, not fine on a phone (e.g. the Account page's Unsubscribe button). */
+@media (max-width: 899px) {
+  .btn--sm { min-height: 44px; padding-top: .75em; padding-bottom: .75em; }
+}
 
 /* --------------------------------------------------------------------------
    6. Cards, chips, badges
@@ -1155,7 +1161,17 @@ legend { font-weight: 600; font-size: var(--step--1); padding-inline: .4rem; }
   font-weight: 600;
 }
 .confidence__bar { width: 70px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
-.confidence__fill { height: 100%; background: var(--leaf); border-radius: inherit; transition: width var(--dur-slow) var(--ease-out); }
+/* Reuses the .w-pct-N steps for their --pct custom property, not their width —
+   scaling a transform is composited, animating width is not. */
+.confidence__fill {
+  width: 100%;
+  height: 100%;
+  background: var(--leaf);
+  border-radius: inherit;
+  transform: scaleX(var(--pct, 1));
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
 .confidence--high .confidence__fill { background: var(--gradient-leaf); }
 .confidence--medium .confidence__fill { background: var(--gradient-marigold); }
 .confidence--low .confidence__fill { background: var(--ink-soft); }

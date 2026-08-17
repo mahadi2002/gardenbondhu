@@ -29,7 +29,7 @@ $statusLabels = ['pending' => 'যাচাইয়ের অপেক্ষা
 <div class="card">
   <p class="pre-line"><?= e((string) $question['body']) ?></p>
   <?php if (!empty($question['image'])): ?>
-    <img class="rounded-s" src="/media/<?= e(ImageService::toToken((string) $question['image'])) ?>" alt="" loading="lazy">
+    <img class="rounded-s" src="/media/<?= e(ImageService::toToken((string) $question['image'])) ?>" alt="প্রশ্নের সাথে যুক্ত ছবি" loading="lazy">
   <?php endif; ?>
 </div>
 

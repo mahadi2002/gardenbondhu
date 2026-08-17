@@ -15,7 +15,7 @@ $this->layout('layouts/admin', ['title' => (string) $question['title']]);
 <div class="card">
   <p class="pre-line"><?= e((string) $question['body']) ?></p>
   <?php if (!empty($question['image'])): ?>
-    <img class="max-w-xs rounded-s" src="/media/<?= e(ImageService::toToken((string) $question['image'])) ?>" alt="">
+    <img class="max-w-xs rounded-s" src="/media/<?= e(ImageService::toToken((string) $question['image'])) ?>" alt="প্রশ্নের সাথে যুক্ত ছবি">
   <?php endif; ?>
 </div>
 
