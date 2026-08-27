@@ -70,7 +70,9 @@ the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
 ## Admin (`/admin/*`)
 
 Separate login (email+password, not phone+OTP — admins might not have a
-Robi number). Standard CRUD for plants, problems, guides, and Q&A
+Robi number), with optional TOTP 2FA — `/admin/login/verify` after password
+if the admin has enrolled it, self-service enroll/disable at
+`/admin/security`. Standard CRUD for plants, problems, guides, and Q&A
 moderation, a users list that only ever shows the last 4 digits of a phone
 number, a contact-form inbox (`/admin/contact`), and an audit log viewer.
 Nothing exotic — see `app/Controllers/Admin/` if you need the specifics.

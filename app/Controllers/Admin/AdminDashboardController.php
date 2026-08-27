@@ -9,31 +9,23 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Repositories\ContactRepo;
 use App\Repositories\GuideRepo;
-use App\Repositories\OperatorRepo;
 use App\Repositories\PlantRepo;
 use App\Repositories\ProblemRepo;
 use App\Repositories\QuestionRepo;
-use App\Repositories\SubscriptionRepo;
 use App\Repositories\UserRepo;
 
 final class AdminDashboardController extends Controller
 {
     public function index(Request $request): Response
     {
-        $subs  = new SubscriptionRepo();
         $users = new UserRepo();
 
         return $this->view('admin/dashboard', [
-            'activeSubs'     => $users->countActive(),
-            'newUsers7d'     => $users->countNewSince(7),
-            'chargesToday'   => $subs->chargeTotalsToday(),
-            'statusBreakdown' => $subs->statusBreakdown(),
-            'failures'       => $subs->recentFailures(10),
+            'activeUsers'      => $users->countByStatus('active'),
+            'newUsers7d'       => $users->countNewSince(7),
             'pendingQuestions' => (new QuestionRepo())->pendingCount(),
-            'newContacts'    => (new ContactRepo())->newCount(),
-            'byOperator'     => (new OperatorRepo())->activeByOperator(),
-            'trend'          => (new OperatorRepo())->chargeTrend(14),
-            'content'        => [
+            'newContacts'      => (new ContactRepo())->newCount(),
+            'content'          => [
                 'plants'   => (new PlantRepo())->publishedCount(),
                 'problems' => (new ProblemRepo())->publishedCount(),
                 'guides'   => (new GuideRepo())->publishedCount(),

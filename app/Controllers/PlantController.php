@@ -9,12 +9,10 @@ use App\Core\Response;
 use App\Repositories\PlantRepo;
 
 /**
- * Public and gated routes render the SAME view with an $isSubscribed flag —
- * one template, so the free and paid experience can never quietly drift apart.
- *
- * The paywall is enforced by not SELECTing body_bn at all for a non-subscriber
- * — the paid text never enters PHP memory, let alone the HTML. A view-source
- * check can't leak what was never fetched.
+ * Public and gated routes render the SAME view with an $isLoggedIn flag —
+ * one template, so the free-preview and full-account experience can never
+ * quietly drift apart. Full content (soil mix, fertilizer notes, etc.) only
+ * renders once a viewer is logged in — free registration, not a paywall.
  */
 final class PlantController extends Controller
 {
@@ -45,7 +43,7 @@ final class PlantController extends Controller
         $filters = $this->filtersFrom($request);
 
         return $this->view('plants/finder', [
-            'isSubscribed' => true,
+            'isLoggedIn'   => true,
             'inApp'        => true,
             'filters'      => $filters,
             'categories'   => $repo->categories(),
@@ -62,7 +60,7 @@ final class PlantController extends Controller
         $perPage = 24;
 
         return $this->view('plants/index', [
-            'isSubscribed' => $inApp || $this->isSubscribed(),
+            'isLoggedIn'   => $inApp || $this->isLoggedIn(),
             'inApp'        => $inApp,
             'filters'      => $filters,
             'categories'   => $repo->categories(),
@@ -75,13 +73,13 @@ final class PlantController extends Controller
 
     private function renderShow(string $slug, bool $inApp): Response
     {
-        // The gated route has already passed RequireSubscription, so $inApp
-        // implies access. The public route re-checks the DB for a signed-in user
-        // who happens to be subscribed, so they never hit a paywall they paid for.
-        $isSubscribed = $inApp || $this->isSubscribed();
+        // The gated route has already passed RequireAuth, so $inApp implies
+        // logged in. The public route re-checks the session for a signed-in
+        // visitor, so they never hit the free-preview cut on their own account.
+        $isLoggedIn = $inApp || $this->isLoggedIn();
 
         $repo  = new PlantRepo();
-        $plant = $repo->findBySlug($slug, $isSubscribed);
+        $plant = $repo->findBySlug($slug);
 
         if ($plant === null) {
             $this->notFound();
@@ -90,12 +88,12 @@ final class PlantController extends Controller
         $repo->incrementViews((int) $plant['id']);
 
         return $this->view('plants/show', [
-            'isSubscribed' => $isSubscribed,
-            'inApp'        => $inApp,
-            'plant'        => $plant,
-            'seasons'      => $repo->seasonsFor((int) $plant['id']),
-            'problems'     => $repo->problemsFor((int) $plant['id']),
-            'related'      => $repo->related((int) $plant['id'], $plant['category_id'] === null ? null : (int) $plant['category_id']),
+            'isLoggedIn' => $isLoggedIn,
+            'inApp'      => $inApp,
+            'plant'      => $plant,
+            'seasons'    => $repo->seasonsFor((int) $plant['id']),
+            'problems'   => $repo->problemsFor((int) $plant['id']),
+            'related'    => $repo->related((int) $plant['id'], $plant['category_id'] === null ? null : (int) $plant['category_id']),
         ]);
     }
 

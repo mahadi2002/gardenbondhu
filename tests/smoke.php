@@ -11,9 +11,13 @@ require APP_ROOT . '/app/bootstrap.php';
 
 use App\Core\Crypto;
 use App\Core\Csrf;
+use App\Core\Db;
 use App\Core\Markdown;
 use App\Core\Validator;
-use App\Support\Operators;
+use App\Repositories\PlantRepo;
+use App\Repositories\ProblemRepo;
+use App\Repositories\UserRepo;
+use App\Support\Totp;
 
 $failures = 0;
 
@@ -50,25 +54,12 @@ check('token check passes for the real token', Csrf::check($token));
 check('token check fails for a wrong token', !Csrf::check('wrong'));
 check('token check fails for null', !Csrf::check(null));
 
-fwrite(STDOUT, "\n== Operators ==\n");
-check('normalizes 8801XXXXXXXXX', Operators::normalize('8801712345678') === '01712345678');
-check('normalizes +8801XXXXXXXXX', Operators::normalize('+8801812345678') === '01812345678');
-check('rejects short numbers', Operators::normalize('012345') === null);
-check('018 detected as robi', Operators::detect('01812345678') === 'robi');
-check('016 detected as airtel', Operators::detect('01612345678') === 'airtel');
-check('017 detected as grameenphone', Operators::detect('01712345678') === 'grameenphone');
-check('robi is allowed', Operators::isAllowed('01812345678'));
-check('airtel is allowed', Operators::isAllowed('01612345678'));
-check('grameenphone is not allowed', !Operators::isAllowed('01712345678'));
-check('mask hides the middle', Operators::mask('01712345678') === '01712****78');
-
 fwrite(STDOUT, "\n== Validator ==\n");
-$v = Validator::make(['msisdn' => '01712345678'], ['msisdn' => 'required|msisdn']);
-check('valid msisdn passes', $v->passes());
+$v = Validator::make(['email' => 'demo@kishalay.test'], ['email' => 'required|email']);
+check('valid email passes', $v->passes());
 
-$v2 = Validator::make(['msisdn' => '123'], ['msisdn' => 'required|msisdn']);
-check('invalid msisdn fails', $v2->fails());
-check('invalid msisdn has a Bangla message', str_contains((string) $v2->firstError(), 'সংখ্যার'));
+$v2 = Validator::make(['email' => 'not-an-email'], ['email' => 'required|email']);
+check('invalid email fails', $v2->fails());
 
 fwrite(STDOUT, "\n== Markdown ==\n");
 $html = Markdown::render("# শিরোনাম\n\nএকটি **গুরুত্বপূর্ণ** লাইন।\n\n- ক\n- খ");
@@ -76,6 +67,74 @@ check('renders heading', str_contains($html, '<h2>শিরোনাম</h2>'));
 check('renders bold', str_contains($html, '<strong>গুরুত্বপূর্ণ</strong>'));
 check('renders list', str_contains($html, '<li>ক</li>'));
 check('strips raw script tags', !str_contains(Markdown::render('<script>alert(1)</script>'), '<script>'));
+
+fwrite(STDOUT, "\n== Totp ==\n");
+$totpSecret = Totp::generateSecret();
+check('generated secret is base32 (A-Z2-7)', preg_match('/^[A-Z2-7]+$/', $totpSecret) === 1);
+
+$now = time();
+check('a freshly generated code verifies against its own secret', Totp::verify($totpSecret, Totp::code($totpSecret, $now), $now));
+check('the wrong code is rejected', !Totp::verify($totpSecret, '000000', $now));
+check('a non-numeric code is rejected', !Totp::verify($totpSecret, 'abcdef', $now));
+check('one step of clock drift (+30s) still verifies', Totp::verify($totpSecret, Totp::code($totpSecret, $now), $now + 30));
+check('two steps of clock drift (+60s) is rejected', !Totp::verify($totpSecret, Totp::code($totpSecret, $now), $now + 61));
+
+// RFC 6238 Appendix B's own SHA-1 test vector: ASCII secret "12345678901234567890"
+// (base32: GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ) at Unix time 59 produces the 8-digit
+// TOTP "94287082" — our 6-digit truncation is that same value's last 6 digits.
+check(
+    'matches the RFC 6238 SHA-1 test vector',
+    Totp::code('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', 59) === '287082'
+);
+
+fwrite(STDOUT, "\n== Repositories & auth (email + password) ==\n");
+
+// Only the connection attempt is guarded — a real assertion bug below should
+// fail loudly, not get silently relabeled as "no database".
+$pdo = null;
+try {
+    $pdo = Db::pdo();
+} catch (\Throwable $e) {
+    fwrite(STDOUT, "  SKIP  no working database connection (" . $e->getMessage() . ") — run `php database/migrate.php --fresh` first.\n");
+}
+
+if ($pdo !== null) {
+    $pdo->beginTransaction();
+
+    try {
+        // Every logged-in user gets full content now — no paywall gating left
+        // to test, so this just confirms the content actually round-trips.
+        $plantSlug = 'smoke-test-plant-' . bin2hex(random_bytes(4));
+        $plantRepo = new PlantRepo();
+        $plantRepo->save(null, [
+            'slug' => $plantSlug, 'name_bn' => 'পরীক্ষা গাছ', 'body_bn' => 'বিস্তারিত তথ্য',
+            'difficulty' => 'easy', 'space_type' => 'pot', 'sunlight' => 'partial',
+            'water_need' => 'medium', 'toxic_to_pets' => 0, 'is_published' => 1,
+        ]);
+        $plant = $plantRepo->findBySlug($plantSlug);
+        check('PlantRepo returns full content', $plant !== null && ($plant['body_bn'] ?? null) === 'বিস্তারিত তথ্য');
+
+        $problemSlug = 'smoke-test-problem-' . bin2hex(random_bytes(4));
+        $problemRepo = new ProblemRepo();
+        $problemRepo->save(null, [
+            'slug' => $problemSlug, 'name_bn' => 'পরীক্ষা সমস্যা', 'type' => 'pest', 'severity' => 'low',
+            'organic_remedy_bn' => 'প্রতিকার', 'is_published' => 1,
+        ]);
+        $problem = $problemRepo->findBySlug($problemSlug);
+        check('ProblemRepo returns full content', $problem !== null && ($problem['organic_remedy_bn'] ?? null) === 'প্রতিকার');
+
+        $email = 'smoke-test-' . bin2hex(random_bytes(4)) . '@example.test';
+        $userRepo = new UserRepo();
+        $user = $userRepo->create($email, password_hash('correct horse', PASSWORD_DEFAULT));
+        check('UserRepo::create() persists the email', $userRepo->findByEmail($email)['email'] === $email);
+
+        $forAuth = $userRepo->findForAuth($email);
+        check('findForAuth() returns a verifiable password hash', password_verify('correct horse', (string) $forAuth['password_hash']));
+    } finally {
+        // Never persist test fixtures — roll back regardless of pass/fail.
+        $pdo->rollBack();
+    }
+}
 
 fwrite(STDOUT, "\n" . ($failures === 0 ? "All checks passed.\n" : "$failures check(s) FAILED.\n"));
 exit($failures === 0 ? 0 : 1);

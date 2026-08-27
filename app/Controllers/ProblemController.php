@@ -43,33 +43,33 @@ final class ProblemController extends Controller
         $perPage = 24;
 
         return $this->view('problems/index', [
-            'isSubscribed' => $inApp || $this->isSubscribed(),
-            'inApp'        => $inApp,
-            'filters'      => $filters,
-            'problems'     => $repo->filter($filters, $perPage, ($page - 1) * $perPage),
-            'total'        => $repo->countFiltered($filters),
-            'page'         => $page,
-            'perPage'      => $perPage,
+            'isLoggedIn' => $inApp || $this->isLoggedIn(),
+            'inApp'      => $inApp,
+            'filters'    => $filters,
+            'problems'   => $repo->filter($filters, $perPage, ($page - 1) * $perPage),
+            'total'      => $repo->countFiltered($filters),
+            'page'       => $page,
+            'perPage'    => $perPage,
         ]);
     }
 
     private function renderShow(string $slug, bool $inApp): Response
     {
-        $isSubscribed = $inApp || $this->isSubscribed();
+        $isLoggedIn = $inApp || $this->isLoggedIn();
 
         $repo    = new ProblemRepo();
-        $problem = $repo->findBySlug($slug, $isSubscribed);
+        $problem = $repo->findBySlug($slug);
 
         if ($problem === null) {
             $this->notFound();
         }
 
         return $this->view('problems/show', [
-            'isSubscribed' => $isSubscribed,
-            'inApp'        => $inApp,
-            'problem'      => $problem,
-            'symptoms'     => $repo->symptomsFor((int) $problem['id']),
-            'plants'       => $repo->plantsFor((int) $problem['id']),
+            'isLoggedIn' => $isLoggedIn,
+            'inApp'      => $inApp,
+            'problem'    => $problem,
+            'symptoms'   => $repo->symptomsFor((int) $problem['id']),
+            'plants'     => $repo->plantsFor((int) $problem['id']),
         ]);
     }
 }

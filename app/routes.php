@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * The route table. Format: [method, path, 'Controller@action', [middleware]].
  *
- * Middleware keys: csrf | guest | auth | sub | admin | rl:<bucket>
+ * Middleware keys: csrf | guest | auth | admin | rl:<bucket>
  * SecurityHeaders is applied globally in public/index.php, not per route.
  *
  * Order matters: literal paths must precede {slug} patterns that would also match
@@ -16,6 +16,7 @@ return [
 
     // ── Public ──────────────────────────────────────────────────────────
     ['GET',  '/',                    'HomeController@index',          []],
+    ['POST', '/diagnose',            'HomeController@diagnoseDemo',   ['csrf', 'rl:diagnose_demo']],
     ['GET',  '/privacy',             'HomeController@privacy',        []],
     ['GET',  '/terms',               'HomeController@terms',          []],
     ['GET',  '/about',               'HomeController@about',          []],
@@ -34,63 +35,66 @@ return [
     // Uploaded images are never web-accessible; they are served through PHP.
     ['GET',  '/media/{slug}',        'MediaController@show',          []],
 
-    // ── Auth (mobile OTP) ────────────────────────────────────────────────
-    ['GET',  '/subscribe',           'AuthController@phoneForm',      ['guest']],
-    ['POST', '/subscribe/otp',       'AuthController@requestOtp',     ['guest', 'csrf', 'rl:otp_request']],
-    ['GET',  '/subscribe/verify',    'AuthController@otpForm',        ['guest']],
-    ['POST', '/subscribe/verify',    'AuthController@verifyOtp',      ['guest', 'csrf', 'rl:otp_verify']],
-    ['POST', '/subscribe/resend',    'AuthController@resendOtp',      ['guest', 'csrf', 'rl:otp_request']],
-    ['GET',  '/login',               'AuthController@login',          ['guest']],
+    // ── Auth (email + password) ────────────────────────────────────────
+    ['GET',  '/register',            'AuthController@registerForm',   ['guest']],
+    ['POST', '/register',            'AuthController@register',       ['guest', 'csrf', 'rl:register']],
+    ['GET',  '/login',               'AuthController@loginForm',      ['guest']],
+    ['POST', '/login',               'AuthController@login',          ['guest', 'csrf', 'rl:login']],
     ['POST', '/logout',              'AuthController@logout',         ['auth', 'csrf']],
+    ['GET',  '/forgot-password',     'AuthController@forgotPasswordForm', ['guest']],
+    ['POST', '/forgot-password',     'AuthController@forgotPassword', ['guest', 'csrf', 'rl:password_reset']],
+    ['GET',  '/reset-password/{slug}', 'AuthController@resetPasswordForm', ['guest']],
+    ['POST', '/reset-password/{slug}', 'AuthController@resetPassword',     ['guest', 'csrf', 'rl:password_reset']],
 
-    // ── Gated app ───────────────────────────────────────────────────────
-    ['GET',  '/app',                       'DashboardController@index',   ['auth', 'sub']],
-    ['GET',  '/app/plants',                'PlantController@appIndex',    ['auth', 'sub']],
-    ['GET',  '/app/plants/finder',         'PlantController@finder',      ['auth', 'sub']],
-    ['GET',  '/app/plants/{slug}',         'PlantController@appShow',     ['auth', 'sub']],
-    ['GET',  '/app/problems',              'ProblemController@appIndex',  ['auth', 'sub']],
-    ['GET',  '/app/problems/{slug}',       'ProblemController@appShow',   ['auth', 'sub']],
-    ['GET',  '/app/guides',                'GuideController@appIndex',    ['auth', 'sub']],
-    ['GET',  '/app/guides/{slug}',         'GuideController@appShow',     ['auth', 'sub']],
+    // ── Gated app (any logged-in user — no billing gate) ──────────────────
+    ['GET',  '/app',                       'DashboardController@index',   ['auth']],
+    ['GET',  '/app/plants',                'PlantController@appIndex',    ['auth']],
+    ['GET',  '/app/plants/finder',         'PlantController@finder',      ['auth']],
+    ['GET',  '/app/plants/{slug}',         'PlantController@appShow',     ['auth']],
+    ['GET',  '/app/problems',              'ProblemController@appIndex',  ['auth']],
+    ['GET',  '/app/problems/{slug}',       'ProblemController@appShow',   ['auth']],
+    ['GET',  '/app/guides',                'GuideController@appIndex',    ['auth']],
+    ['GET',  '/app/guides/{slug}',         'GuideController@appShow',     ['auth']],
 
-    ['GET',  '/app/diagnose',              'DiagnoseController@wizard',   ['auth', 'sub']],
-    ['POST', '/app/diagnose',              'DiagnoseController@result',   ['auth', 'sub', 'csrf']],
+    ['GET',  '/app/diagnose',              'DiagnoseController@wizard',   ['auth']],
+    ['POST', '/app/diagnose',              'DiagnoseController@result',   ['auth', 'csrf']],
 
-    ['GET',  '/app/calendar',              'CalendarController@index',    ['auth', 'sub']],
-    ['GET',  '/app/tools',                 'ToolController@index',        ['auth', 'sub']],
-    ['POST', '/app/tools/water',           'ToolController@water',        ['auth', 'sub', 'csrf']],
-    ['POST', '/app/tools/fertilizer',      'ToolController@fertilizer',   ['auth', 'sub', 'csrf']],
-    ['POST', '/app/tools/pot',             'ToolController@pot',          ['auth', 'sub', 'csrf']],
+    ['GET',  '/app/calendar',              'CalendarController@index',    ['auth']],
+    ['GET',  '/app/tools',                 'ToolController@index',        ['auth']],
+    ['POST', '/app/tools/water',           'ToolController@water',        ['auth', 'csrf']],
+    ['POST', '/app/tools/fertilizer',      'ToolController@fertilizer',   ['auth', 'csrf']],
+    ['POST', '/app/tools/pot',             'ToolController@pot',          ['auth', 'csrf']],
 
-    ['GET',  '/app/garden',                'GardenController@index',      ['auth', 'sub']],
-    ['GET',  '/app/garden/add',            'GardenController@createForm', ['auth', 'sub']],
-    ['POST', '/app/garden',                'GardenController@store',      ['auth', 'sub', 'csrf']],
-    ['GET',  '/app/garden/{id}',           'GardenController@show',       ['auth', 'sub']],
-    ['POST', '/app/garden/{id}',           'GardenController@update',     ['auth', 'sub', 'csrf']],
-    ['POST', '/app/garden/{id}/delete',    'GardenController@destroy',    ['auth', 'sub', 'csrf']],
-    ['POST', '/app/garden/task/{id}/done', 'GardenController@completeTask', ['auth', 'sub', 'csrf']],
+    ['GET',  '/app/garden',                'GardenController@index',      ['auth']],
+    ['GET',  '/app/garden/add',            'GardenController@createForm', ['auth']],
+    ['POST', '/app/garden',                'GardenController@store',      ['auth', 'csrf']],
+    ['GET',  '/app/garden/{id}',           'GardenController@show',       ['auth']],
+    ['POST', '/app/garden/{id}',           'GardenController@update',     ['auth', 'csrf']],
+    ['POST', '/app/garden/{id}/delete',    'GardenController@destroy',    ['auth', 'csrf']],
+    ['POST', '/app/garden/task/{id}/done', 'GardenController@completeTask', ['auth', 'csrf']],
 
-    ['GET',  '/app/qa',                    'QaController@index',          ['auth', 'sub']],
-    ['GET',  '/app/qa/ask',                'QaController@askForm',        ['auth', 'sub']],
-    ['POST', '/app/qa',                    'QaController@store',          ['auth', 'sub', 'csrf', 'rl:qa_post']],
-    ['GET',  '/app/qa/{id}',               'QaController@show',           ['auth', 'sub']],
-    ['POST', '/app/qa/{id}/answer',        'QaController@answer',         ['auth', 'sub', 'csrf']],
+    ['GET',  '/app/qa',                    'QaController@index',          ['auth']],
+    ['GET',  '/app/qa/ask',                'QaController@askForm',        ['auth']],
+    ['POST', '/app/qa',                    'QaController@store',          ['auth', 'csrf', 'rl:qa_post']],
+    ['GET',  '/app/qa/{id}',               'QaController@show',           ['auth']],
+    ['POST', '/app/qa/{id}/answer',        'QaController@answer',         ['auth', 'csrf']],
 
-    // ── Account (auth only — reachable while expired, so billing can be fixed) ──
+    // ── Account ─────────────────────────────────────────────────────────
     ['GET',  '/account',             'AccountController@index',           ['auth']],
-    ['GET',  '/account/unsubscribe', 'AccountController@unsubscribeForm', ['auth']],
-    ['POST', '/account/unsubscribe', 'AccountController@unsubscribe',     ['auth', 'csrf']],
     ['POST', '/account/delete',      'AccountController@destroy',         ['auth', 'csrf']],
-    ['GET',  '/expired',             'AccountController@expired',         ['auth']],
-
-    // ── Webhooks (no CSRF — signature + IP allowlist instead) ───────────
-    ['POST', '/webhooks/carrier',    'WebhookController@carrier',         []],
 
     // ── Admin ───────────────────────────────────────────────────────────
     ['GET',  '/admin/login',         'Admin/AdminAuthController@form',    []],
     ['POST', '/admin/login',         'Admin/AdminAuthController@login',   ['csrf', 'rl:admin_login']],
+    ['GET',  '/admin/login/verify',  'Admin/AdminAuthController@verifyForm', []],
+    ['POST', '/admin/login/verify',  'Admin/AdminAuthController@verify',  ['csrf', 'rl:admin_totp']],
     ['POST', '/admin/logout',        'Admin/AdminAuthController@logout',  ['admin', 'csrf']],
     ['GET',  '/admin',               'Admin/AdminDashboardController@index', ['admin']],
+
+    ['GET',  '/admin/security',              'Admin/AdminSecurityController@index',        ['admin']],
+    ['GET',  '/admin/security/totp/setup',   'Admin/AdminSecurityController@setup',        ['admin']],
+    ['POST', '/admin/security/totp/confirm', 'Admin/AdminSecurityController@confirm',      ['admin', 'csrf', 'rl:admin_totp']],
+    ['POST', '/admin/security/totp/disable', 'Admin/AdminSecurityController@disable',      ['admin', 'csrf']],
 
     ['GET',  '/admin/plants',            'Admin/AdminPlantController@index',   ['admin']],
     ['GET',  '/admin/plants/new',        'Admin/AdminPlantController@form',    ['admin']],

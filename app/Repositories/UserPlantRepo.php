@@ -25,6 +25,26 @@ final class UserPlantRepo
         );
     }
 
+    /**
+     * Same as forUser(), plus the next pending watering date for each plant —
+     * what the dashboard's garden-health widget draws its ring from.
+     */
+    public function forUserWithSchedule(int $userId, int $limit = 4): array
+    {
+        return Db::all(
+            'SELECT up.*, p.name_bn AS plant_name_bn, p.slug AS plant_slug, p.water_need,
+                    p.water_interval_days, p.hero_image,
+                    (SELECT MIN(t.due_on) FROM care_tasks t
+                      WHERE t.user_plant_id = up.id AND t.task = "water" AND t.done_at IS NULL) AS next_water_due
+               FROM user_plants up
+               LEFT JOIN plants p ON p.id = up.plant_id
+              WHERE up.user_id = ? AND up.is_archived = 0
+              ORDER BY up.created_at DESC
+              LIMIT ' . max(1, $limit),
+            [$userId]
+        );
+    }
+
     public function find(int $id, int $userId): ?array
     {
         return Db::first(
@@ -41,8 +61,8 @@ final class UserPlantRepo
     public function create(int $userId, array $data): int
     {
         return Db::insert(
-            'INSERT INTO user_plants (user_id, plant_id, nickname, planted_on, location, pot_size_cm, notes)
-             VALUES (?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO user_plants (user_id, plant_id, nickname, planted_on, location, pot_size_cm, notes, photo)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [
                 $userId,
                 $data['plant_id'] ?: null,
@@ -51,15 +71,17 @@ final class UserPlantRepo
                 $data['location'],
                 $data['pot_size_cm'] ?: null,
                 $data['notes'] ?: null,
+                $data['photo'] ?: null,
             ]
         );
     }
 
+    /** $data['photo'] is expected to already be resolved by the caller (new upload or the existing value kept as-is). */
     public function update(int $id, int $userId, array $data): bool
     {
         return Db::exec(
             'UPDATE user_plants
-                SET nickname = ?, planted_on = ?, location = ?, pot_size_cm = ?, notes = ?, is_archived = ?
+                SET nickname = ?, planted_on = ?, location = ?, pot_size_cm = ?, notes = ?, is_archived = ?, photo = ?
               WHERE id = ? AND user_id = ?',
             [
                 $data['nickname'] ?: null,
@@ -68,6 +90,7 @@ final class UserPlantRepo
                 $data['pot_size_cm'] ?: null,
                 $data['notes'] ?: null,
                 (int) ($data['is_archived'] ?? 0),
+                $data['photo'] ?: null,
                 $id,
                 $userId,
             ]

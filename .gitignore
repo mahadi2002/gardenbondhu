@@ -14,3 +14,8 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Frontend build tooling — public/assets/css/app.css, public/assets/js/app.js
+# and public/assets/js/diagnose.js are committed build OUTPUT (see README),
+# only node_modules itself is excluded.
+node_modules/

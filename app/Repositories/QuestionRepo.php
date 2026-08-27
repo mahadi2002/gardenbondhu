@@ -21,7 +21,7 @@ final class QuestionRepo
 
         return Db::all(
             'SELECT q.id, q.title, q.body, q.image, q.status, q.answer_count, q.created_at,
-                    u.display_name, u.msisdn_last4, u.role,
+                    u.display_name, u.role,
                     p.name_bn AS plant_name_bn
                FROM questions q
                JOIN users u ON u.id = q.user_id
@@ -37,7 +37,7 @@ final class QuestionRepo
     public function find(int $id, ?int $viewerId = null): ?array
     {
         return Db::first(
-            'SELECT q.*, u.display_name, u.msisdn_last4, u.role, p.name_bn AS plant_name_bn, p.slug AS plant_slug
+            'SELECT q.*, u.display_name, u.role, p.name_bn AS plant_name_bn, p.slug AS plant_slug
                FROM questions q
                JOIN users u ON u.id = q.user_id
                LEFT JOIN plants p ON p.id = q.plant_id
@@ -49,7 +49,7 @@ final class QuestionRepo
     public function findForAdmin(int $id): ?array
     {
         return Db::first(
-            'SELECT q.*, u.msisdn_last4, u.role FROM questions q
+            'SELECT q.*, u.email, u.role FROM questions q
                JOIN users u ON u.id = q.user_id WHERE q.id = ?',
             [$id]
         );
@@ -68,7 +68,7 @@ final class QuestionRepo
     {
         return Db::all(
             'SELECT a.id, a.body, a.is_expert, a.is_accepted, a.upvotes, a.created_at,
-                    u.display_name, u.msisdn_last4, u.role, ad.name AS admin_name
+                    u.display_name, u.role, ad.name AS admin_name
                FROM answers a
                LEFT JOIN users u ON u.id = a.user_id
                LEFT JOIN admins ad ON ad.id = a.admin_id
@@ -115,7 +115,7 @@ final class QuestionRepo
     public function moderationQueue(string $status = 'pending', int $limit = 50): array
     {
         return Db::all(
-            'SELECT q.id, q.title, q.status, q.answer_count, q.created_at, q.image, u.msisdn_last4
+            'SELECT q.id, q.title, q.status, q.answer_count, q.created_at, q.image, u.email
                FROM questions q JOIN users u ON u.id = q.user_id
               WHERE q.status = ?
               ORDER BY q.created_at

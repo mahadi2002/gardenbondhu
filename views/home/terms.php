@@ -4,25 +4,11 @@
     <h1>Terms &amp; Conditions</h1>
     <p class="muted">সর্বশেষ হালনাগাদ: <?= e(bn_date(date('Y-m-d'))) ?></p>
 
-    <h2>Subscription ও Billing</h2>
+    <h2>Account</h2>
     <p>
-      বাগানবন্ধু একটি Daily Micro-Subscription Service, যার মূল্য দিনে ৳<?= e($dailyAmount) ?>
-      (Incl. VAT, SD &amp; SC)। এটি শুধুমাত্র Robi ও Airtel নম্বরের জন্য Direct Carrier Billing-এর
-      মাধ্যমে পরিচালিত হয়। Subscribe করলে প্রতিদিন আপনার Mobile Account থেকে টাকা কাটা হবে,
-      যতক্ষণ না আপনি Unsubscribe করেন।
-    </p>
-
-    <h2>Unsubscribe</h2>
-    <p>
-      যেকোনো সময় Account পেজ থেকে, অথবা STOP লিখে <?= e($shortcode) ?> নম্বরে SMS করে
-      Unsubscribe করা যায়। Unsubscribe করার পর থেকে আর কোনো Charge হবে না।
-    </p>
-
-    <h2>ব্যালেন্স কম থাকলে</h2>
-    <p>
-      কোনো দিনের Charge ব্যর্থ হলে ৪৮ ঘণ্টা পর্যন্ত Access চালু থাকে (Grace Period)।
-      এর মধ্যে Recharge করলে Access নিজে থেকেই চালু থাকবে। ৪৮ ঘণ্টার মধ্যে Recharge না
-      হলে Subscription বন্ধ হয়ে যাবে।
+      বাগানবন্ধু সম্পূর্ণ Free — কোনো Subscription বা Billing নেই। Email আর Password দিয়ে
+      Register করলেই সব কনটেন্ট সাথে সাথে খুলে যায়। যেকোনো সময় Account পেজ থেকে নিজের
+      Account স্থায়ীভাবে মুছে ফেলা যায়।
     </p>
 
     <h2>কনটেন্ট সম্পর্কে</h2>

@@ -1,11 +1,11 @@
 <?php
 /**
- * One template for both the public teaser and the gated page. When
- * $isSubscribed is false, body_bn was never selected — there is nothing
- * in this HTML to un-hide.
+ * One template for both the public teaser and the logged-in page. The full
+ * detail sections only render when $isLoggedIn is true — free registration,
+ * not a paywall.
  *
  * @var array $plant, $seasons, $problems, $related
- * @var bool  $isSubscribed, $inApp
+ * @var bool  $isLoggedIn, $inApp
  */
 use App\Core\Markdown;
 use App\Core\View;
@@ -69,7 +69,7 @@ $problemBase = $inApp ? '/app/problems/' : '/problems/';
     <p class="lede"><?= e((string) $plant['summary_bn']) ?></p>
   </div>
 
-  <?php if ($isSubscribed): ?>
+  <?php if ($isLoggedIn): ?>
     <?php if (!empty($plant['body_bn'])): ?>
       <div class="prose"><?= Markdown::render((string) $plant['body_bn']) ?></div>
     <?php endif; ?>
@@ -104,7 +104,7 @@ $problemBase = $inApp ? '/app/problems/' : '/problems/';
         বানাবেন — পুরোটা লেখা আছে।
       </p>
     </div>
-    <?= View::partial('partials/paywall', get_defined_vars() + ['what' => 'এই গাছের পূর্ণ যত্ন-নির্দেশিকা']) ?>
+    <?= View::partial('partials/register-wall', get_defined_vars() + ['what' => 'এই গাছের পূর্ণ যত্ন-নির্দেশিকা']) ?>
   <?php endif; ?>
 
   <?php if ($seasons !== []): ?>

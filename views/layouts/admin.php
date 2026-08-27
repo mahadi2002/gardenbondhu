@@ -11,10 +11,11 @@ $links = [
     '/admin/users'    => 'ব্যবহারকারী',
     '/admin/contact'  => 'Contact Inbox',
     '/admin/logs'     => 'Audit log',
+    '/admin/security' => 'Security',
 ];
 ?>
 <!doctype html>
-<html lang="bn" data-theme="<?= e($theme ?? 'light') ?>">
+<html lang="bn" data-theme="<?= e($theme ?? 'light') ?>" data-season="<?= e((string) ($season ?? 6)) ?>">
 <head>
 <?= View::partial('partials/head', get_defined_vars()) ?>
 </head>

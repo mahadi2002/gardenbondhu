@@ -36,11 +36,6 @@ final class Response
         return new self('', $status, ['Location' => $to]);
     }
 
-    public static function empty(int $status = 204): self
-    {
-        return new self('', $status, []);
-    }
-
     /** Raw binary payload (uploaded images served through PHP). */
     public static function file(string $bytes, string $contentType): self
     {

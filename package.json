@@ -1,0 +1,14 @@
+{
+  "name": "gardenbondhu-assets",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Frontend build for GardenBondhu — CSS/JS only, minified into public/assets/. Not required at deploy time; built output is committed.",
+  "scripts": {
+    "dev": "vite build --watch --mode development",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^8.2.2"
+  }
+}

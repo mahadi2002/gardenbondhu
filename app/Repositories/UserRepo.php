@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Core\Crypto;
 use App\Core\Db;
-use App\Support\Operators;
 
 final class UserRepo
 {
-    private const COLUMNS = 'id, msisdn_hash, msisdn_last4, operator, display_name, district,
+    private const COLUMNS = 'id, email, display_name, district,
                              role, status, locale, created_at, last_login_at, anonymized_at';
 
     public function find(int $id): ?array
@@ -17,47 +15,30 @@ final class UserRepo
         return Db::first('SELECT ' . self::COLUMNS . ' FROM users WHERE id = ?', [$id]);
     }
 
-    public function findByMsisdn(string $msisdn): ?array
+    public function findByEmail(string $email): ?array
     {
-        return Db::first(
-            'SELECT ' . self::COLUMNS . ' FROM users WHERE msisdn_hash = ?',
-            [Crypto::blindIndex((string) Operators::normalize($msisdn))]
-        );
+        return Db::first('SELECT ' . self::COLUMNS . ' FROM users WHERE email = ?', [$email]);
     }
 
-    /**
-     * Create on first subscribe, or return the existing row for a returning
-     * number. The users row is never duplicated and never deleted — billing
-     * history lives in the subscriptions table, keyed off this one row.
-     */
-    public function findOrCreate(string $msisdn): array
+    /** Only the login flow needs the password hash — never selected otherwise. */
+    public function findForAuth(string $email): ?array
     {
-        $normalized = (string) Operators::normalize($msisdn);
-        $existing   = $this->findByMsisdn($normalized);
+        return Db::first('SELECT id, email, password_hash, status FROM users WHERE email = ?', [$email]);
+    }
 
-        if ($existing !== null) {
-            return $existing;
-        }
-
+    public function create(string $email, string $passwordHash): array
+    {
         $id = Db::insert(
-            'INSERT INTO users (msisdn_hash, msisdn_enc, msisdn_last4, operator, status)
-             VALUES (?, ?, ?, ?, "pending")',
-            [
-                Crypto::blindIndex($normalized),
-                Crypto::encrypt($normalized),
-                Operators::last4($normalized),
-                (string) Operators::detect($normalized),
-            ]
+            'INSERT INTO users (email, password_hash, status) VALUES (?, ?, "active")',
+            [$email, $passwordHash]
         );
 
         return (array) $this->find($id);
     }
 
-    /** Decrypt on demand — only the charging cron and support tooling need this. */
-    public function msisdnFor(int $userId): ?string
+    public function updatePassword(int $userId, string $passwordHash): void
     {
-        $enc = Db::value('SELECT msisdn_enc FROM users WHERE id = ?', [$userId]);
-        return $enc === null ? null : Crypto::decrypt((string) $enc);
+        Db::exec('UPDATE users SET password_hash = ? WHERE id = ?', [$passwordHash, $userId]);
     }
 
     public function touchLogin(int $userId): void
@@ -85,16 +66,15 @@ final class UserRepo
 
     /**
      * Irreversibly strip the identifiers while keeping the row, so foreign
-     * keys and billing history stay intact — this is how "delete my account"
-     * actually gets implemented without breaking every table that references it.
+     * keys stay intact — this is how "delete my account" actually gets
+     * implemented without breaking every table that references it.
      */
     public function anonymize(int $userId): void
     {
         Db::exec(
             'UPDATE users
-                SET msisdn_hash = SHA2(CONCAT("anon:", id, ":", UUID()), 256),
-                    msisdn_enc = "",
-                    msisdn_last4 = "0000",
+                SET email = CONCAT("anon+", id, "-", SUBSTRING(SHA2(UUID(), 256), 1, 12), "@deleted.invalid"),
+                    password_hash = "",
                     display_name = NULL,
                     district = NULL,
                     status = "blocked",
@@ -104,43 +84,26 @@ final class UserRepo
         );
     }
 
-    /** Admin search — by last 4 digits only. Full numbers are never displayed. */
-    public function searchByLast4(string $last4, int $limit = 50): array
+    /** Admin search — by email substring. */
+    public function searchByEmail(string $q, int $limit = 50): array
     {
         return Db::all(
-            'SELECT u.id, u.msisdn_last4, u.operator, u.role, u.status, u.created_at, u.last_login_at,
-                    s.status AS sub_status, s.current_period_end
-               FROM users u
-               LEFT JOIN subscriptions s ON s.id = (
-                    SELECT id FROM subscriptions WHERE user_id = u.id ORDER BY id DESC LIMIT 1
-               )
-              WHERE u.msisdn_last4 = ?
-              ORDER BY u.id DESC
-              LIMIT ' . (int) $limit,
-            [$last4]
+            'SELECT ' . self::COLUMNS . ' FROM users WHERE email LIKE ?
+              ORDER BY id DESC LIMIT ' . (int) $limit,
+            ['%' . $q . '%']
         );
     }
 
     public function recent(int $limit = 50): array
     {
         return Db::all(
-            'SELECT u.id, u.msisdn_last4, u.operator, u.role, u.status, u.created_at, u.last_login_at,
-                    s.status AS sub_status, s.current_period_end
-               FROM users u
-               LEFT JOIN subscriptions s ON s.id = (
-                    SELECT id FROM subscriptions WHERE user_id = u.id ORDER BY id DESC LIMIT 1
-               )
-              ORDER BY u.id DESC
-              LIMIT ' . (int) $limit
+            'SELECT ' . self::COLUMNS . ' FROM users ORDER BY id DESC LIMIT ' . (int) $limit
         );
     }
 
-    public function countActive(): int
+    public function countByStatus(string $status): int
     {
-        return (int) Db::value(
-            'SELECT COUNT(DISTINCT user_id) FROM subscriptions
-              WHERE status IN ("active","grace") AND current_period_end > NOW()'
-        );
+        return (int) Db::value('SELECT COUNT(*) FROM users WHERE status = ?', [$status]);
     }
 
     public function countNewSince(int $days): int

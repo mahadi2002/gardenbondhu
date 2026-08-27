@@ -8,14 +8,13 @@ use App\Core\Db;
 final class GuideRepo
 {
     private const TEASER_COLUMNS = 'g.id, g.slug, g.title_bn, g.category, g.excerpt_bn,
-        g.cover_image, g.read_minutes, g.is_premium, g.published_at, g.view_count';
+        g.cover_image, g.read_minutes, g.published_at, g.view_count';
 
-    public function findBySlug(string $slug, bool $withBody): ?array
+    /** Full detail page — one query, every column. No teaser/is_premium split any more. */
+    public function findBySlug(string $slug): ?array
     {
-        $columns = self::TEASER_COLUMNS . ($withBody ? ', g.body_bn' : '');
-
         return Db::first(
-            'SELECT ' . $columns . ' FROM guides g WHERE g.slug = ? AND g.is_published = 1',
+            'SELECT g.* FROM guides g WHERE g.slug = ? AND g.is_published = 1',
             [$slug]
         );
     }

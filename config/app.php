@@ -18,13 +18,6 @@ return [
         'secure'         => (bool) env('SESSION_SECURE', true),
     ],
 
-    'otp' => [
-        'length'          => (int) env('OTP_LENGTH', 6),
-        'ttl'             => (int) env('OTP_TTL_SECONDS', 300),
-        'max_attempts'    => (int) env('OTP_MAX_ATTEMPTS', 3),
-        'resend_cooldown' => (int) env('OTP_RESEND_COOLDOWN', 60),
-    ],
-
     'uploads' => [
         'max_bytes' => (int) env('UPLOAD_MAX_BYTES', 4194304),
         'path'      => env('UPLOAD_PATH', 'storage/uploads'),
@@ -42,11 +35,8 @@ return [
     'support_email' => env('SUPPORT_EMAIL', ''),
 
     'retention' => [
-        'otp_hours'      => (int) env('RETAIN_OTP_HOURS', 24),
         'ratelimit_days' => (int) env('RETAIN_RATELIMIT_DAYS', 7),
-        'webhook_days'   => (int) env('RETAIN_WEBHOOK_DAYS', 90),
         'session_days'   => (int) env('RETAIN_SESSION_DAYS', 30),
         'audit_days'     => (int) env('RETAIN_AUDIT_DAYS', 365),
-        'anonymize_days' => (int) env('ANONYMIZE_AFTER_DAYS', 180),
     ],
 ];

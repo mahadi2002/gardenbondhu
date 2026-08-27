@@ -25,19 +25,16 @@
       </div>
 
       <div>
-        <h4>Billing</h4>
-        <p class="small">Robi &amp; Airtel Mobile Billing</p>
+        <h4>অ্যাকাউন্ট</h4>
+        <ul class="footer-links small">
+          <li><a href="/register">Register করুন</a></li>
+          <li><a href="/login">Login করুন</a></li>
+        </ul>
       </div>
     </div>
 
-    <p class="charge-warning">
-      ⚠️ Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC) আপনার Robi /Airtel Account
-      থেকে কাটা হবে। Unsubscribe করতে STOP লিখে <?= e($shortcode) ?> নম্বরে SMS করুন।
-    </p>
-
     <div class="footer-bottom">
       <span>© <?= e(date('Y')) ?> <?= e($appName) ?> — সর্বস্বত্ব সংরক্ষিত</span>
-      <span class="mono">Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC)</span>
     </div>
   </div>
 </footer>

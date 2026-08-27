@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: gardenbondhu
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_mysql, mbstring, gd, curl, openssl
+          coverage: none
+
+      - name: Lint every PHP file (php -l)
+        run: find . -name '*.php' -not -path './storage/*' -print0 | xargs -0 -n1 -P4 php -l
+
+      - name: Configure .env for CI
+        run: |
+          cp .env.example .env
+          php -r '$k = base64_encode(random_bytes(32)); $p = base64_encode(random_bytes(32));
+            $env = file_get_contents(".env");
+            $env = preg_replace("/^APP_KEY=.*/m", "APP_KEY=$k", $env);
+            $env = preg_replace("/^HASH_PEPPER=.*/m", "HASH_PEPPER=$p", $env);
+            $env = preg_replace("/^DB_USER=.*/m", "DB_USER=root", $env);
+            $env = preg_replace("/^DB_PASS=.*/m", "DB_PASS=root", $env);
+            $env = preg_replace("/^DB_MIGRATE_USER=.*/m", "DB_MIGRATE_USER=root", $env);
+            $env = preg_replace("/^DB_MIGRATE_PASS=.*/m", "DB_MIGRATE_PASS=root", $env);
+            file_put_contents(".env", $env);'
+
+      - name: Run migrations (schema only, no content seed)
+        run: php database/migrate.php --fresh
+
+      - name: Run smoke tests
+        run: php tests/smoke.php

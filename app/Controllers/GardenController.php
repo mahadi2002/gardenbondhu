@@ -8,9 +8,11 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Core\Validator;
+use App\Exceptions\HttpException;
 use App\Repositories\PlantRepo;
 use App\Repositories\UserPlantRepo;
 use App\Services\CareScheduler;
+use App\Services\ImageService;
 
 /**
  * "আমার বাগান". Every query is scoped by user_id inside the repository;
@@ -51,6 +53,19 @@ final class GardenController extends Controller
         $userId = (int) $this->currentUserId();
         $repo   = new UserPlantRepo();
 
+        $photo = null;
+        $file  = $request->file('photo');
+        if ($file !== null) {
+            try {
+                $photo = (new ImageService())->store($file);
+            } catch (HttpException $e) {
+                Session::flash('_errors', ['photo' => [$e->getMessage()]]);
+                $validator->flash();
+                Session::notify('error', $e->getMessage());
+                return $this->redirect('/app/garden/add');
+            }
+        }
+
         $id = $repo->create($userId, [
             'plant_id'    => $validator->get('plant_id'),
             'nickname'    => $validator->get('nickname'),
@@ -58,6 +73,7 @@ final class GardenController extends Controller
             'location'    => $validator->get('location'),
             'pot_size_cm' => $validator->get('pot_size_cm'),
             'notes'       => $validator->get('notes'),
+            'photo'       => $photo,
         ]);
 
         // Generate the first week of tasks straight away, so the schedule is
@@ -93,6 +109,7 @@ final class GardenController extends Controller
     public function update(Request $request, string $id): Response
     {
         $userId    = (int) $this->currentUserId();
+        $repo      = new UserPlantRepo();
         $validator = $this->validate($request);
 
         if ($validator->fails()) {
@@ -101,13 +118,34 @@ final class GardenController extends Controller
             return $this->redirect('/app/garden/' . (int) $id);
         }
 
-        $updated = (new UserPlantRepo())->update((int) $id, $userId, [
+        $existing = $repo->find((int) $id, $userId);
+        if ($existing === null) {
+            $this->notFound();
+        }
+
+        // Keep the existing photo unless a new one was uploaded — the edit
+        // form never clears it on its own.
+        $photo = $existing['photo'] ?? null;
+        $file  = $request->file('photo');
+        if ($file !== null) {
+            try {
+                $photo = (new ImageService())->store($file);
+            } catch (HttpException $e) {
+                Session::flash('_errors', ['photo' => [$e->getMessage()]]);
+                $validator->flash();
+                Session::notify('error', $e->getMessage());
+                return $this->redirect('/app/garden/' . (int) $id);
+            }
+        }
+
+        $updated = $repo->update((int) $id, $userId, [
             'nickname'    => $validator->get('nickname'),
             'planted_on'  => $validator->get('planted_on'),
             'location'    => $validator->get('location'),
             'pot_size_cm' => $validator->get('pot_size_cm'),
             'notes'       => $validator->get('notes'),
             'is_archived' => $request->str('is_archived') === '1' ? 1 : 0,
+            'photo'       => $photo,
         ]);
 
         if (!$updated) {

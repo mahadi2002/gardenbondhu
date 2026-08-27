@@ -2,6 +2,8 @@
 /**
  * @var array $plant, $tasks, $plants, $locations
  */
+use App\Services\ImageService;
+
 $this->layout('layouts/app', ['title' => (string) ($plant['nickname'] ?: $plant['plant_name_bn'] ?: 'আমার গাছ')]);
 
 $taskLabels = (array) config('content.care_task');
@@ -13,10 +15,26 @@ $taskLabels = (array) config('content.care_task');
   <?php endif; ?>
 </div>
 
+<?php if (!empty($plant['photo'])): ?>
+  <div class="plant-photo max-w-sm mb-1-5">
+    <img src="/media/<?= e(ImageService::toToken((string) $plant['photo'])) ?>" alt="আমার <?= e((string) ($plant['nickname'] ?: $plant['plant_name_bn'] ?: 'গাছ')) ?>" loading="lazy">
+  </div>
+<?php elseif (!empty($plant['hero_image'])): ?>
+  <div class="plant-photo plant-photo--stock max-w-sm mb-1-5">
+    <img src="<?= e((string) $plant['hero_image']) ?>" alt="" loading="lazy">
+    <span class="plant-photo__tag small">ক্যাটালগের ছবি</span>
+  </div>
+<?php endif; ?>
+
 <div class="grid grid--2">
-  <form class="card" method="post" action="/app/garden/<?= e((string) $plant['id']) ?>" data-guard>
+  <form class="card" method="post" action="/app/garden/<?= e((string) $plant['id']) ?>" enctype="multipart/form-data" data-guard>
     <?= csrf_field() ?>
     <h2 class="card__title">তথ্য সম্পাদনা</h2>
+
+    <div class="field">
+      <label for="e-photo">নিজের গাছের ছবি বদলান (ঐচ্ছিক)</label>
+      <input class="input" type="file" id="e-photo" name="photo" accept="image/jpeg,image/png,image/webp">
+    </div>
 
     <div class="field">
       <label for="e-nick">ডাকনাম</label>

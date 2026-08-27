@@ -2,15 +2,29 @@
 
 ## Running the tests
 
-There's no PHPUnit here, just `tests/smoke.php` — a plain CLI script that
-checks the stuff that would be genuinely bad to get wrong silently:
-encrypt/decrypt round-tripping, the blind-index hash being stable and not
-looking reversible, CSRF token comparison, phone number normalization
-against real BTRC prefixes, and the Markdown renderer actually stripping
-raw script tags. Run it with `php tests/smoke.php`. If you add something to
-`Crypto`, `Csrf`, `Validator`, or `Operators`, add a check here too — this
-file is meant to be the "did I just break something load-bearing" gate, not
-exhaustive coverage.
+There's no PHPUnit here, just `tests/smoke.php` — a plain CLI script using
+a hand-rolled `check(string $label, bool $condition)` helper, no assertions
+library. It checks the stuff that would be genuinely bad to get wrong
+silently: encrypt/decrypt round-tripping, the blind-index hash being stable
+and not looking reversible, CSRF token comparison, phone number
+normalization against real BTRC prefixes, the Markdown renderer actually
+stripping raw script tags, TOTP codes against a published RFC 6238 test
+vector, the Repositories never leaking a paid column into a teaser query,
+and the subscription state machine's date math (`renew()` measuring from
+the old period end, `toGrace()`/`expire()` setting the right status and
+timestamps). Run it with `php tests/smoke.php`.
+
+The Repository and SubscriptionService checks need a real database — they
+open a transaction against whatever `.env` points at, insert throwaway
+fixtures, and always roll back, win or lose. No live DB configured? Those
+checks print a `SKIP` line and the rest of the file still runs. CI spins up
+a real MySQL service and runs `php database/migrate.php --fresh` first, so
+they run for real there.
+
+If you add something to `Crypto`, `Csrf`, `Validator`, `Operators`, `Totp`,
+a Repository's teaser/full column split, or `SubscriptionService`, add a
+check here too — this file is meant to be the "did I just break something
+load-bearing" gate, not exhaustive coverage.
 
 ## Conventions, mostly enforced by habit rather than tooling
 
@@ -40,11 +54,9 @@ exhaustive coverage.
   README. Using plain `index.php` with `php -S` means CSS/JS/images all
   404 because the front controller doesn't know how to fall through to a
   static file.
-- MariaDB doesn't have the `ngram` fulltext parser MySQL 8 does. Migration
-  `005` will fail on that one specific `ALTER TABLE` and that's expected —
-  `migrate.php` catches it and moves on, `SearchService` falls back to
-  `LIKE` automatically. Don't "fix" this by trying to force the migration
-  through.
+- Search is `LIKE '%term%'`, permanently — see `SearchService.php` and
+  `005_indexes.sql`. That file is an intentional no-op placeholder now, not
+  a bug to "fix" by adding FULLTEXT back.
 - If you're testing the OTP flow repeatedly from the same machine, you'll
   hit the rate limiter (3 requests/hour, keyed by IP) fast. That's the
   security feature working correctly, not a bug — just

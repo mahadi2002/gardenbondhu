@@ -14,7 +14,6 @@ require __DIR__ . '/_lock.php';
 
 use App\Core\Db;
 use App\Core\Logger;
-use App\Repositories\UserRepo;
 
 if (PHP_SAPI !== 'cli') {
     exit(1);
@@ -28,20 +27,10 @@ if ($release === null) {
 $retention = (array) config('app.retention');
 $report    = [];
 
-$report['otp_requests'] = Db::exec(
-    'DELETE FROM otp_requests WHERE created_at < DATE_SUB(NOW(), INTERVAL ? HOUR)',
-    [(int) $retention['otp_hours']]
-);
-
 $report['rate_limits'] = Db::exec(
     'DELETE FROM rate_limits WHERE window_start < DATE_SUB(NOW(), INTERVAL ? DAY)
        AND (blocked_until IS NULL OR blocked_until < NOW())',
     [(int) $retention['ratelimit_days']]
-);
-
-$report['webhook_events'] = Db::exec(
-    'DELETE FROM webhook_events WHERE created_at < DATE_SUB(NOW(), INTERVAL ? DAY)',
-    [(int) $retention['webhook_days']]
 );
 
 $report['sessions'] = Db::exec(
@@ -54,26 +43,9 @@ $report['audit_log'] = Db::exec(
     [(int) $retention['audit_days']]
 );
 
-// Anonymise users who unsubscribed long ago and never came back.
-$stale = Db::all(
-    'SELECT DISTINCT u.id
-       FROM users u
-       JOIN subscriptions s ON s.user_id = u.id
-      WHERE u.anonymized_at IS NULL
-        AND s.status = "unsubscribed"
-        AND s.cancelled_at < DATE_SUB(NOW(), INTERVAL ? DAY)
-        AND NOT EXISTS (
-              SELECT 1 FROM subscriptions s2
-               WHERE s2.user_id = u.id AND s2.id <> s.id AND s2.created_at > s.cancelled_at
-        )',
-    [(int) $retention['anonymize_days']]
+$report['password_resets'] = Db::exec(
+    'DELETE FROM password_resets WHERE expires_at < DATE_SUB(NOW(), INTERVAL 7 DAY)'
 );
-
-$userRepo = new UserRepo();
-foreach ($stale as $row) {
-    $userRepo->anonymize((int) $row['id']);
-}
-$report['anonymized_users'] = count($stale);
 
 Logger::info('cleanup.done', $report);
 fwrite(STDOUT, "cleanup: " . json_encode($report) . "\n");

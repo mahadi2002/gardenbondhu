@@ -39,38 +39,33 @@ final class GuideController extends Controller
         ], static fn($v): bool => $v !== null);
 
         return $this->view('guides/index', [
-            'isSubscribed' => $inApp || $this->isSubscribed(),
-            'inApp'        => $inApp,
-            'filters'      => $filters,
-            'guides'       => $repo->filter($filters),
-            'total'        => $repo->countFiltered($filters),
+            'isLoggedIn' => $inApp || $this->isLoggedIn(),
+            'inApp'      => $inApp,
+            'filters'    => $filters,
+            'guides'     => $repo->filter($filters),
+            'total'      => $repo->countFiltered($filters),
         ]);
     }
 
     private function renderShow(string $slug, bool $inApp): Response
     {
-        $isSubscribed = $inApp || $this->isSubscribed();
+        $isLoggedIn = $inApp || $this->isLoggedIn();
 
         $repo  = new GuideRepo();
+        $guide = $repo->findBySlug($slug);
 
-        // A guide flagged is_premium = 0 is free for everyone; only then is
-        // body_bn selected for a signed-out reader.
-        $meta = $repo->findBySlug($slug, false);
-        if ($meta === null) {
+        if ($guide === null) {
             $this->notFound();
         }
 
-        $mayReadBody = $isSubscribed || (int) $meta['is_premium'] === 0;
-        $guide       = $mayReadBody ? $repo->findBySlug($slug, true) : $meta;
-
-        $repo->incrementViews((int) $meta['id']);
+        $repo->incrementViews((int) $guide['id']);
 
         return $this->view('guides/show', [
-            'isSubscribed' => $isSubscribed,
-            'mayReadBody'  => $mayReadBody,
-            'inApp'        => $inApp,
-            'guide'        => $guide,
-            'related'      => $repo->latest(3),
+            'isLoggedIn'  => $isLoggedIn,
+            'mayReadBody' => $isLoggedIn,
+            'inApp'       => $inApp,
+            'guide'       => $guide,
+            'related'     => $repo->latest(3),
         ]);
     }
 }

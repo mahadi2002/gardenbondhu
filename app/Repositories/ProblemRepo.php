@@ -7,18 +7,15 @@ use App\Core\Db;
 
 final class ProblemRepo
 {
-    /** Free columns. The remedies are paid and are never selected for a teaser. */
+    /** Listing/card columns — remedies are left out (smaller queries for grids). */
     private const TEASER_COLUMNS = 'p.id, p.slug, p.name_bn, p.name_en, p.type, p.severity,
         p.description_bn, p.identification_bn';
 
-    public function findBySlug(string $slug, bool $withRemedies): ?array
+    /** Full detail page — one query, every column. No teaser/paid split any more. */
+    public function findBySlug(string $slug): ?array
     {
-        $columns = self::TEASER_COLUMNS . ($withRemedies
-            ? ', p.organic_remedy_bn, p.chemical_remedy_bn, p.prevention_bn, p.safety_note_bn'
-            : '');
-
         return Db::first(
-            'SELECT ' . $columns . ' FROM problems p WHERE p.slug = ? AND p.is_published = 1',
+            'SELECT p.* FROM problems p WHERE p.slug = ? AND p.is_published = 1',
             [$slug]
         );
     }

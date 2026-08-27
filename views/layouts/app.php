@@ -5,12 +5,7 @@
  *
  * @var string $content
  */
-use App\Core\Session;
 use App\Core\View;
-use App\Services\SubscriptionService;
-
-$userId      = Session::userId();
-$graceNotice = $userId === null ? null : SubscriptionService::graceNotice($userId);
 
 $sideLinks = [
     'ড্যাশবোর্ড' => [
@@ -40,7 +35,7 @@ $isCurrent = static function (string $href) use ($currentPath): bool {
 };
 ?>
 <!doctype html>
-<html lang="bn" data-theme="<?= e($theme ?? 'light') ?>">
+<html lang="bn" data-theme="<?= e($theme ?? 'light') ?>" data-season="<?= e((string) ($season ?? 6)) ?>">
 <head>
 <?= View::partial('partials/head', get_defined_vars()) ?>
 </head>
@@ -86,13 +81,6 @@ $isCurrent = static function (string $href) use ($currentPath): bool {
     </aside>
 
     <main class="app-main" id="main">
-      <?php if ($graceNotice !== null): ?>
-        <div class="notice notice--warn" role="alert">
-          <span class="notice__icon" aria-hidden="true">⚠</span>
-          <span><?= e($graceNotice) ?></span>
-        </div>
-      <?php endif; ?>
-
       <?= View::partial('partials/flash', ['notice' => $notice ?? null]) ?>
       <?= $content ?>
     </main>

@@ -9,8 +9,8 @@ use SessionHandlerInterface;
  * DB-backed session handler.
  *
  * Storing sessions in MySQL is what makes server-side revocation possible:
- * when a subscription lapses, SubscriptionService deletes the user's rows and
- * an already-open browser loses access on its very next request.
+ * when an account is blocked or deleted, its rows are removed here and an
+ * already-open browser loses access on its very next request.
  *
  * Bound to ua_hash only — Bangladeshi mobile IPs rotate constantly, so IP
  * binding would log real users out every few minutes.
@@ -143,7 +143,7 @@ final class Session implements SessionHandlerInterface
         self::$started = false;
     }
 
-    /** Server-side revocation — used by SubscriptionService and account delete. */
+    /** Server-side revocation — used on account block/delete. */
     public static function revokeAllForUser(int $userId): void
     {
         Db::exec('DELETE FROM sessions WHERE user_id = ?', [$userId]);

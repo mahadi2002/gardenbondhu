@@ -1,7 +1,7 @@
 <?php
 /**
  * @var array $guide, $related
- * @var bool  $isSubscribed, $mayReadBody, $inApp
+ * @var bool  $isLoggedIn, $mayReadBody, $inApp
  */
 use App\Core\Markdown;
 use App\Core\View;
@@ -35,7 +35,7 @@ $guideBase = $inApp ? '/app/guides/' : '/guides/';
   </div>
 
   <?php if (!$mayReadBody): ?>
-    <?= View::partial('partials/paywall', get_defined_vars() + ['what' => 'এই গাইডের পুরো লেখা']) ?>
+    <?= View::partial('partials/register-wall', get_defined_vars() + ['what' => 'এই গাইডের পুরো লেখা']) ?>
   <?php endif; ?>
 
   <?php if ($related !== []): ?>

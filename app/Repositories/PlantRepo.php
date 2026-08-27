@@ -7,21 +7,16 @@ use App\Core\Db;
 
 final class PlantRepo
 {
-    /** Columns safe to send to a non-subscriber. body_bn is deliberately absent. */
+    /** Listing/card columns — body_bn and the other detail-page fields are left out on purpose (smaller queries for grids). */
     private const TEASER_COLUMNS = 'p.id, p.slug, p.name_bn, p.name_en, p.scientific_name, p.category_id,
         p.difficulty, p.space_type, p.sunlight, p.water_need, p.growth_habit, p.pot_size_cm,
         p.toxic_to_pets, p.summary_bn, p.hero_image, p.view_count, p.harvest_days';
 
-    public function findBySlug(string $slug, bool $withBody): ?array
+    /** Full detail page — one query, every column. No teaser/paid split any more. */
+    public function findBySlug(string $slug): ?array
     {
-        $columns = self::TEASER_COLUMNS . ($withBody
-            ? ', p.body_bn, p.soil_mix, p.fertilizer_note, p.pruning_note, p.propagation,
-                 p.water_interval_days, p.fertilizer_interval_days, p.temp_min_c, p.temp_max_c,
-                 p.ph_min, p.ph_max, p.local_names'
-            : '');
-
         return Db::first(
-            'SELECT ' . $columns . ', c.name_bn AS category_bn, c.slug AS category_slug
+            'SELECT p.*, c.name_bn AS category_bn, c.slug AS category_slug
                FROM plants p
                LEFT JOIN plant_categories c ON c.id = p.category_id
               WHERE p.slug = ? AND p.is_published = 1',

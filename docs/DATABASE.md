@@ -20,7 +20,8 @@ tracks what's already applied in a `migrations` table.
   someone if it gets interrupted mid-run.
 - **`otp_requests`** — codes are hashed (`password_hash()`), never stored
   plain, and expire after a few minutes.
-- **`admins`** — separate from `users` entirely. Argon2id passwords.
+- **`admins`** — separate from `users` entirely. Argon2id passwords, optional
+  encrypted TOTP secret for 2FA (see SECURITY.md).
 
 ## Content
 
@@ -46,7 +47,6 @@ tracks what's already applied in a `migrations` table.
   a `user_plants` row.
 - **`questions`**, **`answers`** — Q&A. Questions start `pending` and need
   admin approval before anyone else sees them.
-- **`bookmarks`** — saved plants/problems/guides.
 
 ## Plumbing
 

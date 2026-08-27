@@ -18,14 +18,14 @@ $tabs = ['pending' => 'যাচাইয়ের অপেক্ষায়',
 <?php if ($questions === []): ?>
   <p class="muted">এই তালিকায় কিছু নেই।</p>
 <?php else: ?>
-  <div class="table-wrap">
+  <div class="table-wrap reveal">
     <table>
       <thead><tr><th>শিরোনাম</th><th>User</th><th>উত্তর</th><th>তারিখ</th></tr></thead>
       <tbody>
       <?php foreach ($questions as $q): ?>
         <tr>
           <td><a href="/admin/qa/<?= e((string) $q['id']) ?>"><?= e((string) $q['title']) ?></a></td>
-          <td>01••••<?= e((string) $q['msisdn_last4']) ?></td>
+          <td><?= e((string) $q['email']) ?></td>
           <td class="mono"><?= e(bn_num((int) $q['answer_count'])) ?></td>
           <td class="small mono"><?= e((string) $q['created_at']) ?></td>
         </tr>

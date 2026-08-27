@@ -1,8 +1,7 @@
 # TODO
 
 ## Content
-- Catalog's at 51 plants, 13 problems, 8 guides. Want more like 60/40/20 eventually.
-- Missing problems: fruit fly, cutworm, anthracnose, bacterial wilt, nematode/root-knot.
+- Catalog's at 51 plants, 18 problems, 8 guides. Want more like 60/40/20 eventually.
 - No guides yet under "tools" or a dedicated indoor-plants category.
 - Someone who actually speaks Bangla natively needs to read through all the plant/problem
   copy before this goes live. I wrote it, it should be fine, but "should be fine" isn't
@@ -33,9 +32,9 @@
   email is a nice-to-have heads-up, not the only way to see them.
 
 ## Nice to have, not urgent
-- FULLTEXT search only works on real MySQL — MariaDB doesn't ship the ngram parser,
-  so it silently falls back to LIKE. Fine for now at this content size, would want
-  real fulltext (or something like Meilisearch) if the catalog gets much bigger.
-- Admin TOTP 2FA — spec mentions it as optional, never got to it.
+- Search is LIKE-only, permanently — see SearchService.php and
+  005_indexes.sql. Fine for now at this content size (60/40/20-ish); would
+  want real fulltext (or something like Meilisearch) only if the catalog
+  gets much bigger.
 - SMS care reminders — needs its own SMS quota from the carrier billing provider,
   costs money per message, punting on this until the daily-charge margin can absorb it.

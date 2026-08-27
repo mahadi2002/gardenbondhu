@@ -100,17 +100,6 @@ final class Request
         return $f;
     }
 
-    public function rawBody(): string
-    {
-        return (string) file_get_contents('php://input');
-    }
-
-    public function json(): array
-    {
-        $decoded = json_decode($this->rawBody(), true);
-        return is_array($decoded) ? $decoded : [];
-    }
-
     public function isPost(): bool
     {
         return $this->method === 'POST';
@@ -151,10 +140,5 @@ final class Request
     public function uaHash(): string
     {
         return Crypto::blindIndex('ua:' . $this->userAgent());
-    }
-
-    public function wantsJson(): bool
-    {
-        return str_contains((string) $this->header('accept', ''), 'application/json');
     }
 }

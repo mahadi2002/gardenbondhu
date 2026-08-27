@@ -1,7 +1,7 @@
 <?php
 /**
  * @var array $problems, $filters
- * @var bool  $inApp, $isSubscribed
+ * @var bool  $inApp, $isLoggedIn
  * @var int   $total, $page, $perPage
  */
 use App\Core\View;
@@ -75,8 +75,8 @@ $base = $inApp ? '/app/problems' : '/problems';
   <?php endif; ?>
 <?php endif; ?>
 
-<?php if (!$inApp && !$isSubscribed): ?>
-  <?= View::partial('partials/paywall', get_defined_vars() + ['what' => 'প্রতিটি সমস্যার সমাধান']) ?>
+<?php if (!$inApp && !$isLoggedIn): ?>
+  <?= View::partial('partials/register-wall', get_defined_vars() + ['what' => 'প্রতিটি সমস্যার সমাধান']) ?>
 <?php endif; ?>
 
 <?php if (!$inApp): ?></div></section><?php endif; ?>

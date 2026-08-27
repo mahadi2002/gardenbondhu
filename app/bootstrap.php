@@ -60,13 +60,8 @@ if (strlen((string) config('app.key')) !== 32 || strlen((string) config('app.pep
     $fatal('APP_KEY and HASH_PEPPER must each decode to exactly 32 bytes of base64.');
 }
 
-if ($env === 'production') {
-    if ($isDebug) {
-        $fatal('APP_DEBUG must be false when APP_ENV=production.');
-    }
-    if (config('carrier.driver') === 'mock') {
-        $fatal('CARRIER_DRIVER=mock is blocked when APP_ENV=production.');
-    }
+if ($env === 'production' && $isDebug) {
+    $fatal('APP_DEBUG must be false when APP_ENV=production.');
 }
 
 // ── Storage directories ────────────────────────────────────────────────
@@ -119,6 +114,3 @@ register_shutdown_function(static function (): void {
 
 // ── Values every view can rely on ──────────────────────────────────────
 App\Core\View::share('appName', (string) config('app.name'));
-App\Core\View::share('dailyAmount', number_format((float) config('carrier.amount', 2.78), 2));
-App\Core\View::share('shortcode', (string) config('carrier.sms.shortcode'));
-App\Core\View::share('operatorNote', (string) config('operators.display_note'));

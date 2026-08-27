@@ -43,7 +43,7 @@ final class DashboardController extends Controller
             'doneTodayCount'  => count($doneToday),
             'totalTodayCount' => count($dueToday),
             'plantCount'  => $userPlant->countForUser($userId),
-            'myPlants'    => array_slice($userPlant->forUser($userId), 0, 4),
+            'myPlants'    => $userPlant->forUserWithSchedule($userId, 4),
             'picks'       => (new PlantRepo())->beginnerPicks(4),
             'guides'      => (new GuideRepo())->latest(3),
             'questions'   => array_slice((new QuestionRepo())->feed(4), 0, 4),

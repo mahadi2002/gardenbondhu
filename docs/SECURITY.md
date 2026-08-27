@@ -86,6 +86,15 @@ Argon2id, not phone+OTP). User search only ever works by last-4-digits,
 and no screen anywhere shows a full phone number. Optional IP allowlist via
 `ADMIN_IP_ALLOWLIST` if you want to lock it down further.
 
+Optional TOTP 2FA (`app/Support/Totp.php`, RFC 6238, hand-rolled on
+`hash_hmac` — no dependency) — an admin enrolls it themselves from
+`/admin/security`. Once enrolled, a password-only login lands in a pending
+state (`admin_pending_id` in session, never `admin_id`) until a live code
+also checks out at `/admin/login/verify`; `RequireAdmin` only ever trusts
+`admin_id`. Enrollment requires one live code back before the secret is
+persisted, and disabling it back requires the current password. The secret
+is encrypted at rest with `Crypto` the same way `msisdn_enc` is.
+
 ## Before this goes live for real
 
 See TODO.md — fresh encryption keys, delete the seeded test accounts, real

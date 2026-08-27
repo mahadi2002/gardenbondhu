@@ -1,7 +1,7 @@
 <?php
 /**
  * @var array $guides, $filters
- * @var bool  $inApp, $isSubscribed
+ * @var bool  $inApp, $isLoggedIn
  * @var int   $total
  */
 use App\Core\View;
@@ -46,8 +46,8 @@ $base = $inApp ? '/app/guides' : '/guides';
   </div>
 <?php endif; ?>
 
-<?php if (!$inApp && !$isSubscribed): ?>
-  <?= View::partial('partials/paywall', get_defined_vars() + ['what' => 'গাইডের পুরো লেখা']) ?>
+<?php if (!$inApp && !$isLoggedIn): ?>
+  <?= View::partial('partials/register-wall', get_defined_vars() + ['what' => 'গাইডের পুরো লেখা']) ?>
 <?php endif; ?>
 
 <?php if (!$inApp): ?></div></section><?php endif; ?>

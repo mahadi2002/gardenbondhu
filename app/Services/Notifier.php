@@ -35,6 +35,28 @@ final class Notifier
         }
     }
 
+    /** Password reset link. Sent directly to the account holder, not the admin inbox. */
+    public static function passwordReset(string $to, string $resetUrl): void
+    {
+        if ($to === '') {
+            return;
+        }
+
+        $subject = (string) config('app.name') . ' — Password Reset';
+        $body    = "আপনার " . (string) config('app.name') . " Password Reset করার অনুরোধ এসেছে।\n\n"
+                 . "নিচের লিংকে গিয়ে নতুন Password সেট করুন (১ ঘণ্টার জন্য বৈধ):\n\n{$resetUrl}\n\n"
+                 . "আপনি যদি এই অনুরোধ না করে থাকেন, এই Email উপেক্ষা করুন — কিছুই বদলাবে না।";
+        $headers = 'From: no-reply@' . self::domain() . "\r\nContent-Type: text/plain; charset=UTF-8";
+
+        try {
+            if (!@mail($to, $subject, $body, $headers)) {
+                Logger::warning('notifier.mail_failed', ['to' => $to, 'context' => 'password_reset']);
+            }
+        } catch (\Throwable $e) {
+            Logger::warning('notifier.mail_exception', ['error' => $e->getMessage()]);
+        }
+    }
+
     private static function domain(): string
     {
         $host = parse_url((string) config('app.url'), PHP_URL_HOST);

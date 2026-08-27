@@ -1,7 +1,7 @@
 <?php
 /**
  * The plant finder. Same filter shape as plants/index, but always inside
- * the app shell and always subscribed — this view is never reached signed out.
+ * the app shell and always logged in — this view is never reached signed out.
  *
  * @var array $plants, $categories, $filters
  * @var int   $total

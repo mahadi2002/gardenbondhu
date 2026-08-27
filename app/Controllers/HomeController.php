@@ -13,6 +13,7 @@ use App\Repositories\GuideRepo;
 use App\Repositories\PlantRepo;
 use App\Repositories\ProblemRepo;
 use App\Services\AuditService;
+use App\Services\DiagnosisEngine;
 use App\Services\Notifier;
 use App\Services\SearchService;
 
@@ -20,17 +21,50 @@ final class HomeController extends Controller
 {
     public function index(Request $request): Response
     {
+        return $this->view('home/index', $this->homeData());
+    }
+
+    /**
+     * The landing page's live diagnose demo. Posts here, re-renders the same
+     * landing page with a real result inline — no login wall, no redirect to
+     * a teaser. Anyone can see the tool actually work before registering.
+     */
+    public function diagnoseDemo(Request $request): Response
+    {
+        $engine     = new DiagnosisEngine();
+        $symptomIds = $engine->validSymptomIds($request->arr('symptoms'));
+        $plantId    = $request->int('plant_id') ?: null;
+
+        $demoResults  = [];
+        $demoAttempted = $symptomIds !== [];
+
+        if ($symptomIds !== []) {
+            $demoResults = $engine->diagnose($symptomIds, $plantId, 3);
+            if ($demoResults === [] && $plantId !== null) {
+                $demoResults = $engine->diagnose($symptomIds, null, 3);
+            }
+        }
+
+        return $this->view('home/index', $this->homeData() + [
+            'demoResults'   => $demoResults,
+            'demoAttempted' => $demoAttempted,
+            'demoSelected'  => $symptomIds,
+        ]);
+    }
+
+    private function homeData(): array
+    {
         $plants   = new PlantRepo();
         $problems = new ProblemRepo();
 
-        return $this->view('home/index', [
+        return [
             'symptoms' => $problems->symptomsByBodyPart(),
             'stats'    => [
                 'plants'   => $plants->publishedCount(),
                 'problems' => $problems->publishedCount(),
                 'guides'   => (new GuideRepo())->publishedCount(),
             ],
-        ]);
+        ];
     }
 
     public function privacy(Request $request): Response

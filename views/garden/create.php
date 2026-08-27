@@ -7,8 +7,14 @@ $this->layout('layouts/app', ['title' => 'গাছ যোগ করুন']);
 ?>
 <div class="page-head"><h1>গাছ যোগ করুন</h1></div>
 
-<form class="card max-w-620" method="post" action="/app/garden" data-guard>
+<form class="card max-w-620" method="post" action="/app/garden" enctype="multipart/form-data" data-guard>
   <?= csrf_field() ?>
+
+  <div class="field">
+    <label for="c-photo">নিজের গাছের ছবি (ঐচ্ছিক)</label>
+    <input class="input" type="file" id="c-photo" name="photo" accept="image/jpeg,image/png,image/webp">
+    <p class="small muted mb-0">JPG, PNG বা WEBP, সর্বোচ্চ ৪ MB। ছবি না দিলে ক্যাটালগের ছবি দেখানো হবে।</p>
+  </div>
 
   <div class="field">
     <label for="c-plant">কোন গাছ?</label>

@@ -113,11 +113,6 @@ final class Validator
             'slug' => preg_match('/^[a-z0-9\-]{1,140}$/', $str) === 1
                 ?: $this->fail($field, $label . ' সঠিক নয়।'),
 
-            'array' => is_array($value)
-                ?: $this->fail($field, $label . ' সঠিক নয়।'),
-
-            'array_of_int' => $this->arrayOfInt($field, $label, $value),
-
             default => true,
         };
     }
@@ -131,19 +126,6 @@ final class Validator
                 $field,
                 $label . ' ' . bn_num($min) . ' থেকে ' . bn_num($max) . '-এর মধ্যে হতে হবে।'
             );
-        }
-        return true;
-    }
-
-    private function arrayOfInt(string $field, string $label, mixed $value): bool
-    {
-        if (!is_array($value)) {
-            return $this->fail($field, $label . ' সঠিক নয়।');
-        }
-        foreach ($value as $item) {
-            if (!is_numeric($item)) {
-                return $this->fail($field, $label . ' সঠিক নয়।');
-            }
         }
         return true;
     }

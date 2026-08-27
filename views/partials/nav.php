@@ -28,12 +28,10 @@ $isLoggedIn = \App\Core\Session::userId() !== null;
       <?= csrf_field() ?>
       <button class="btn btn--ghost btn--sm" type="submit">Logout</button>
     </form>
-    <a class="price-badge header-cta" href="/app">অ্যাপে যান</a>
+    <a class="btn btn--accent btn--sm header-cta" href="/app">অ্যাপে যান</a>
   <?php else: ?>
     <a href="/login">লগইন করুন</a>
-    <a class="price-badge header-cta" href="/subscribe" title="Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC)">
-      <span class="per">Daily</span><span class="amount">৳<?= e($dailyAmount) ?></span><span class="vat-note">+VAT</span>
-    </a>
+    <a class="btn btn--accent btn--sm header-cta" href="/register">শুরু করুন</a>
   <?php endif; ?>
 
   <button class="theme-toggle" type="button" data-theme-toggle

@@ -11,9 +11,7 @@ declare(strict_types=1);
  * code was the easy half.
  */
 
-use App\Core\Crypto;
 use App\Core\Db;
-use App\Support\Operators;
 
 /** @var \PDO $pdo defined by migrate.php before this file is required */
 
@@ -684,6 +682,56 @@ $problems = [
         'safety_note_bn' => null,
         'symptoms' => ['fruit-crack' => 4, 'whole-slow' => 3],
     ],
+    [
+        'slug' => 'fruit-fly', 'name_bn' => 'ফলের মাছি', 'name_en' => 'Fruit Fly', 'type' => 'pest', 'severity' => 'high',
+        'description_bn' => 'ফলের মাছি পাকতে-শুরু-করা ফলের ভেতর ডিম পাড়ে, ডিম থেকে বের হওয়া শুককীট ভেতর থেকে ফল নষ্ট করে দেয়। আম, পেয়ারা, শসার মতো ফলে বাংলাদেশে সবচেয়ে বেশি দেখা যায়।',
+        'identification_bn' => 'ফলের গায়ে ছোট ছোট সুচের ফুটোর মতো দাগ দেখা যায় — এখানেই ডিম পাড়া হয়েছে। ফল কাটলে ভেতরে সাদা শুককীট পাওয়া যায়, ফল সময়ের আগেই পচে ঝরে পড়ে।',
+        'organic_remedy_bn' => "১. মিথাইল ইউজেনল ফেরোমোন ফাঁদ বা ঘরে বানানো বোতল-ফাঁদ (মিষ্টি তরল দিয়ে) গাছে ঝুলিয়ে রাখুন।\n২. আক্রান্ত ও ঝরে পড়া ফল প্রতিদিন কুড়িয়ে মাটির নিচে পুঁতে ফেলুন বা ব্যাগে বেঁধে ফেলে দিন — কম্পোস্টে দেবেন না, নাহলে মাছি আবার বের হবে।\n৩. ফল ছোট থাকতেই কাগজ বা কাপড়ের ব্যাগে মুড়ে দিন (Fruit Bagging), মাছি ডিম পাড়তে পারবে না।",
+        'chemical_remedy_bn' => 'স্পিনোস্যাড-ভিত্তিক বেইট স্প্রে সকালে গাছের পাতায়/কাণ্ডে লেবেল অনুযায়ী দিতে পারেন — পুরো গাছে না দিয়ে অল্প জায়গায় দিলেই যথেষ্ট।',
+        'prevention_bn' => 'ফল ধরার মৌসুম শুরুর আগেই ফাঁদ বসিয়ে রাখুন। বাগানের আশেপাশে পড়ে থাকা পাকা/পচা ফল নিয়মিত পরিষ্কার করুন।',
+        'safety_note_bn' => 'ফাঁদ বা স্প্রেতে বিষ থাকে — শিশু ও পোষা প্রাণী থেকে দূরে রাখুন, ফল খাওয়ার আগে লেবেলের অপেক্ষার সময় মেনে চলুন।',
+        'symptoms' => ['fruit-drop' => 8, 'fruit-crack' => 3],
+    ],
+    [
+        'slug' => 'cutworm', 'name_bn' => 'কাটুই পোকা', 'name_en' => 'Cutworm', 'type' => 'pest', 'severity' => 'medium',
+        'description_bn' => 'কাটুই পোকার শুককীট দিনে মাটির নিচে লুকিয়ে থাকে, রাতে বের হয়ে নতুন লাগানো চারার গোড়া কেটে ফেলে দেয়। একরাতেই সুস্থ চারা মাটিতে পড়ে থাকতে দেখা যায়।',
+        'identification_bn' => 'সকালে দেখা যায় আগের দিনের সুস্থ চারা মাটির গোড়ায় কাটা অবস্থায় শুয়ে আছে। গোড়ার মাটি একটু খুঁড়লে মোটা, ধূসর-বাদামি, কুণ্ডলী পাকানো শুককীট পাওয়া যায়।',
+        'organic_remedy_bn' => "১. রাতে টর্চ নিয়ে হাতে করে পোকা কুড়িয়ে ধ্বংস করুন — সবচেয়ে কার্যকর পদ্ধতি।\n২. প্রতিটা চারার গোড়ায় কাগজ বা টিনের ছোট কলার (বেড়া) মাটির ভেতর পুঁতে দিন, পোকা কাণ্ড পর্যন্ত পৌঁছাতে পারবে না।\n৩. গোড়ার চারপাশে কাঠের ছাই বা নিম খৈল ছড়িয়ে দিন।",
+        'chemical_remedy_bn' => 'তীব্র আক্রমণে বিটি (Bacillus thuringiensis)-ভিত্তিক মাটি-স্প্রে চারার গোড়ায় লেবেল অনুযায়ী প্রয়োগ করা যায়।',
+        'prevention_bn' => 'চারা লাগানোর আগে বেড থেকে আগাছা পরিষ্কার করুন — কাটুই পোকা আগাছায় লুকিয়ে থাকে। নতুন লাগানোর পর কয়েক রাত টর্চ দিয়ে পরীক্ষা করুন।',
+        'safety_note_bn' => null,
+        'symptoms' => ['whole-wilting' => 8, 'leaf-drop' => 3],
+    ],
+    [
+        'slug' => 'anthracnose', 'name_bn' => 'অ্যানথ্রাকনোজ', 'name_en' => 'Anthracnose', 'type' => 'fungal', 'severity' => 'high',
+        'description_bn' => 'অ্যানথ্রাকনোজ একটা ছত্রাক রোগ, পাতা-কাণ্ড-ফল সবকিছুতেই কালচে দেবে-যাওয়া দাগ ফেলে। আম, মরিচ, পেয়ারায় বর্ষাকালে বাংলাদেশে সবচেয়ে বেশি দেখা যায়।',
+        'identification_bn' => 'পাতা ও ফলে অনিয়মিত আকারের কালচে-বাদামি দাগ পড়ে, দাগের মাঝখানটা একটু দেবে যায় আর কখনো গোল বলয়ের মতো দেখায়। বেশি আক্রান্ত ফল পচে যায়, পাতা ঝরে পড়ে।',
+        'organic_remedy_bn' => "১. আক্রান্ত পাতা ও ফল সাথে সাথে তুলে ধ্বংস করুন — কম্পোস্টে দেবেন না।\n২. গাছের ডালপালা ছেঁটে বাতাস চলাচলের জায়গা রাখুন, স্যাঁতসেঁতে ভাব কমান।\n৩. পাতলা নিমতেল স্প্রে বা তামা-ভিত্তিক জৈব ছত্রাকনাশক নিয়মিত ব্যবধানে স্প্রে করুন।\n৪. ভেজা গাছে হাত দেবেন না বা কাজ করবেন না — এতে ছত্রাকের বীজ ছড়িয়ে পড়ে।",
+        'chemical_remedy_bn' => 'কপার অক্সিক্লোরাইড বা ম্যানকোজেব-জাতীয় ছত্রাকনাশক লেবেল অনুযায়ী স্প্রে করুন, বিশেষ করে বর্ষা মৌসুমের আগে ও সময়ে।',
+        'prevention_bn' => 'উপর থেকে পানি না দিয়ে গোড়ায় পানি দিন। রোগমুক্ত সুস্থ চারা ব্যবহার করুন, গাছের মধ্যে পর্যাপ্ত ফাঁকা রাখুন।',
+        'safety_note_bn' => 'ছত্রাকনাশক স্প্রে করার পর ফল খাওয়ার আগে লেবেলে বলা অপেক্ষার সময় মেনে চলুন।',
+        'symptoms' => ['leaf-black-spot' => 8, 'leaf-drop' => 4, 'fruit-crack' => 3],
+    ],
+    [
+        'slug' => 'bacterial-wilt', 'name_bn' => 'ব্যাকটেরিয়াল উইল্ট', 'name_en' => 'Bacterial Wilt', 'type' => 'bacterial', 'severity' => 'high',
+        'description_bn' => 'মাটিবাহিত ব্যাকটেরিয়া গাছের পানি বহনকারী নালী বন্ধ করে দেয় — একদম সুস্থ দেখতে গাছ কয়েক দিনের মধ্যে হঠাৎ নেতিয়ে পড়ে। টমেটো, বেগুন, মরিচে বাংলাদেশে সবচেয়ে বেশি দেখা যায়।',
+        'identification_bn' => 'মাটি ভেজা থাকা সত্ত্বেও গাছ হঠাৎ নেতিয়ে পড়ে, সাধারণত নিচের পাতা থেকে শুরু হয়। গোড়ার কাছ থেকে কাণ্ড কেটে এক গ্লাস স্বচ্ছ পানিতে ডোবালে কয়েক মিনিটের মধ্যে দুধের মতো সাদা রস বের হতে দেখা যায় — এটাই নিশ্চিত করার সবচেয়ে সহজ পরীক্ষা।',
+        'organic_remedy_bn' => "১. আক্রান্ত গাছ সাথে সাথে তুলে পুড়িয়ে ফেলুন — কম্পোস্টে দেবেন না, ব্যাকটেরিয়া বছরের পর বছর মাটিতে টিকে থাকতে পারে।\n২. আক্রান্ত জায়গার মাটি স্বচ্ছ পলিথিন দিয়ে ঢেকে কড়া রোদে কয়েক সপ্তাহ রেখে জীবাণুমুক্ত করুন (Soil Solarization)।\n৩. একই জায়গায় অন্তত দুই মৌসুম টমেটো-বেগুন-মরিচ জাতীয় গাছ না লাগিয়ে অন্য ফসল ঘুরিয়ে লাগান।",
+        'chemical_remedy_bn' => null,
+        'prevention_bn' => 'সম্ভব হলে রোগ-প্রতিরোধী জাত ব্যবহার করুন। একই মাটিতে বারবার টমেটো-বেগুন-মরিচ না লাগিয়ে ফসল পরিবর্তন করুন, গাছের গোড়ায় পানি জমতে দেবেন না।',
+        'safety_note_bn' => 'আক্রান্ত গাছের কোনো অংশ কম্পোস্টে দেবেন না বা ফেলে রাখবেন না — মাটির মাধ্যমে অন্য গাছে ছড়িয়ে পড়ে।',
+        'symptoms' => ['whole-wilting' => 9, 'stem-black' => 4],
+    ],
+    [
+        'slug' => 'root-knot-nematode', 'name_bn' => 'রুট-নট নেমাটোড', 'name_en' => 'Root-Knot Nematode', 'type' => 'pest', 'severity' => 'medium',
+        'description_bn' => 'নেমাটোড মাটির অতি ক্ষুদ্র কৃমি, খালি চোখে দেখা যায় না। শিকড়ে ঢুকে গিঁটের মতো ফোলা তৈরি করে, ফলে গাছ ঠিকমতো পানি ও খাবার শোষণ করতে পারে না।',
+        'identification_bn' => 'গাছ ধীরে বাড়ে, পাতা হলুদ হয়ে যায়, দিনের কড়া রোদে মাটি ভেজা থাকা সত্ত্বেও নেতিয়ে পড়ে। গাছ তুলে শিকড় ধুয়ে দেখলে শিকড়ে ছোট ছোট গুটি বা গিঁটের মতো ফোলা অংশ দেখা যায়।',
+        'organic_remedy_bn' => "১. বেশি আক্রান্ত গাছ তুলে ধ্বংস করুন — কম্পোস্টে দেবেন না।\n২. মাটি স্বচ্ছ পলিথিন দিয়ে ঢেকে কড়া রোদে কয়েক সপ্তাহ রেখে জীবাণুমুক্ত করুন।\n৩. লাগানোর আগে মাটিতে নিম খৈল মিশিয়ে দিন।\n৪. গাঁদা ফুল একই জায়গায় ঘুরিয়ে লাগালে নেমাটোড কমে বলে জানা যায়।",
+        'chemical_remedy_bn' => 'তীব্র আক্রমণে মাটি-প্রয়োগ নেমাটিসাইড লেবেল অনুযায়ী ব্যবহার করা যায়, তবে বাসাবাড়ির টব-বাগানে সাধারণত এর দরকার হয় না।',
+        'prevention_bn' => 'আগে আক্রান্ত হয়েছিল এমন মাটি জীবাণুমুক্ত না করে নতুন গাছে ব্যবহার করবেন না। নতুন লাগানোর জন্য তাজা বা জীবাণুমুক্ত মাটি ব্যবহার করুন।',
+        'safety_note_bn' => null,
+        'symptoms' => ['whole-slow' => 7, 'leaf-yellow' => 5, 'whole-wilting' => 4],
+    ],
 ];
 
 $problemIds = [];
@@ -721,23 +769,23 @@ fwrite(STDOUT, '  ' . count($problemIds) . " problems ready\n");
 
 // Link plants to their common problems.
 $plantProblemLinks = [
-    'moric' => ['whitefly', 'aphid', 'leaf-curl-virus'],
-    'tomato' => ['blossom-end-rot', 'black-spot', 'whitefly'],
+    'moric' => ['whitefly', 'aphid', 'leaf-curl-virus', 'cutworm', 'bacterial-wilt', 'anthracnose'],
+    'tomato' => ['blossom-end-rot', 'black-spot', 'whitefly', 'cutworm', 'bacterial-wilt', 'root-knot-nematode'],
     'lebu' => ['red-spider-mite', 'mealybug', 'nitrogen-deficiency'],
     'golap' => ['black-spot', 'powdery-mildew', 'aphid'],
     'joba' => ['mealybug', 'leaf-curl-virus'],
     'lau' => ['powdery-mildew', 'red-spider-mite'],
-    'shosha' => ['powdery-mildew'],
-    'begun' => ['whitefly'],
+    'shosha' => ['powdery-mildew', 'fruit-fly'],
+    'begun' => ['whitefly', 'cutworm', 'bacterial-wilt', 'root-knot-nematode'],
     'money-plant' => ['overwatering'],
     'snake-plant' => ['overwatering', 'root-rot'],
     'aloe-vera' => ['overwatering'],
     'pepe' => ['root-rot', 'black-spot'],
     'palong' => ['aphid'],
-    'dherosh' => ['aphid'],
+    'dherosh' => ['aphid', 'root-knot-nematode'],
     'pudina' => ['overwatering'],
-    'aam' => ['aphid', 'mealybug'],
-    'peyara' => ['mealybug'],
+    'aam' => ['aphid', 'mealybug', 'fruit-fly', 'anthracnose'],
+    'peyara' => ['mealybug', 'fruit-fly', 'anthracnose'],
     'lichu' => ['red-spider-mite'],
     'dalim' => ['fungus-gnats'],
     'kumra' => ['powdery-mildew', 'red-spider-mite'],
@@ -859,36 +907,20 @@ if (!$exists) {
     fwrite(STDOUT, "  admin created: $adminEmail / ChangeMe123!  (CHANGE THIS before launch)\n");
 }
 
-// ── Demo subscriber ──────────────────────────────────────────────────
+// ── Demo user ────────────────────────────────────────────────────────
 //
-// Dev/demo convenience only — a subscriber account with an already-active
-// subscription, so /login can be tested immediately without stepping
-// through the OTP → first-charge flow every time. DELETE before production,
-// same as the seeded admin account below — see TODO.md.
+// Dev/demo convenience only — a ready-to-use account so /login can be
+// tested immediately without registering first. DELETE before production,
+// same as the seeded admin account above — see TODO.md.
 
-$demoMsisdn = '01812345678'; // Robi range, normal ending — no mock 00/99 quirks
-$demoHash   = Crypto::blindIndex($demoMsisdn);
-$demoUserId = Db::value('SELECT id FROM users WHERE msisdn_hash = ?', [$demoHash]);
+$demoEmail = 'demo@kishalay.test';
+$demoUserId = Db::value('SELECT id FROM users WHERE email = ?', [$demoEmail]);
 
 if (!$demoUserId) {
-    $demoUserId = Db::insert(
-        'INSERT INTO users (msisdn_hash, msisdn_enc, msisdn_last4, operator, status, display_name)
-         VALUES (?, ?, ?, ?, "active", "Demo User")',
-        [$demoHash, Crypto::encrypt($demoMsisdn), Operators::last4($demoMsisdn), (string) Operators::detect($demoMsisdn)]
-    );
-
-    $demoRef = 'mocksub_' . substr($demoHash, 0, 24);
-    $subId = Db::insert(
-        'INSERT INTO subscriptions (user_id, carrier_sub_ref, status, daily_amount, started_at, current_period_end)
-         VALUES (?, ?, "active", 2.78, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY))',
-        [$demoUserId, $demoRef]
-    );
-
     Db::insert(
-        'INSERT INTO charge_transactions (subscription_id, idempotency_key, external_txn_id, amount, status, status_code, raw_response, attempted_at, settled_at)
-         VALUES (?, ?, ?, 2.78, "success", "OK", ?, NOW(), NOW())',
-        [$subId, 'demo-seed-' . $subId, 'mocktxn_demoseed' . $subId, json_encode(['mock' => true, 'seed' => true])]
+        'INSERT INTO users (email, password_hash, status, display_name) VALUES (?, ?, "active", "Demo User")',
+        [$demoEmail, password_hash('ChangeMe123!', PASSWORD_DEFAULT)]
     );
 
-    fwrite(STDOUT, "  demo subscriber created: $demoMsisdn — login at /login with OTP code 123456\n");
+    fwrite(STDOUT, "  demo user created: $demoEmail / ChangeMe123!\n");
 }

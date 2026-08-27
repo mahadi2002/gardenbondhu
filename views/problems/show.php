@@ -1,7 +1,7 @@
 <?php
 /**
  * @var array $problem, $symptoms, $plants
- * @var bool  $isSubscribed, $inApp
+ * @var bool  $isLoggedIn, $inApp
  */
 use App\Core\Markdown;
 use App\Core\View;
@@ -47,7 +47,7 @@ $plantBase = $inApp ? '/app/plants/' : '/plants/';
     </section>
   <?php endif; ?>
 
-  <?php if ($isSubscribed): ?>
+  <?php if ($isLoggedIn): ?>
     <?php if (!empty($problem['organic_remedy_bn'])): ?>
       <div class="remedy remedy--organic">
         <h3>জৈব সমাধান</h3>
@@ -73,7 +73,7 @@ $plantBase = $inApp ? '/app/plants/' : '/plants/';
       <?= e((string) ($problem['safety_note_bn'] ?: 'রাসায়নিক ব্যবহারের আগে মাত্রা ভালোভাবে দেখে নিন এবং শিশু ও পোষা প্রাণী থেকে দূরে রাখুন।')) ?>
     </p>
   <?php else: ?>
-    <?= View::partial('partials/paywall', get_defined_vars() + ['what' => 'জৈব ও রাসায়নিক সমাধান']) ?>
+    <?= View::partial('partials/register-wall', get_defined_vars() + ['what' => 'জৈব ও রাসায়নিক সমাধান']) ?>
   <?php endif; ?>
 
   <?php if ($plants !== []): ?>

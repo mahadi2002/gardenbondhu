@@ -9,140 +9,142 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Core\Session;
 use App\Core\Validator;
-use App\Exceptions\GatewayException;
-use App\Exceptions\OtpException;
-use App\Repositories\SubscriptionRepo;
+use App\Repositories\PasswordResetRepo;
 use App\Repositories\UserRepo;
 use App\Services\AuditService;
-use App\Services\OtpService;
-use App\Services\SubscriptionService;
-use App\Support\Operators;
+use App\Services\Notifier;
+use PDOException;
 
 /**
- * The subscribe funnel. Every OTP failure case gets its own exact Bangla
- * message here — "wrong code" and "too many tries" read very differently
- * to someone who's never used an OTP flow before.
+ * Email + password auth. Every failure message is deliberately generic —
+ * "email or password is wrong", never "no such account" — so the login and
+ * password-reset forms can't be used to enumerate registered emails.
  */
 final class AuthController extends Controller
 {
-    private const PENDING_KEY = '_pending_msisdn';
-    private const STARTED_KEY = '_otp_form_started';
-
-    public function phoneForm(Request $request): Response
+    public function registerForm(Request $request): Response
     {
-        return $this->renderPhoneForm($request, false);
+        return $this->view('auth/register', ['next' => $this->safeNext($request->str('next'))]);
     }
 
-    public function requestOtp(Request $request): Response
+    public function register(Request $request): Response
     {
+        $next = $this->safeNext($request->str('next'));
+
         // Honeypot + minimum fill time — cheaper and kinder than a CAPTCHA.
         if ($request->str('website') !== '') {
-            return $this->redirect('/subscribe');
+            return $this->redirect('/register');
         }
 
-        $started = (int) Session::get(self::STARTED_KEY, 0);
-        if ($started > 0 && time() - $started < 2) {
-            Session::notify('error', 'একটু ধীরে চেষ্টা করুন।');
-            return $this->redirect('/subscribe');
-        }
-
-        $validator = Validator::make($request->body, ['msisdn' => 'required|msisdn'], ['msisdn' => 'মোবাইল নম্বর']);
-
-        if ($validator->fails()) {
-            $validator->flash();
-            return $this->redirect('/subscribe');
-        }
-
-        $msisdn = (string) Operators::normalize((string) $validator->get('msisdn'));
-
-        if (!Operators::isAllowed($msisdn)) {
-            Session::flash('_errors', ['msisdn' => ['এই Service এখন শুধু Robi ও Airtel Number-এ পাওয়া যাচ্ছে।']]);
-            Session::flash('_old', ['msisdn' => $msisdn]);
-            return $this->redirect('/subscribe');
-        }
-
-        return $this->sendOtp($msisdn, $request, false);
-    }
-
-    public function otpForm(Request $request): Response
-    {
-        $msisdn = (string) Session::get(self::PENDING_KEY, '');
-
-        if ($msisdn === '') {
-            return $this->redirect('/subscribe');
-        }
-
-        return $this->view('auth/otp', [
-            'masked'     => Operators::mask($msisdn),
-            'resendWait' => OtpService::make()->resendWaitFor($msisdn),
-            'devOtp'     => config('app.debug') ? Session::flashGet('_dev_otp') : null,
-            'next'       => $this->safeNext((string) Session::get('_next', '')),
+        $validator = Validator::make($request->body, [
+            'email'                 => 'required|email|max:191',
+            'password'              => 'required|min:8|max:200',
+            'password_confirmation' => 'required|min:8|max:200',
+        ], [
+            'email'                 => 'Email',
+            'password'              => 'Password',
+            'password_confirmation' => 'Password',
         ]);
-    }
-
-    public function verifyOtp(Request $request): Response
-    {
-        $msisdn = (string) Session::get(self::PENDING_KEY, '');
-
-        if ($msisdn === '') {
-            return $this->redirect('/subscribe');
-        }
-
-        $validator = Validator::make($request->body, ['code' => 'required|digits:6'], ['code' => 'OTP Code']);
 
         if ($validator->fails()) {
             $validator->flash();
-            return $this->redirect('/subscribe/verify');
+            return $this->redirect('/register' . ($next !== '' ? '?next=' . rawurlencode($next) : ''));
+        }
+
+        $email    = mb_strtolower((string) $validator->get('email'));
+        $password = (string) $validator->get('password');
+
+        if ($password !== (string) $validator->get('password_confirmation')) {
+            Session::flash('_errors', ['password_confirmation' => ['Password দুটো মিলছে না।']]);
+            Session::flash('_old', ['email' => $email]);
+            return $this->redirect('/register' . ($next !== '' ? '?next=' . rawurlencode($next) : ''));
+        }
+
+        $repo = new UserRepo();
+
+        // Generic message either way — never confirm whether an email is
+        // already registered.
+        if ($repo->findByEmail($email) !== null) {
+            Session::flash('_errors', ['email' => ['এই Email দিয়ে Register করা যাচ্ছে না।']]);
+            Session::flash('_old', ['email' => $email]);
+            return $this->redirect('/register' . ($next !== '' ? '?next=' . rawurlencode($next) : ''));
         }
 
         try {
-            $subscriberRef = OtpService::make()->verify($msisdn, (string) $validator->get('code'), $request);
-        } catch (OtpException $e) {
-            Session::flash('_errors', ['code' => [$e->getMessage()]]);
-
-            // Three strikes: the row is dead, so send them back to step one.
-            if ($e->reason === 'too_many' || $e->reason === 'expired' || $e->reason === 'missing') {
-                Session::forget(self::PENDING_KEY);
-                Session::notify('error', $e->getMessage());
-                return $this->redirect('/subscribe');
+            $user = $repo->create($email, password_hash($password, PASSWORD_DEFAULT));
+        } catch (PDOException $e) {
+            // The findByEmail() check above can't stop a concurrent request
+            // for the same address winning the race between check and
+            // insert — the unique constraint on users.email is the real
+            // guard. Surface the same generic message instead of a 500.
+            if ($e->getCode() === '23000' || str_contains($e->getMessage(), 'Duplicate entry')) {
+                Session::flash('_errors', ['email' => ['এই Email দিয়ে Register করা যাচ্ছে না।']]);
+                Session::flash('_old', ['email' => $email]);
+                return $this->redirect('/register' . ($next !== '' ? '?next=' . rawurlencode($next) : ''));
             }
-
-            return $this->redirect('/subscribe/verify');
-        } catch (GatewayException $e) {
-            \App\Core\Logger::warning('otp.verify.gateway_failed', ['error' => $e->getMessage()]);
-            Session::notify('error', 'এই মুহূর্তে যাচাই করা যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।');
-            return $this->redirect('/subscribe/verify');
+            throw $e;
         }
 
-        return $this->completeSubscribe($msisdn, $subscriberRef, $request);
+        $userId = (int) $user['id'];
+
+        Session::regenerate();
+        Session::put('user_id', $userId);
+        Session::put('_ua', $request->uaHash());
+        $repo->touchLogin($userId);
+
+        AuditService::log('auth.registered', 'user', $userId, 'user', $userId, [], $request->ipHash(), $request->uaHash());
+        Session::notify('success', 'স্বাগতম! আপনার অ্যাকাউন্ট তৈরি হয়েছে।');
+
+        return $this->redirect($next ?: '/app');
     }
 
-    public function resendOtp(Request $request): Response
+    public function loginForm(Request $request): Response
     {
-        $msisdn = (string) Session::get(self::PENDING_KEY, '');
-
-        if ($msisdn === '') {
-            return $this->redirect('/subscribe');
-        }
-
-        $wait = OtpService::make()->resendWaitFor($msisdn);
-        if ($wait > 0) {
-            Session::notify('error', bn_num((int) config('app.otp.resend_cooldown', 60)) . ' সেকেন্ড পর আবার পাঠাতে পারবেন।');
-            return $this->redirect('/subscribe/verify');
-        }
-
-        return $this->sendOtp($msisdn, $request, true);
+        return $this->view('auth/login', ['next' => $this->safeNext($request->str('next'))]);
     }
 
-    /**
-     * GET /login — same OTP mechanism as /subscribe (a returning subscriber's
-     * number is recognised and logged straight in — see completeSubscribe()),
-     * but framed as a login screen rather than a sales page for people who
-     * are already paying and just want back in.
-     */
     public function login(Request $request): Response
     {
-        return $this->renderPhoneForm($request, true);
+        $next = $this->safeNext($request->str('next'));
+
+        $validator = Validator::make($request->body, [
+            'email'    => 'required|email',
+            'password' => 'required',
+        ], ['email' => 'Email', 'password' => 'Password']);
+
+        $email = mb_strtolower((string) $request->str('email'));
+
+        if ($validator->fails()) {
+            Session::notify('error', 'Email অথবা Password সঠিক নয়।');
+            Session::flash('_old', ['email' => $email]);
+            return $this->redirect('/login' . ($next !== '' ? '?next=' . rawurlencode($next) : ''));
+        }
+
+        $repo = new UserRepo();
+        $user = $repo->findForAuth($email);
+
+        if ($user === null || !password_verify((string) $validator->get('password'), (string) $user['password_hash'])) {
+            Session::notify('error', 'Email অথবা Password সঠিক নয়।');
+            Session::flash('_old', ['email' => $email]);
+            return $this->redirect('/login' . ($next !== '' ? '?next=' . rawurlencode($next) : ''));
+        }
+
+        $userId = (int) $user['id'];
+
+        if ($user['status'] === 'blocked') {
+            Session::notify('error', 'এই Account দিয়ে এখন Login করা যাচ্ছে না। যোগাযোগ করুন।');
+            return $this->redirect('/contact');
+        }
+
+        // Session fixation: rotate the id the moment the identity changes.
+        Session::regenerate();
+        Session::put('user_id', $userId);
+        Session::put('_ua', $request->uaHash());
+        $repo->touchLogin($userId);
+
+        AuditService::log('auth.login', 'user', $userId, 'user', $userId, [], $request->ipHash(), $request->uaHash());
+
+        return $this->redirect($next ?: '/app');
     }
 
     public function logout(Request $request): Response
@@ -158,134 +160,74 @@ final class AuthController extends Controller
         return $this->redirect('/');
     }
 
-    // ── internals ───────────────────────────────────────────────────────
-
-    private function renderPhoneForm(Request $request, bool $isLogin): Response
+    public function forgotPasswordForm(Request $request): Response
     {
-        Session::put(self::STARTED_KEY, time());
-
-        return $this->view('auth/phone', [
-            'next'    => $this->safeNext($request->str('next')),
-            'isLogin' => $isLogin,
-        ]);
+        return $this->view('auth/forgot-password');
     }
 
-    private function sendOtp(string $msisdn, Request $request, bool $isResend): Response
+    public function forgotPassword(Request $request): Response
     {
-        try {
-            OtpService::make()->send($msisdn, $request, $isResend);
-        } catch (OtpException $e) {
-            Session::flash('_errors', ['msisdn' => [$e->getMessage()]]);
-            Session::flash('_old', ['msisdn' => $msisdn]);
-            Session::notify('error', $e->getMessage());
+        $validator = Validator::make($request->body, ['email' => 'required|email'], ['email' => 'Email']);
 
-            return $this->redirect($isResend ? '/subscribe/verify' : '/subscribe');
-        } catch (GatewayException $e) {
-            \App\Core\Logger::warning('otp.send.gateway_failed', ['error' => $e->getMessage()]);
-            Session::notify('error', 'এই মুহূর্তে OTP পাঠানো যাচ্ছে না। একটু পরে আবার চেষ্টা করুন।');
+        if (!$validator->fails()) {
+            $email = mb_strtolower((string) $validator->get('email'));
+            $user  = (new UserRepo())->findByEmail($email);
 
-            return $this->redirect($isResend ? '/subscribe/verify' : '/subscribe')->withStatus(503);
+            // Only sends when the account exists, but the response below is
+            // identical either way — no enumeration signal.
+            if ($user !== null && $user['status'] !== 'blocked') {
+                $token = Crypto::randomToken(32);
+                (new PasswordResetRepo())->create((int) $user['id'], $token, $request->ipHash());
+
+                $resetUrl = rtrim((string) config('app.url'), '/') . '/reset-password/' . $token;
+                Notifier::passwordReset($email, $resetUrl);
+
+                AuditService::log('auth.password_reset_requested', 'user', (int) $user['id'], 'user', (int) $user['id'], [], $request->ipHash());
+            }
         }
 
-        Session::put(self::PENDING_KEY, $msisdn);
-        Session::put('_next', $this->safeNext($request->str('next')));
+        Session::notify('success', 'Email ঠিকানাটি নিবন্ধিত থাকলে একটি Reset Link পাঠানো হয়েছে।');
 
-        return $this->redirect('/subscribe/verify');
+        return $this->redirect('/login');
     }
 
-    /**
-     * OTP verified. Create-or-reuse the user, open a pending subscription and
-     * attempt the first charge immediately — the user is watching the screen,
-     * so waiting an hour for cron would be a terrible first impression.
-     */
-    private function completeSubscribe(string $msisdn, string $subscriberRef, Request $request): Response
+    public function resetPasswordForm(Request $request, string $token): Response
     {
-        $userRepo = new UserRepo();
-        $user     = $userRepo->findOrCreate($msisdn);
-        $userId   = (int) $user['id'];
-
-        if ($user['status'] === 'blocked') {
-            Session::forget(self::PENDING_KEY);
-            Session::notify('error', 'এই নম্বর দিয়ে এখন Login করা যাচ্ছে না। যোগাযোগ করুন।');
-            return $this->redirect('/contact');
-        }
-
-        $service = new SubscriptionService();
-        $subRepo = new SubscriptionRepo();
-
-        // Session fixation: rotate the id the moment the identity changes.
-        Session::regenerate();
-        Session::put('user_id', $userId);
-        Session::put('_ua', $request->uaHash());
-        Session::forget(self::PENDING_KEY);
-        Session::forget(self::STARTED_KEY);
-
-        $userRepo->touchLogin($userId);
-
-        AuditService::log('auth.otp_verified', 'user', $userId, 'user', $userId, [
-            'msisdn_last4' => Operators::last4($msisdn),
-        ], $request->ipHash(), $request->uaHash());
-
-        // Already an active subscriber — just let them in.
-        if (SubscriptionService::hasAccess($userId)) {
-            Session::notify('success', 'আপনি আগে থেকেই Subscribed। স্বাগতম!');
-            return $this->redirect($this->safeNext((string) Session::get('_next', '')) ?: '/app');
-        }
-
-        $subscriptionId = $service->startPending($userId, $subscriberRef);
-        $result         = $this->chargeFirstPeriod($subscriptionId, $subscriberRef, $service, $subRepo);
-
-        if ($result !== 'success') {
-            Session::notify('error', 'ব্যালেন্স কম মনে হচ্ছে। Recharge করে আবার চেষ্টা করুন।');
-            return $this->redirect('/expired');
-        }
-
-        Session::notify('success', 'স্বাগতম! আপনার Subscription চালু হয়েছে।');
-
-        return $this->redirect($this->safeNext((string) Session::get('_next', '')) ?: '/app');
+        return $this->view('auth/reset-password', ['token' => $token]);
     }
 
-    private function chargeFirstPeriod(
-        int $subscriptionId,
-        string $subscriberRef,
-        SubscriptionService $service,
-        SubscriptionRepo $repo,
-    ): string {
-        $amount = (float) config('carrier.amount', 2.78);
-        $key    = sha1($subscriptionId . ':' . date('Y-m-d'));
+    public function resetPassword(Request $request, string $token): Response
+    {
+        $validator = Validator::make($request->body, [
+            'password'              => 'required|min:8|max:200',
+            'password_confirmation' => 'required|min:8|max:200',
+        ], ['password' => 'Password', 'password_confirmation' => 'Password']);
 
-        if (!$repo->claimCharge($subscriptionId, $key, $amount)) {
-            // Already attempted today — trust whatever that attempt concluded.
-            return SubscriptionService::hasAccess((int) $repo->userIdFor($subscriptionId)) ? 'success' : 'failed';
+        if ($validator->fails() || (string) $validator->get('password') !== (string) $validator->get('password_confirmation')) {
+            Session::notify('error', 'Password ঠিক নয় অথবা দুটো মিলছে না (কমপক্ষে ৮ অক্ষর)।');
+            return $this->redirect('/reset-password/' . rawurlencode($token));
         }
 
-        try {
-            $charge = \App\Services\GatewayFactory::make()->charge($subscriberRef, $key, $amount);
-        } catch (\Throwable $e) {
-            \App\Core\Logger::warning('charge.first.transport_error', ['error' => $e->getMessage()]);
-            $repo->settleCharge($key, 'failed', null, 'TRANSPORT', [], $e->getMessage());
-            return 'failed';
+        $resetRepo = new PasswordResetRepo();
+        $row       = $resetRepo->findValidByToken($token);
+
+        if ($row === null) {
+            Session::notify('error', 'Reset Link-এর মেয়াদ শেষ হয়ে গেছে। আবার চেষ্টা করুন।');
+            return $this->redirect('/forgot-password');
         }
 
-        $repo->settleCharge(
-            $key,
-            $charge['status'] === 'success' ? 'success' : ($charge['status'] === 'pending' ? 'pending' : 'failed'),
-            $charge['txn_id'],
-            $charge['code'],
-            $charge['raw'],
-            $charge['status'] === 'success' ? null : (string) ($charge['code'] ?? 'failed')
-        );
+        $userId = (int) $row['user_id'];
 
-        if ($charge['status'] === 'success') {
-            $service->activate($subscriptionId);
-            return 'success';
-        }
+        (new UserRepo())->updatePassword($userId, password_hash((string) $validator->get('password'), PASSWORD_DEFAULT));
+        $resetRepo->consume((int) $row['id']);
 
-        AuditService::log('charge.first_failed', 'gateway', null, 'subscription', $subscriptionId, [
-            'code' => $charge['code'],
-        ]);
+        // A password change invalidates every existing session for this user.
+        \App\Core\Session::revokeAllForUser($userId);
 
-        return 'failed';
+        AuditService::log('auth.password_reset', 'user', $userId, 'user', $userId, [], $request->ipHash());
+        Session::notify('success', 'Password বদলানো হয়েছে। এখন নতুন Password দিয়ে Login করুন।');
+
+        return $this->redirect('/login');
     }
 
     /** Only same-site absolute paths may be used as a post-login redirect. */

@@ -9,7 +9,7 @@ $this->layout('layouts/admin', ['title' => (string) $question['title']]);
 ?>
 <div class="page-head">
   <h1><?= e((string) $question['title']) ?></h1>
-  <p class="muted">01••••<?= e((string) $question['msisdn_last4']) ?> · <?= e((string) $question['status']) ?></p>
+  <p class="muted"><?= e((string) $question['email']) ?> · <?= e((string) $question['status']) ?></p>
 </div>
 
 <div class="card">

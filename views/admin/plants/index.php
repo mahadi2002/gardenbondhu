@@ -17,7 +17,7 @@ $this->layout('layouts/admin', ['title' => 'গাছ']);
   <button class="btn btn--sm" type="submit">খুঁজুন</button>
 </form>
 
-<div class="table-wrap">
+<div class="table-wrap reveal">
   <table>
     <thead><tr><th>নাম</th><th>কষ্টসাধ্যতা</th><th>Views</th><th>Status</th><th>Updated</th></tr></thead>
     <tbody>

@@ -1,22 +1,27 @@
 <?php
 /**
- * The landing page. Section order and the exact wording in a few spots
- * (the price badge, the OTP box copy) are locked on purpose — this page
- * gets read closely by people deciding whether to hand over their phone
- * number, wording changes shouldn't happen casually.
+ * The landing page. Section order is deliberate — problem, features, live
+ * demo, stats, CTA, how-it-works, FAQ, final CTA.
  *
  * @var array $symptoms  body_part => rows
  * @var array $stats
+ * @var array|null $demoResults
+ * @var bool|null  $demoAttempted
+ * @var array|null $demoSelected
  */
 use App\Core\View;
+use App\Services\DiagnosisEngine;
 
 $this->layout('layouts/public', [
     'title'       => null,
-    'description' => 'গাছ মরে যাচ্ছে কেন, কোন পোকা, কতটুকু পানি — নতুন বাগানিদের জন্য বাংলায় সম্পূর্ণ গাইড। দিনে মাত্র ৳2.78।',
+    'description' => 'গাছ মরে যাচ্ছে কেন, কোন পোকা, কতটুকু পানি — নতুন বাগানিদের জন্য বাংলায় সম্পূর্ণ গাইড। সম্পূর্ণ ফ্রি।',
     'scripts'     => ['diagnose.js'],
 ]);
 
-$bodyParts = (array) config('content.body_parts');
+$bodyParts     = (array) config('content.body_parts');
+$demoResults   = $demoResults ?? [];
+$demoAttempted = $demoAttempted ?? false;
+$demoSelected  = array_map('strval', $demoSelected ?? []);
 
 $features = [
     ['গাছ খুঁজুন',      'বারান্দা, ছাদ না ঘরের ভেতর — জায়গা আর রোদ অনুযায়ী সঠিক গাছ বেছে নিন'],
@@ -41,25 +46,21 @@ $mistakes = [
 ];
 
 $faqs = [
-    ['টাকা কীভাবে কাটা হবে?',
-     'Daily ৳' . $dailyAmount . ' (Incl. VAT, SD & SC) আপনার Robi/Airtel ব্যালেন্স থেকে। আলাদা কার্ড বা bKash লাগবে না।'],
-    ['বন্ধ করব কীভাবে?',
-     'STOP লিখে ' . $shortcode . ' নম্বরে SMS করুন, অথবা Account পেজ থেকে Unsubscribe করুন। সাথে সাথেই বন্ধ হবে।'],
-    ['Grameenphone/Banglalink দিয়ে হবে?',
-     'এখন শুধু Robi ও Airtel। অন্য অপারেটর শীঘ্রই আসছে।'],
-    ['ব্যালেন্স না থাকলে?',
-     '২ দিন পর্যন্ত access চালু থাকবে। এর মধ্যে recharge করলে কিছুই হারাবে না।'],
+    ['এই সাইট কি সম্পূর্ণ ফ্রি?',
+     'হ্যাঁ। ফ্রি Register করলেই গাছের পূর্ণ যত্ন-নির্দেশিকা, রোগ নির্ণয়ের সমাধান, আর মাসের কাজের তালিকা — সবকিছু খুলে যায়। কোনো কার্ড বা টাকা লাগে না।',
+    ],
     ['আমি একদম নতুন, কিছুই জানি না — কাজে লাগবে?',
      'এই সাইট নতুনদের জন্যই বানানো। প্রতিটা গাইড শূন্য থেকে শুরু।'],
-    ['আমার নম্বর কি অন্য কাউকে দেওয়া হবে?',
-     'না। নম্বর encrypted অবস্থায় রাখা হয়, শুধু subscription যাচাইয়ের জন্য ব্যবহৃত হয়।'],
+    ['আমার Email কি অন্য কাউকে দেওয়া হবে?',
+     'না। Email শুধু Login আর জরুরি যোগাযোগের জন্য ব্যবহৃত হয়, কখনো বিক্রি বা শেয়ার করা হয় না।'],
+    ['অ্যাকাউন্ট মুছে ফেলা যাবে?',
+     'হ্যাঁ, যেকোনো সময় Account পেজ থেকে নিজের অ্যাকাউন্ট স্থায়ীভাবে মুছে ফেলতে পারবেন।'],
 ];
 
 $steps = [
-    ['নম্বর দিন',       'Robi বা Airtel নম্বর লিখে OTP নিন।'],
-    ['Code বসান',       'SMS-এ আসা ৬ সংখ্যার Code বসান।'],
-    ['Access চালু',     'সাথে সাথেই সব Content খুলে যাবে।'],
-    ['বাগান শুরু',      'নিজের গাছ যোগ করুন, রিমাইন্ডার পান।'],
+    ['ফ্রি Register করুন',  'শুধু Email আর Password দিয়ে অ্যাকাউন্ট তৈরি করুন।'],
+    ['Access চালু',        'সাথে সাথেই সব Content খুলে যাবে।'],
+    ['বাগান শুরু',         'নিজের গাছ যোগ করুন, রিমাইন্ডার পান।'],
 ];
 ?>
 
@@ -74,10 +75,10 @@ $steps = [
         বাগানবন্ধু সেই কারণটা ধরিয়ে দেয়, আর কী করতে হবে সেটাও বলে দেয়।
       </p>
       <p class="cluster">
-        <a class="btn btn--accent btn--lg" href="#otp-box">Subscribe Now</a>
+        <a class="btn btn--accent btn--lg" href="/register">শুরু করুন — সম্পূর্ণ ফ্রি</a>
         <a class="btn btn--ghost btn--lg" href="#diagnose-demo">আগে দেখে নিই</a>
       </p>
-      <p class="small muted">Robi &amp; Airtel Users Only &nbsp;|&nbsp; যেকোনো সময় Unsubscribe করুন</p>
+      <p class="small muted">সম্পূর্ণ ফ্রি &nbsp;|&nbsp; কোনো কার্ড লাগবে না</p>
     </div>
 
     <div class="hero__art">
@@ -143,11 +144,11 @@ $steps = [
       <h2>পাতা দেখে রোগ নির্ণয়</h2>
       <p class="lede">
         গাছের যে অংশে সমস্যা, সেখানে চাপ দিন। লক্ষণগুলো বেছে নিন — সম্ভাব্য কারণ আর
-        সমাধান সাজিয়ে দেওয়া হবে।
+        সমাধান এখনই দেখতে পাবেন, কোনো Login ছাড়াই।
       </p>
     </div>
 
-    <form class="diagnoser" id="diagnose-form" method="post" action="/app/diagnose">
+    <form class="diagnoser" id="diagnose-form" method="post" action="/diagnose#diagnose-demo-results">
       <?= csrf_field() ?>
 
       <?= View::partial('partials/leaf-picker', ['bodyParts' => $bodyParts]) ?>
@@ -171,7 +172,8 @@ $steps = [
               <?php foreach ($symptoms[$part] as $symptom): ?>
                 <label class="check">
                   <input type="checkbox" name="symptoms[]" value="<?= e((string) $symptom['id']) ?>"
-                         data-part="<?= e($part) ?>">
+                         data-part="<?= e($part) ?>"
+                         <?= in_array((string) $symptom['id'], $demoSelected, true) ? ' checked' : '' ?>>
                   <span><?= e((string) $symptom['name_bn']) ?></span>
                 </label>
               <?php endforeach; ?>
@@ -183,10 +185,36 @@ $steps = [
 
         <p class="cluster">
           <button class="btn btn--lg" type="submit">সম্ভাব্য কারণ দেখুন</button>
-          <span class="small muted">ফলাফল দেখতে Subscribe করতে হবে</span>
         </p>
       </div>
     </form>
+
+    <div id="diagnose-demo-results">
+      <?php if ($demoAttempted): ?>
+        <?php if ($demoResults === []): ?>
+          <div class="notice notice--info reveal">
+            <span class="notice__icon" aria-hidden="true">i</span>
+            <span>এই লক্ষণগুলোর সাথে মেলে এমন কিছু পাওয়া যায়নি। অন্য লক্ষণ বেছে আবার চেষ্টা করুন।</span>
+          </div>
+        <?php else: ?>
+          <div class="reveal">
+            <h3>সম্ভাব্য কারণ</h3>
+            <div class="grid grid--3">
+              <?php foreach ($demoResults as $result): ?>
+                <a class="card card--link" href="/problems/<?= e((string) $result['slug']) ?>">
+                  <span class="chip chip--<?= e(DiagnosisEngine::labelClass((float) $result['confidence'])) ?>">
+                    <?= e((string) $result['confidence_label']) ?>
+                  </span>
+                  <h4 class="card__title"><?= e((string) $result['name_bn']) ?></h4>
+                  <p class="card__meta mb-0">বিস্তারিত ও সমাধান দেখুন →</p>
+                </a>
+              <?php endforeach; ?>
+            </div>
+            <p class="small muted"><?= e(DiagnosisEngine::DISCLAIMER) ?></p>
+          </div>
+        <?php endif; ?>
+      <?php endif; ?>
+    </div>
   </div>
 </section>
 
@@ -216,23 +244,34 @@ $steps = [
 <section class="section">
   <div class="wrap">
     <div class="cta-block reveal">
-      <h2>🚀 এখনই Start করুন — Daily ৳<?= e($dailyAmount) ?></h2>
-      <p>Robi &amp; Airtel Users Only &nbsp;|&nbsp; Incl. VAT, SD &amp; SC &nbsp;|&nbsp; যেকোনো সময় Unsubscribe করুন</p>
+      <h2>
+        <svg class="cta-icon" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+          <circle cx="21"   cy="14"   r="5" fill="var(--marigold)"/>
+          <circle cx="17.5" cy="20.1" r="5" fill="var(--marigold)"/>
+          <circle cx="10.5" cy="20.1" r="5" fill="var(--marigold)"/>
+          <circle cx="7"    cy="14"   r="5" fill="var(--marigold)"/>
+          <circle cx="10.5" cy="7.9"  r="5" fill="var(--marigold)"/>
+          <circle cx="17.5" cy="7.9"  r="5" fill="var(--marigold)"/>
+          <circle cx="14"   cy="14"   r="5" fill="var(--marigold-d)"/>
+        </svg>
+        এখনই শুরু করুন — সম্পূর্ণ ফ্রি
+      </h2>
+      <p>কোনো কার্ড লাগবে না &nbsp;|&nbsp; যেকোনো সময় অ্যাকাউন্ট মুছে ফেলতে পারবেন</p>
 
       <div class="value-copy">একটা মরে যাওয়া গাছের দাম ২০০ টাকা। একটা ভুল সারের প্যাকেট ১৫০ টাকা।
-বাগানবন্ধু — Daily ৳<?= e($dailyAmount) ?> (Incl. VAT, SD &amp; SC)।
+বাগানবন্ধু — শুধু একটা ফ্রি অ্যাকাউন্ট।
 
-প্রতিদিন ৳<?= e($dailyAmount) ?>-তে আপনি পাচ্ছেন:
+Register করলেই পাচ্ছেন:
 • ৬০+ গাছের পূর্ণ যত্ন-নির্দেশিকা — মাটি, পানি, রোদ, সার, ছাঁটাই
-• পাতা দেখে রোগ নির্ণয় — ৪০+ পোকা ও রোগের জৈব ও রাসায়নিক সমাধান
+• পাতা দেখে রোগ নির্ণয় — পোকা ও রোগের জৈব ও রাসায়নিক সমাধান
 • প্রতি মাসে কী করতে হবে, তার তালিকা
 • পানি ও সারের সঠিক পরিমাণ হিসাব করার টুল
 • আপনার নিজের বাগানের রেকর্ড আর কাজের রিমাইন্ডার
 • যেকোনো সমস্যায় প্রশ্ন করার সুযোগ
 
-কোনো চুক্তি নেই। কোনো কার্ড লাগবে না। যেদিন ইচ্ছা বন্ধ করে দিন।</div>
+কোনো চুক্তি নেই। কোনো কার্ড লাগবে না। যেদিন ইচ্ছা অ্যাকাউন্ট মুছে ফেলুন।</div>
 
-      <p><a class="btn btn--accent btn--lg" href="#otp-box">Subscribe Now</a></p>
+      <p><a class="btn btn--accent btn--lg" href="/register">শুরু করুন</a></p>
     </div>
   </div>
 </section>
@@ -265,9 +304,16 @@ $steps = [
   </div>
 </section>
 
-<!-- 10 · OTP BOX --------------------------------------------------------->
+<!-- 10 · FINAL CTA --------------------------------------------------------->
 <section class="section section--tight">
   <div class="wrap">
-    <?= View::partial('partials/otp-box', get_defined_vars()) ?>
+    <div class="otp-box center">
+      <h2>শুরু করুন</h2>
+      <p class="sub">Email আর Password দিয়ে ফ্রি Register করুন — Instant Access পাবেন সব গার্ডেনিং Content-এ!</p>
+      <p class="cluster">
+        <a class="btn btn--accent btn--lg" href="/register">শুরু করুন</a>
+        <a class="btn btn--ghost btn--lg" href="/login">আগে থেকে Account আছে? Login করুন</a>
+      </p>
+    </div>
   </div>
 </section>

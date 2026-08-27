@@ -45,14 +45,9 @@ abstract class Controller
         return Session::userId();
     }
 
-    /**
-     * True when the viewer may see paid content right now.
-     * Always re-read from the DB — never from a session flag. Caching this
-     * would mean a lapsed subscription stays "active" until next login.
-     */
-    protected function isSubscribed(): bool
+    /** Full content is gated behind a free account, not a subscription. */
+    protected function isLoggedIn(): bool
     {
-        $userId = Session::userId();
-        return $userId !== null && \App\Services\SubscriptionService::hasAccess($userId);
+        return Session::userId() !== null;
     }
 }

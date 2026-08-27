@@ -6,7 +6,7 @@
 use App\Core\View;
 ?>
 <!doctype html>
-<html lang="bn" data-theme="<?= e($theme ?? 'light') ?>">
+<html lang="bn" data-theme="<?= e($theme ?? 'light') ?>" data-season="<?= e((string) ($season ?? 6)) ?>">
 <head>
 <?= View::partial('partials/head', get_defined_vars()) ?>
 </head>

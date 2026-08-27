@@ -21,7 +21,7 @@ $statusLabels = ['pending' => 'যাচাইয়ের অপেক্ষা
   </div>
   <h1><?= e((string) $question['title']) ?></h1>
   <p class="muted">
-    <?= e((string) ($question['display_name'] ?: '01••••' . $question['msisdn_last4'])) ?>
+    <?= e((string) ($question['display_name'] ?: 'একজন ব্যবহারকারী')) ?>
     · <?= e(bn_date((string) $question['created_at'])) ?>
   </p>
 </div>
@@ -48,7 +48,7 @@ $statusLabels = ['pending' => 'যাচাইয়ের অপেক্ষা
       <div class="card">
         <div class="between">
           <strong>
-            <?= e((string) ($answer['admin_name'] ?? $answer['display_name'] ?? ('01••••' . ($answer['msisdn_last4'] ?? '')))) ?>
+            <?= e((string) ($answer['admin_name'] ?? $answer['display_name'] ?? 'একজন ব্যবহারকারী')) ?>
           </strong>
           <?php if ((int) $answer['is_expert'] === 1): ?><span class="chip chip--low">বিশেষজ্ঞ</span><?php endif; ?>
         </div>

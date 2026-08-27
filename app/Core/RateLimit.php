@@ -14,14 +14,16 @@ final class RateLimit
      * Several buckets have two windows; both are checked.
      */
     public const BUCKETS = [
-        'otp_request' => [['limit' => 3,  'window' => 3600,  'block' => 3600],
-                          ['limit' => 8,  'window' => 86400, 'block' => 86400]],
-        'otp_verify'  => [['limit' => 5,  'window' => 900,   'block' => 86400]],
-        'otp_resend'  => [['limit' => 3,  'window' => 3600,  'block' => 3600]],
-        'admin_login' => [['limit' => 5,  'window' => 900,   'block' => 900]],
-        'qa_post'     => [['limit' => 5,  'window' => 86400, 'block' => 86400]],
-        'search'      => [['limit' => 30, 'window' => 60,    'block' => 60]],
-        'contact'     => [['limit' => 3,  'window' => 3600,  'block' => 3600]],
+        'login'          => [['limit' => 5,  'window' => 900,   'block' => 86400]],
+        'register'       => [['limit' => 5,  'window' => 3600,  'block' => 3600],
+                             ['limit' => 10, 'window' => 86400, 'block' => 86400]],
+        'password_reset' => [['limit' => 3,  'window' => 3600,  'block' => 3600]],
+        'admin_login'    => [['limit' => 5,  'window' => 900,   'block' => 900]],
+        'admin_totp'     => [['limit' => 5,  'window' => 900,   'block' => 900]],
+        'qa_post'        => [['limit' => 5,  'window' => 86400, 'block' => 86400]],
+        'search'         => [['limit' => 30, 'window' => 60,    'block' => 60]],
+        'contact'        => [['limit' => 3,  'window' => 3600,  'block' => 3600]],
+        'diagnose_demo'  => [['limit' => 20, 'window' => 3600,  'block' => 3600]],
     ];
 
     /**
@@ -39,31 +41,6 @@ final class RateLimit
             $wait = self::hitWindow($name, (int) $w['limit'], (int) $w['window'], (int) $w['block']);
             if ($wait !== null) {
                 $retry = max($retry ?? 0, $wait);
-            }
-        }
-
-        return $retry;
-    }
-
-    /** Check without consuming a hit. */
-    public static function tooMany(string $bucket, string $key): ?int
-    {
-        $windows = self::BUCKETS[$bucket] ?? [];
-        $retry   = null;
-
-        foreach ($windows as $i => $w) {
-            $name = $bucket . ':' . $i . ':' . substr($key, 0, 100);
-            $row  = Db::first('SELECT hits, window_start, blocked_until FROM rate_limits WHERE bucket = ?', [$name]);
-            if ($row === null) {
-                continue;
-            }
-            if ($row['blocked_until'] !== null && strtotime((string) $row['blocked_until']) > time()) {
-                $retry = max($retry ?? 0, strtotime((string) $row['blocked_until']) - time());
-                continue;
-            }
-            $elapsed = time() - strtotime((string) $row['window_start']);
-            if ($elapsed < (int) $w['window'] && (int) $row['hits'] >= (int) $w['limit']) {
-                $retry = max($retry ?? 0, (int) $w['window'] - $elapsed);
             }
         }
 

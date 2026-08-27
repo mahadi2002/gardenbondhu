@@ -20,6 +20,7 @@ use App\Core\Session;
 use App\Core\View;
 use App\Exceptions\HttpException;
 use App\Middleware\SecurityHeaders;
+use App\Services\CareScheduler;
 
 $request = Request::capture();
 
@@ -29,6 +30,7 @@ try {
     View::share('currentPath', $request->path);
     View::share('notice', Session::notice());
     View::share('theme', ($_COOKIE['gb_theme'] ?? '') === 'dark' ? 'dark' : 'light');
+    View::share('season', (string) CareScheduler::currentSeasonId());
 
     $router   = new Router(require APP_ROOT . '/app/routes.php');
     $response = $router->dispatch($request);

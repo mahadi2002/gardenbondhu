@@ -21,7 +21,7 @@ $tabs = ['new' => 'নতুন', 'read' => 'দেখা হয়েছে', '
 <?php if ($messages === []): ?>
   <p class="muted">এই তালিকায় কিছু নেই।</p>
 <?php else: ?>
-  <div class="table-wrap">
+  <div class="table-wrap reveal">
     <table>
       <thead><tr><th>নাম</th><th>যোগাযোগ</th><th>বার্তা</th><th>অবস্থা</th><th>তারিখ</th></tr></thead>
       <tbody>
