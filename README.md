@@ -116,7 +116,6 @@ actually editing the CSS/JS needs it.
 - [`docs/SECURITY.md`](docs/SECURITY.md) — what's protecting what, and why
 - [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — getting this onto shared hosting or a VPS
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — conventions, testing, how to not break things
-- [`STARTING.md`](STARTING.md) — quick reference for firing up the local server (and un-breaking it)
 - [`TODO.md`](TODO.md) — what's left
 - [`PHOTO_CREDITS.md`](PHOTO_CREDITS.md) — where the plant photos came from
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) — before you send a PR
