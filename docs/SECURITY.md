@@ -1,9 +1,9 @@
 # Security
 
-What's actually protecting what, and why it's built the way it is. The two
-things worth protecting here are phone numbers and billing state — that's
-the whole threat model, and most of what follows exists because of one or
-the other.
+What's actually protecting what, and why it's built the way it is. The main
+things worth protecting here are user accounts (email + password) and admin
+access — that's the whole threat model, and most of what follows exists
+because of one or the other.
 
 ## SQL
 
@@ -23,14 +23,16 @@ source text gets escaped *first*, then specific patterns like `**bold**` or
 can inject a script tag, because the escaping happens before any tag is
 reintroduced, not after.
 
-## Phone numbers
+## Passwords
 
-Encrypted at rest (AES-256-GCM), looked up via a separate HMAC hash — see
-ARCHITECTURE.md and DATABASE.md, this is described in a couple places
-because it's the thing most worth getting right. Full numbers never appear
-in a log line, an admin screen, or anywhere else — only the last 4 digits,
-or a hash prefix if something needs to correlate log entries without
-revealing the number itself.
+`users.password_hash` uses PHP's default `password_hash()` algorithm
+(Argon2id on current PHP); `admins.password_hash` is hashed and rehashed
+with `PASSWORD_ARGON2ID` explicitly, so an admin account stays on Argon2id
+even if a future PHP version changes what "default" means. Neither is ever
+reversible. Login failure messages are deliberately generic ("email or
+password is wrong") so the login and password-reset forms can't be used to
+enumerate registered emails. See `App\Controllers\AuthController` and
+`App\Controllers\Admin\AdminAuthController`.
 
 ## Sessions
 
@@ -43,18 +45,18 @@ Session ID gets regenerated on login and on any role change.
 
 ## CSRF
 
-Every POST/PUT/DELETE checks a per-session token. The one exception is the
-carrier billing webhook, which obviously can't carry a session token since
-it's not a browser making the request — that's verified by signature and IP
-allowlist instead.
+Every POST/PUT/DELETE checks a per-session token, no exceptions — there's no
+route in `app/routes.php` today that skips the `csrf` middleware.
 
 ## Rate limiting
 
-A handful of buckets (OTP requests, OTP verification attempts, admin login,
-search, contact form, question posting), each with its own limit, backed by
-a `rate_limits` table rather than assuming Redis is available. Plus a
-honeypot field and a minimum 2-second fill time on the subscribe form — no
-CAPTCHA, because a CAPTCHA on a ৳2.78/day impulse-subscribe flow would tank
+A handful of buckets, each with its own limit, backed by a `rate_limits`
+table rather than assuming Redis is available: `login`, `register`,
+`password_reset`, `admin_login`, `admin_totp`, `qa_post`, `search`,
+`contact`, and `diagnose_demo` — see `App\Core\RateLimit::BUCKETS` for the
+exact limits/windows and `app/routes.php` for which route hits which bucket
+via `rl:<name>`. Plus a honeypot field on the register and contact forms —
+no CAPTCHA, because a CAPTCHA on a free registration flow would tank
 conversion for approximately zero additional protection against anything a
 determined attacker actually cares about.
 
@@ -81,9 +83,9 @@ that sets its own Content-Type. Never trusts the client.
 
 ## Admin
 
-Separate authentication from regular users entirely (email+password,
-Argon2id, not phone+OTP). User search only ever works by last-4-digits,
-and no screen anywhere shows a full phone number. Optional IP allowlist via
+Separate authentication from regular users entirely — its own `admins`
+table, own email+password login at `/admin/login`, Argon2id specifically
+(not PHP's default, which can silently downgrade). Optional IP allowlist via
 `ADMIN_IP_ALLOWLIST` if you want to lock it down further.
 
 Optional TOTP 2FA (`app/Support/Totp.php`, RFC 6238, hand-rolled on
@@ -93,10 +95,11 @@ state (`admin_pending_id` in session, never `admin_id`) until a live code
 also checks out at `/admin/login/verify`; `RequireAdmin` only ever trusts
 `admin_id`. Enrollment requires one live code back before the secret is
 persisted, and disabling it back requires the current password. The secret
-is encrypted at rest with `Crypto` the same way `msisdn_enc` is.
+(`admins.totp_secret`) is encrypted at rest with the same `App\Core\Crypto`
+AES-256-GCM helper used elsewhere in the app.
 
 ## Before this goes live for real
 
-See TODO.md — fresh encryption keys, delete the seeded test accounts, real
-carrier billing credentials, an actual security scan against a staging copy,
-and a backup restore that's been tested at least once, not just assumed to work.
+See TODO.md — fresh encryption keys, delete the seeded test accounts, an
+actual security scan against a staging copy, and a backup restore that's
+been tested at least once, not just assumed to work.

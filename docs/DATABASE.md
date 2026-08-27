@@ -5,31 +5,31 @@ Migrations live in `database/migrations/`, numbered, applied in order by
 `database/migrate.php`. Running the migrate script twice is a no-op — it
 tracks what's already applied in a `migrations` table.
 
-## Identity & billing
+## Identity
 
-- **`users`** — one row per subscriber. Phone number is stored encrypted
-  (`msisdn_enc`) plus a separate one-way hash for lookups (`msisdn_hash`) —
-  see ARCHITECTURE.md for why it's split that way. `msisdn_last4` is the
-  only part ever shown in any UI, including admin.
-- **`subscriptions`** — a user can have more than one over time (re-subscribe
-  after cancelling creates a new row, history is never deleted). Status is
-  one of `pending → active → grace → expired` or `unsubscribed`, and
-  `current_period_end` is what actually gates access.
-- **`charge_transactions`** — one row per billing attempt, keyed by an
-  idempotency string so the hourly cron can't accidentally double-charge
-  someone if it gets interrupted mid-run.
-- **`otp_requests`** — codes are hashed (`password_hash()`), never stored
-  plain, and expire after a few minutes.
+- **`users`** — one row per account. Plain email + password (`email` unique,
+  `password_hash` via `password_hash()`) — see `008_email_auth.sql`, which
+  replaced the old phone/carrier-OTP columns with these. `status` is
+  `pending`, `active`, or `blocked`; `RequireAuth` re-checks it from the DB
+  on every gated request.
+- **`password_resets`** — one-time reset tokens for `/forgot-password`. Only
+  the SHA-256 hash of the raw token is stored — the raw token lives in the
+  emailed link and nowhere else.
 - **`admins`** — separate from `users` entirely. Argon2id passwords, optional
-  encrypted TOTP secret for 2FA (see SECURITY.md).
+  encrypted TOTP secret (`totp_secret`) for 2FA (see SECURITY.md and
+  FEATURES.md).
 
 ## Content
 
 - **`plants`**, **`problems`**, **`guides`** — the actual knowledge base.
-  Each has a free part (`summary_bn` / `description_bn` / `excerpt_bn`) and
-  a paid part (`body_bn`, `organic_remedy_bn`, `chemical_remedy_bn`, etc.)
-  — the paid columns just aren't selected in the query at all for a
-  non-subscriber, which is a stronger guarantee than hiding them in the UI.
+  Each has a short public-facing part (`summary_bn` / `description_bn` /
+  `excerpt_bn`) shown to anonymous visitors, and a fuller part (`body_bn`,
+  `organic_remedy_bn`, `chemical_remedy_bn`, etc.) that renders once the
+  viewer is logged in — free registration gates it, not a paywall. The
+  detail-page query always selects every column; it's the view that decides
+  what to render based on `$isLoggedIn`. `guides.is_premium` is a leftover
+  column from the old paid-tier split — admins can still toggle it in the
+  guide form, but nothing reads it for access control any more.
 - **`plant_categories`**, **`seasons`** — lookup tables.
 - **`symptoms`** — feeds the leaf-picker on the diagnosis page, grouped by
   which part of the plant they show up on (leaf, stem, root, flower, fruit,
@@ -52,13 +52,11 @@ tracks what's already applied in a `migrations` table.
 
 - **`sessions`** — yes, sessions are a table, not files. See ARCHITECTURE.md.
 - **`rate_limits`** — sliding-window counters, one row per bucket+key
-  combination (e.g. `otp_request:0:ip:<hash>`).
-- **`audit_log`** — who did what, when. Never stores a full phone number or
-  an OTP code, only hashes/prefixes.
-- **`webhook_events`** — every carrier billing callback we've ever received,
-  keyed by their event ID so a retried webhook applies exactly once.
-- **`jobs`** — a bare-bones queue. Right now the only job type is applying a
-  webhook event after it's already been acknowledged.
+  combination (e.g. `login:0:ip:<hash>`, `register:0:ip:<hash>`,
+  `admin_totp:0:ip:<hash>`) — see `App\Core\RateLimit` and the `rl:*`
+  middleware entries in `routes.php`.
+- **`audit_log`** — who did what, when. Never stores a raw password, TOTP
+  secret, or password-reset token, only hashes/prefixes.
 
 ## Full-text search
 

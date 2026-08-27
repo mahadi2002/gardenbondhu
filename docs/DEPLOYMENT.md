@@ -32,12 +32,12 @@ Then:
    can't drop a table.
 3. `php database/migrate.php` (add `--seed` only if this is a genuinely
    fresh install, and delete the seeded admin/demo accounts afterward).
-4. Add the four cron entries — each script has the exact crontab line in a
-   comment at the top of the file.
-5. `APP_ENV=production`, `APP_DEBUG=false`, `CARRIER_DRIVER=carrier` once you
-   actually have carrier billing credentials. The app refuses to boot if you set
-   `APP_ENV=production` while still on the mock driver or with debug on —
-   that's intentional, not a bug to work around.
+4. Add the cron entries — each script in `cron/` has the exact crontab line
+   in a comment at the top of the file.
+5. `APP_ENV=production`, `APP_DEBUG=false`. The app refuses to boot in
+   production if `APP_DEBUG` is still on, or if `APP_KEY`/`HASH_PEPPER`
+   aren't set to real 32-byte values — that's intentional, not a bug to
+   work around (see `app/bootstrap.php`).
 
 ## VPS
 
@@ -86,5 +86,5 @@ need it. An untested backup isn't a backup, it's a hope.
 - Admin password isn't the seeded default
 - Fresh encryption keys, not the dev ones
 - CSP header has no `unsafe-inline`
-- Session gets killed when a subscription lapses — check this by hand once,
-  in a second browser, don't just trust the code
+- Session gets killed when an admin blocks a user's account — check this by
+  hand once, in a second browser, don't just trust the code

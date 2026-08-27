@@ -3,9 +3,9 @@
 The actual source of truth is `app/routes.php` — this is just that table
 laid out more readably. Middleware shorthand: `csrf` checks the token on
 POST/PUT/DELETE, `guest` bounces you if you're already logged in, `auth`
-requires a login, `sub` requires an *active* subscription (re-checked from
-the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
-`rl:name` rate-limits against the bucket of that name.
+requires a login (any logged-in user, re-checked from the DB, see
+ARCHITECTURE.md), `admin` requires an admin login, `rl:name` rate-limits
+against the bucket of that name.
 
 ## Ops
 
@@ -21,30 +21,29 @@ the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
 | `GET /privacy`, `/terms`, `/about` | Static pages |
 | `GET /contact`, `POST /contact` | Contact form |
 | `GET /search` | Search across plants/problems/guides |
-| `GET /plants`, `/plants/{slug}` | Plant catalog + detail (teaser only if not subscribed) |
+| `GET /plants`, `/plants/{slug}` | Plant catalog + detail (teaser only if not logged in) |
 | `GET /problems`, `/problems/{slug}` | Same deal, for pests/diseases |
 | `GET /guides`, `/guides/{slug}` | Same deal, for how-to articles |
-| `GET /media/{token}` | Serves uploaded Q&A images (never a direct file path) |
+| `GET /media/{slug}` | Serves uploaded Q&A images (never a direct file path) |
 | `GET /sitemap.xml` | Generated from published content |
 
 ## Getting in
 
 | Route | What it does |
 |---|---|
-| `GET /subscribe` | Phone number form |
-| `POST /subscribe/otp` | Sends the OTP |
-| `GET /subscribe/verify`, `POST /subscribe/verify` | Enter the code |
-| `POST /subscribe/resend` | Resend, rate-limited so you can't spam it |
-| `GET /login` | Same flow, framed as "log back in" instead of "subscribe" for people who already pay |
+| `GET /register`, `POST /register` | Email + password sign-up |
+| `GET /login`, `POST /login` | Email + password sign-in |
 | `POST /logout` | Kills the session |
+| `GET /forgot-password`, `POST /forgot-password` | Request a password-reset email |
+| `GET /reset-password/{slug}`, `POST /reset-password/{slug}` | Set a new password from the emailed link (`{slug}` is the reset token) |
 
-## Inside the app (needs an active subscription)
+## Inside the app (any logged-in user — no billing gate)
 
 | Route | What it does |
 |---|---|
 | `GET /app` | Dashboard — today's tasks, quick links |
 | `GET /app/plants`, `/finder`, `/{slug}` | Full plant content + the filterable finder |
-| `GET /app/problems/{slug}`, `/app/guides/{slug}` | Full content, no paywall |
+| `GET /app/problems`, `/{slug}`, `/app/guides`, `/{slug}` | Full content, no paywall |
 | `GET /app/diagnose`, `POST /app/diagnose` | The leaf-symptom checker |
 | `GET /app/calendar` | What to do this month, by season |
 | `GET /app/tools`, `POST .../water`, `.../fertilizer`, `.../pot` | The three calculators |
@@ -52,27 +51,31 @@ the DB every time, see ARCHITECTURE.md), `admin` requires an admin login,
 | `POST /app/garden/task/{id}/done` | Mark a care task complete |
 | `GET /app/qa`, `/ask`, `POST /app/qa`, `/{id}`, `POST .../answer` | Q&A |
 
-## Account (works even without an active subscription — you need to be able to fix billing)
+## Account
 
 | Route | What it does |
 |---|---|
-| `GET /account` | Status, subscription details, charge history |
-| `GET /expired` | Where you land when access has lapsed |
-| `GET /account/unsubscribe`, `POST` | Cancel |
-| `POST /account/delete` | Anonymize + cancel, permanent |
-
-## Behind the scenes
-
-| Route | What it does |
-|---|---|
-| `POST /webhooks/carrier` | Carrier billing provider calling us back — no CSRF (can't, it's not a browser), verified by signature/IP instead |
+| `GET /account` | Account status |
+| `POST /account/delete` | Anonymize + delete, permanent |
 
 ## Admin (`/admin/*`)
 
-Separate login (email+password, not phone+OTP — admins might not have a
-Robi number), with optional TOTP 2FA — `/admin/login/verify` after password
-if the admin has enrolled it, self-service enroll/disable at
-`/admin/security`. Standard CRUD for plants, problems, guides, and Q&A
-moderation, a users list that only ever shows the last 4 digits of a phone
-number, a contact-form inbox (`/admin/contact`), and an audit log viewer.
-Nothing exotic — see `app/Controllers/Admin/` if you need the specifics.
+| Route | What it does |
+|---|---|
+| `GET /admin/login`, `POST /admin/login` | Email + password sign-in |
+| `GET /admin/login/verify`, `POST /admin/login/verify` | Second step for an admin who has enrolled TOTP — password success alone lands in a pending state, not a full admin session |
+| `POST /admin/logout` | Kills the admin session |
+| `GET /admin` | Dashboard |
+| `GET /admin/security` | 2FA status |
+| `GET /admin/security/totp/setup` | Enroll TOTP — shows the secret + `otpauth://` URI |
+| `POST /admin/security/totp/confirm` | Confirm enrollment with a live code |
+| `POST /admin/security/totp/disable` | Disable 2FA (requires current password) |
+| `GET /admin/plants`, `/new`, `/{id}`; `POST /admin/plants`, `/{id}`, `/{id}/delete` | Plant catalog CRUD |
+| `GET /admin/problems`, `/new`, `/{id}`; `POST /admin/problems`, `/{id}`, `/{id}/delete` | Problem catalog CRUD |
+| `GET /admin/guides`, `/new`, `/{id}`; `POST /admin/guides`, `/{id}`, `/{id}/delete` | Guide catalog CRUD |
+| `GET /admin/qa`, `/{id}`; `POST /admin/qa/{id}` | Q&A moderation |
+| `GET /admin/users`, `/{id}`; `POST /admin/users/{id}` | User list + per-user status changes |
+| `GET /admin/contact`, `/{id}`; `POST /admin/contact/{id}/resolve` | Contact-form inbox |
+| `GET /admin/logs` | Audit log viewer |
+
+Nothing exotic beyond that — see `app/Controllers/Admin/` if you need the specifics.

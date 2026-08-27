@@ -11,7 +11,7 @@ server ever executes directly. It:
 
 1. Loads `app/bootstrap.php` — sets up the autoloader, reads `.env`, checks
    a few things that would be bad to get wrong in production (debug mode on,
-   mock billing driver on, missing encryption keys), registers error handlers.
+   missing encryption keys), registers error handlers.
 2. Builds a `Request` from the superglobals.
 3. Starts the session (custom DB-backed handler, more on that below).
 4. Hands the request to the `Router`, which matches it against the table in
@@ -34,9 +34,9 @@ collaborators.
 
 ```
 Controllers/    thin — pull input, call a service or repo, pick a view
-Services/       the actual business logic (billing state machine, OTP
-                flow, diagnosis scoring, care scheduling, search, image
-                processing)
+Services/       the actual business logic (diagnosis scoring, care
+                scheduling, search, image processing, audit logging,
+                outbound notifications)
 Repositories/   all the SQL lives here, nowhere else. Every query is a
                 prepared statement. Sort columns are read from an allowlist
                 in config/content.php, never taken from user input directly.
@@ -54,32 +54,27 @@ it's just PHP requiring PHP files with `extract()`'d variables.
 
 ## Things that are worth knowing before you touch them
 
-**Sessions live in the database**, not in files or Redis. The whole reason
-for that: when someone's subscription lapses, we need to kill their session
-*right now*, not whenever PHP's garbage collector gets around to expiring a
-file. `SubscriptionService` deletes the relevant `sessions` rows the moment
-access is lost, so the next request from that browser — even mid-page —
-gets bounced. See `App\Core\Session` and `App\Services\SubscriptionService`.
+**Sessions live in the database**, not in files or Redis. That means access
+can be revoked immediately — e.g. an admin setting a user's `status` to
+`blocked` — instead of waiting for PHP's garbage collector to expire a file
+on its own schedule. `RequireAuth` re-checks the user's `status` from the DB
+on every gated request. See `App\Core\Session`.
 
-**Nothing decides access from the session.** `RequireSubscription` (the
-middleware gating everything under `/app`) re-reads the subscription status
-from the database on every single request. No cached flag, no "logged in =
-paid" shortcut. Slightly more DB load, way harder to get wrong.
+**Nothing decides access from the session alone.** `RequireAuth` (the
+middleware gating everything under `/app`) and `RequireAdmin` (everything
+under `/admin` except the login/verify routes) both re-read status from the
+database on every single request. No cached flag. Slightly more DB load,
+way harder to get wrong.
 
-**Phone numbers are encrypted, not hashed-for-lookup-only.** `users.msisdn_enc`
-is AES-256-GCM ciphertext (needs `APP_KEY` to reverse), and a separate
-one-way HMAC (`users.msisdn_hash`, keyed by `HASH_PEPPER`) is what queries
-actually filter on. Two different secrets, two different jobs — losing
-`HASH_PEPPER` alone breaks lookups but doesn't expose anything; losing
-`APP_KEY` alone doesn't let you find a specific user's row without also
-having the hash. See `App\Core\Crypto`.
-
-**The billing gateway is behind an interface.** `SubscriptionGateway` has
-two implementations — `MockGateway` for local dev (generates real OTPs,
-simulates charge success/failure based on the phone number's last two
-digits) and `CarrierGateway` for production, which nobody outside this one
-class knows exists. If the carrier billing provider's actual API turns out
-to look nothing like what's stubbed in there, only that file changes.
+**Auth is plain email + password**, Argon2id via `password_hash()`, nothing
+more exotic for regular users. Admins get an optional second factor on top —
+TOTP (RFC 6238, hand-rolled in `App\Support\Totp`, no dependency). An admin
+enrolls it themselves at `/admin/security`; once enrolled, a correct password
+alone only sets `admin_pending_id`, not `admin_id` — a live 6-digit code at
+`/admin/login/verify` is what `RequireAdmin` actually trusts. The encrypted
+TOTP secret (`admins.totp_secret`) uses the same `App\Core\Crypto`
+AES-256-GCM helper (`APP_KEY`-derived) that the rest of the app's
+at-rest secrets use.
 
 **Uploaded images never touch the web root.** They land in `storage/uploads/`
 and get served back through `MediaController`, re-encoded through GD on the
@@ -88,14 +83,10 @@ polyglot file) with a randomly generated filename.
 
 ## Cron jobs
 
-Four scripts in `cron/`, each wrapped in a file lock so two overlapping runs
-don't double-process anything:
+Scripts in `cron/`, each wrapped in a file lock (`cron/_lock.php`) so two
+overlapping runs don't double-process anything:
 
-- `charge_cycle.php` — hourly, charges whatever subscriptions are due
-- `queue_worker.php` — every minute, drains the `jobs` table (right now
-  that's just applying webhook events after they've already been
-  acknowledged, so the billing provider isn't kept waiting on a slow DB write)
 - `care_tasks.php` — daily, generates the next week of watering/fertilizing
   tasks for everyone's garden
-- `cleanup.php` — daily, purges old rate-limit rows, expired OTPs, stale
-  sessions, and anonymizes users who unsubscribed a long time ago
+- `cleanup.php` — daily, purges old rate-limit rows, stale sessions, aged-out
+  audit log rows, and expired password-reset tokens

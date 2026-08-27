@@ -3,28 +3,27 @@
 Skipping the CRUD-y stuff (plant listings, admin forms) and covering the
 bits that have actual logic in them.
 
-## Subscription state machine
+## Admin two-factor (TOTP)
 
-```mermaid
-stateDiagram-v2
-    [*] --> pending: OTP verified
-    pending --> active: first charge succeeds
-    active --> active: renewal succeeds
-    active --> grace: charge fails
-    grace --> active: recharge succeeds
-    grace --> expired: 48h passes, still failing
-    active --> unsubscribed: user cancels / STOP SMS
-    grace --> unsubscribed: user cancels / STOP SMS
-    expired --> pending: re-subscribes
-```
+Admins can turn on standard TOTP 2FA (RFC 6238, 30s step, 6 digits,
+HMAC-SHA1 — the same scheme Google Authenticator, Authy, 1Password, and
+friends all speak) — see `App\Support\Totp`, built on nothing but
+`hash_hmac()`, no Composer package.
 
-`active` and `grace` are the only two states that grant access — checked
-fresh from the DB on every gated request, never cached. `SubscriptionService`
-owns every transition. The one thing worth remembering if you're touching
-billing code: renewal extends `current_period_end` from the *previous*
-period end, not from `now()`. If you extend from `now()`, every hour the
-cron is late (and it will be, sometimes) quietly steals time from the user.
-It adds up.
+Enrollment (`Admin\AdminSecurityController`) is deliberately two steps:
+`setup()` generates a fresh secret and shows it (QR URI + manual-entry
+fallback) but doesn't persist anything yet; `confirm()` only writes it to
+`admins.totp_secret` (encrypted at rest via `Crypto`) once the admin proves
+they can actually generate a live code from it. A secret nobody has proven
+they can generate codes from is worse than no 2FA — it just locks the admin
+out at next login. Disabling it (`disable()`) requires re-entering the
+account password first.
+
+Once `totp_secret` is set, `/admin/login` no longer logs an admin straight
+in — `Admin\AdminAuthController` redirects to `/admin/login/verify` for a
+6-digit code, tolerating one 30s step of clock drift either side before
+granting the session. Access itself is checked fresh from the DB on every
+`/admin/*` request via the `admin` middleware — no session flag decides it.
 
 ## Diagnosis scoring
 
@@ -86,9 +85,9 @@ itself rather than trusting anything about the original upload.
 ## Q&A moderation
 
 New questions start `pending` and only the asker can see their own pending
-question. An admin approves or rejects. Anyone with an active subscription
-can answer an approved question; answers from users flagged as `expert`
-(admin sets that flag) get a badge and sort first.
+question. An admin approves or rejects. Any logged-in user can answer an
+approved question; answers from users flagged as `expert` (admin sets that
+flag) get a badge and sort first.
 
 ## Contact / support inbox
 

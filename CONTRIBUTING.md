@@ -30,10 +30,10 @@ it, it's not long. The two rules that matter most:
 ## Tests
 
 `php tests/smoke.php` — no framework, just a `check()` helper. If you touch
-`Crypto`, `Csrf`, `Validator`, `Operators`, `Totp`, a Repository's
-teaser/full column split, or `SubscriptionService`, add a check for it in
-the same PR. CI runs `php -l` across every file and `php tests/smoke.php`
-against a real MySQL service on every push — see
+`Crypto`, `Csrf`, `Validator`, `Totp`, or the email/password auth path
+(`AuthController`, `UserRepo`), add a check for it in the same PR. CI runs
+`php -l` across every file and `php tests/smoke.php` against a real MySQL
+service on every push — see
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Plant/problem/guide content

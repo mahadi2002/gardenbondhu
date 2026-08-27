@@ -3,9 +3,8 @@
 Bangla gardening app for people in Bangladesh who are new to growing things.
 Plant care guides, a leaf-symptom checker for figuring out what's wrong with
 a sick plant, a personal garden log with watering/fertilizing reminders, and
-a Q&A section. Free stuff is limited; the rest needs a subscription — ৳2.78 a
-day billed straight through your mobile carrier, works with Robi and Airtel,
-cancel whenever.
+a Q&A section. Free — make an account with just an email and password and
+you get full access, no subscription or billing involved.
 
 PHP backend, no frameworks, no Composer packages. Runs on cheap shared
 hosting just as well as a VPS, which was the whole point — no build step to
@@ -17,8 +16,8 @@ is committed, so deploying still never requires `npm install`.)
 
 Plain PHP 8.2+ (PDO, cURL, OpenSSL, GD, mbstring — nothing else), MySQL/
 MariaDB, one CSS file, vanilla JS. Front controller + hand-rolled routing,
-sessions stored in the DB instead of files so a subscription can be revoked
-mid-session instead of at next login.
+sessions stored in the DB instead of files so a blocked or deleted account
+loses access mid-session instead of at next login.
 
 ## Running it locally
 
@@ -68,21 +67,22 @@ On Mac/Linux, `Ctrl+C` the PHP server and `mysqladmin -u root shutdown` (or
 `brew services stop mysql` / `sudo service mysql stop`, matching however
 you started it).
 
-### Logging in without setting up real billing
+### Logging in
 
-Two accounts get created by the seed:
+Auth is plain email + password. Two accounts get created by the seed:
 
 - Admin: `admin@gardenbondhu.test` / `ChangeMe123!` at `/admin/login`
-- A subscriber already set up with an active mock subscription: phone
-  `01812345678`, OTP `123456`, at `/login` — skips straight to `/app`.
+- Demo user: `demo@kishalay.test` / `ChangeMe123!` at `/login` — skips
+  straight to `/app`, nothing else to set up.
 
-The billing gateway defaults to a mock implementation, so you don't need
-real carrier billing credentials to test any of this. OTPs actually get generated and
-written to `storage/logs/otp-*.log`, or you can just always type `123456`.
-Want to see a failed subscription? Use a number ending in `00` (simulates
-low balance) or `99` (hard failure). Note: retrying the same number the
-same day won't re-attempt the charge — that's on purpose, not a bug, use a
-different number if you want to test a clean success.
+You can also just register your own account at `/register` — there's no
+gate in front of `/app` beyond being logged in.
+
+The seeded admin has TOTP two-factor off, so `/admin/login` logs straight
+in. To try the 2FA flow, log in as that admin and turn it on at
+`/admin/security/totp/setup` (scan the QR with any standard authenticator
+app, or type in the secret manually); every `/admin/login` after that
+redirects to `/admin/login/verify` for a 6-digit code.
 
 ## Frontend build (optional, only if you touch CSS/JS)
 
@@ -112,7 +112,7 @@ actually editing the CSS/JS needs it.
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — how a request flows through the app, why it's structured this way
 - [`docs/ROUTES.md`](docs/ROUTES.md) — every route, what it does, what guards it
 - [`docs/DATABASE.md`](docs/DATABASE.md) — the schema, table by table
-- [`docs/FEATURES.md`](docs/FEATURES.md) — how the subscription state machine, diagnosis scoring, and care scheduler actually work
+- [`docs/FEATURES.md`](docs/FEATURES.md) — how diagnosis scoring, the care scheduler, and admin 2FA actually work
 - [`docs/SECURITY.md`](docs/SECURITY.md) — what's protecting what, and why
 - [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — getting this onto shared hosting or a VPS
 - [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md) — conventions, testing, how to not break things
